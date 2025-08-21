@@ -135,7 +135,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Title 
+    # Create title string "full_title"
     full_title = mo.md("<h1>Stellar Evolution Interactive Tool</h1>") 
 
     return (full_title,)
@@ -143,7 +143,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    # User Guide section header with switch to minimize it 
+    # User Guide section header "userguide_subtitle" with switch to minimize it "userguide_switch"
     userguide_subtitle = mo.md("<h2>Tutorial/Documentation</h2>") 
     userguide_switch = mo.ui.switch(value=True, label="Hide/show")
     userguide_subtitle_hstack = mo.hstack([userguide_subtitle, userguide_switch], justify="space-between", align="center")
@@ -153,7 +153,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(userguide_switch):
-    # User Guide text 
+    # User guide text (shows up if user guide is not minimized) "userguide_text"
 
     userguide_text = "" 
     if userguide_switch.value == True: 
@@ -165,7 +165,7 @@ def _(userguide_switch):
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Flowchart header with switch to minimize it 
+    # Flowchart header "flowchart_subtitle" with switch to minimize it "flowchart_switch"
     flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
     flowchart_switch = mo.ui.switch(value=True, label="Hide/show")
     flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_switch], justify="space-between", align="center")
@@ -176,7 +176,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Other headers 
+    # Controls section header ("controls_subtitle") and secondary plot section header ("secondary_plot_subtitle")
     controls_subtitle = mo.md("<h2>Controls</h2>") 
     secondary_plot_subtitle = mo.md("<h2>Secondary Plot</h2>") 
 
@@ -194,7 +194,7 @@ def _(mo, ui_options):
 
 @app.cell(hide_code=True)
 def _(mo, stellar_evolution_data):
-    # Stage and mass selector dropdowns used by comparison mode string 
+    # Dropdowns used by "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" 
 
     # Mode1 
     unique_masses = sorted({m for s in stellar_evolution_data.SUBSTAGES_LIST for m in [s.mass_min, s.mass_max]})
@@ -216,7 +216,7 @@ def _(
     mode2_parentstage_dropdown,
     ui_options,
 ):
-    # Comparison mode string 
+    # "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" within text 
 
     # String that appears depending on what comparison mode is selected. Includes a dropdown selector. 
     comparison_mode1_str = mo.md(f"View the evolution of a {mode1_massrange_dropdown} mass star: ") 
@@ -235,7 +235,7 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo, ui_options):
-    # Plot mode radio selector 
+    # Plot mode section header ("plot_mode_title") and radio selector ("plot_mode_radio")  
     plot_mode_title = mo.md("<h3>Choose secondary plot</h3>") 
     plot_mode_radio = ui_options.create_radio(ui_options.PLOTMODE_OPTIONS)
 
@@ -244,7 +244,7 @@ def _(mo, ui_options):
 
 @app.cell(hide_code=True)
 def _(mo):
-    # Plot mode option 0: HR Diagram 
+    # Plot mode HR diagram string "HR_diagram_str"
     HR_diagram_str = mo.md("HR diagram")
 
     return (HR_diagram_str,)
@@ -252,7 +252,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo, ui_options):
-    # Plot mode option 1: history vs time  
+    # Plot mode history string "history_str" which contains the dropdown "history_plot_dropdown" 
     history_plot_dropdown = ui_options.create_dropdown(ui_options.HISTORYPLOT_OPTIONS)
     history_str = mo.md(f"History: {history_plot_dropdown} vs time") 
 
@@ -261,7 +261,7 @@ def _(mo, ui_options):
 
 @app.cell(hide_code=True)
 def _(ui_options):
-    # Plot mode option 2: Interior profile 
+    # Plot mode profile Y coord dropdown ("profile_plot_dropdown") 
     profile_plot_dropdown = ui_options.create_dropdown(ui_options.PROFILEPLOT_OPTIONS) 
 
     return (profile_plot_dropdown,)
@@ -269,34 +269,23 @@ def _(ui_options):
 
 @app.cell(hide_code=True)
 def _(ui_options):
-    # Plot mode option 2: X coord to represeent location within interior 
+    # Plot mode profile x coord dropdown ("profile_plot_x_dropdown") 
     profile_plot_x_dropdown = ui_options.create_dropdown(ui_options.PROFILEXAXIS_OPTIONS)
 
     return (profile_plot_x_dropdown,)
 
 
 @app.cell(hide_code=True)
-def _(mcolors):
-    # Convert from matlotlib color name (i.e., "dodgerblue") to the string used in CSS to set text color
-    def set_textcolor_css(text, mpl_color): 
-        css_color = mcolors.to_hex(mpl_color) 
-        colored_text = f"<span style='color:{css_color}'>{text}</span>" 
-        return colored_text 
-
-    return (set_textcolor_css,)
-
-
-@app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
+    helpers,
     mo,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
-    set_textcolor_css,
     substage_selected,
     ui_options,
 ):
-    # Plot mode option 2: Add that together to create string with all profile dropdowns 
+    # Plot mode profile string ("profile_str") which contains two dropdowns: "profile_plot_dropdown" and "profile_plot_x_dropdown" 
 
 
     # Default values (if no substage is selected): Display an empty white line 
@@ -316,7 +305,7 @@ def _(
 
     profile_str = mo.md(
         f"Interior profile: {profile_plot_dropdown} vs {profile_plot_x_dropdown} of a "
-        f"{set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
+        f"{helpers.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
 
 
     return (profile_str,)
@@ -353,13 +342,7 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _(
-    available_substages,
-    comparison_mode_radio,
-    mo,
-    set_textcolor_css,
-    ui_options,
-):
+def _(available_substages, comparison_mode_radio, helpers, mo, ui_options):
     # Create available substage tab selector (if there are any available substages)
 
     if len(available_substages) == 0: 
@@ -368,7 +351,7 @@ def _(
     elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
 
         available_substages_options = {
-            set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
+            helpers.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
             sub.mode1_desc 
             for sub in available_substages}
 
@@ -379,7 +362,7 @@ def _(
     elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
 
         available_substages_options = {
-            set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
+            helpers.set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
             sub.mode2_desc_with_massrange 
             for sub in available_substages} 
 
@@ -396,7 +379,7 @@ def _(
     available_substages,
     available_substages_tabs,
     comparison_mode_radio,
-    set_textcolor_css,
+    helpers,
     ui_options,
 ):
     # Identify available substage tab that is currently selected (if there are any available substages)
@@ -407,13 +390,13 @@ def _(
     elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
         substage_selected = [
             s for s in available_substages 
-            if set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
+            if helpers.set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
         ][0] 
 
     elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
         substage_selected = [
             s for s in available_substages 
-            if set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
+            if helpers.set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
         ][0]
 
     return (substage_selected,)
@@ -441,6 +424,17 @@ def _(
         model_selected = next((m for m in substage_selected.models if m.is_default), substage_selected.models[0])
 
     return (model_selected,)
+
+
+@app.cell
+def _(model_selected):
+    # Load selected history and profile from the selected mass and model 
+
+    print(model_selected)
+
+
+
+    return
 
 
 @app.cell(hide_code=True)
@@ -680,7 +674,7 @@ def _(
         # HR Diagram 
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
             hr = HR_diagram_plotting.HRDiagram() 
-        
+
             if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
                 colors = dict(zip(histories_dict.keys(), ["tab:blue", "tab:orange", "tab:green", "tab:red"]))
                 for mass_i, history_i in histories_dict.items(): 
@@ -689,7 +683,7 @@ def _(
                     else: 
                         hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i], alpha=0.3)
 
-                
+
             hr.label_spectraltypes() 
             hr.legend() 
             fig2 = hr.fig 
@@ -748,72 +742,13 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _(load_data, mo, stellar_evolution_data):
-    # Preload profiles and histories 
-
-    fast_load = False  
-
-
-
-    if fast_load == True: 
-        fast_history = load_data.load_history(1.0)
-        fast_profile = load_data.load_profile(1.0, 296, fast_history)
-
-
-
-
-
-
-    # Get list of all models and masses that need to be loaded  
-    models_list = [] 
-    mass_list = [] 
-    for substage in stellar_evolution_data.SUBSTAGES_LIST: 
-        for model in substage.models: 
-            models_list.append(model)  
-            if model.mass not in mass_list: 
-                mass_list.append(model.mass)
-
-
-
-    # Load histories 
-    histories_dict = {} 
-    for mass in mo.status.progress_bar(
-        mass_list, 
-        remove_on_exit=True, 
-        title="Loading histories", 
-    ): 
-        if mass in histories_dict: 
-            continue 
-        if fast_load == False: 
-            histories_dict[mass] = load_data.load_history(mass) 
-        if fast_load == True: 
-            histories_dict[mass] = fast_history 
-
-
-    # Load profiles 
-    profiles_dict = {} 
-    for model in mo.status.progress_bar(
-        models_list, 
-        remove_on_exit=True, 
-        title="Loading profiles", 
-    ): 
-        mass = model.mass 
-        modelnum = model.model_example 
-        if fast_load == False: 
-            profiles_dict[(mass, modelnum)] = load_data.load_profile(mass, histories_dict[mass], modelnum=modelnum) 
-        if fast_load == True: 
-            profiles_dict[(mass, modelnum)] = fast_profile
-
-
-
-    return histories_dict, profiles_dict
-
-
-@app.cell(hide_code=True)
 def _():
+    # Imports/setup 
+
     # Standard packages 
     import os 
     import numpy as np 
+    from pathlib import Path 
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
     import matplotlib.colors as mcolors 
@@ -824,14 +759,16 @@ def _():
 
     plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
-    return mcolors, mo, mpatches, np, plt
+    data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
+
+    return mo, mpatches, np, plt
 
 
 @app.cell(hide_code=True)
 def _():
-    # Packages I wrote 
     import utils.load_data as load_data 
-    return (load_data,)
+    import utils.helpers as helpers 
+    return (helpers,)
 
 
 @app.cell(hide_code=True)

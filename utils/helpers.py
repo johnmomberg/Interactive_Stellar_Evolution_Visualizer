@@ -1,5 +1,6 @@
 import numpy as np 
 import math 
+import matplotlib.colors as mcolors 
 
 
 
@@ -29,3 +30,13 @@ def mass_luminosity_relation(M):
     if M>=55: 
         L_predicted = 32000 * M 
     return L_predicted 
+
+
+
+
+
+# Convert from matlotlib color name (i.e., "dodgerblue") to the string used in CSS to set text color
+def set_textcolor_css(text, mpl_color): 
+    css_color = mcolors.to_hex(mpl_color) 
+    colored_text = f"<span style='color:{css_color}'>{text}</span>" 
+    return colored_text 

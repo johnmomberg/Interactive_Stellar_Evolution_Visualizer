@@ -12,7 +12,7 @@ def _(Path):
 
 
 @app.cell
-def _():
+def _(history_filepath):
     # Goal: Rewrite loading data functions 
 
     import marimo as mo 
@@ -34,7 +34,7 @@ def _():
     def load_history(MESA_folder_path): 
 
         try: 
-            history = mr.MesaData(str(MESA_folder_path/"history.data"))  
+            history = mr.MesaData(history_filepath)  
             folder_mesa = mr.MesaLogDir(MESA_folder_path, history_file="history.data") 
 
         except FileNotFoundError: 
@@ -70,6 +70,12 @@ def _():
 
 
     return Path, mo, plt
+
+
+@app.cell
+def _():
+    # history = load_history(data_folder/f"M={0.5}")
+    return
 
 
 @app.cell
