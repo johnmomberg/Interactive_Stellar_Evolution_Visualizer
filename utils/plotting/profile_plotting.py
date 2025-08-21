@@ -54,9 +54,9 @@ class ProfilePlot:
         xticks = ax.get_xticks() 
         xticks = np.append(xticks, np.max(x_arr))
         xtick_labels = [
-            "0\n(Core)" if round(xticks[i], 2) == 0 else
+            "0\n(Core)" if float(f"{xticks[i]:.3g}") == 0 else
             f"\n(Surface)" if i == len(xticks)-1 else
-            str(round(xticks[i], 2))
+            f"{xticks[i]:.3g}" 
             for i in range(len(xticks)) 
         ]
         ax.set_xticks(xticks)
