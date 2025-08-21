@@ -115,8 +115,6 @@ def _():
     # HR diagram 
     # Comparison of de broglie wavelength to interparticle spacing 
 
-    # Make loading of profiles/histories dynamic: only load after you need them, then save as you go so you dont have to reload any 
-
     # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, to make it easier to see the interesting properties that happen all near the end of the star's life
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
 
@@ -427,14 +425,15 @@ def _(
 
 
 @app.cell
-def _(model_selected):
+def _(load_data, model_selected):
     # Load selected history and profile from the selected mass and model 
 
-    print(model_selected)
+    if model_selected is not None: 
+        history = load_data.load_history(model_selected.MESA_folder_path)
+        profile = load_data.load_profile(model_selected.MESA_folder_path, model_selected.model_example, history)
 
 
-
-    return
+    return history, profile
 
 
 @app.cell(hide_code=True)
@@ -628,15 +627,15 @@ def _(
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
-    histories_dict,
+    history,
     history_plot_dropdown,
     model_selected,
     plot_mode_radio,
     plt,
+    profile,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
     profile_plotting,
-    profiles_dict,
     ui_options,
 ):
     # Create figure showing interior plot 
@@ -658,30 +657,22 @@ def _(
                 return fig
 
         # If no data has been selected or no data is available for the current selection, return an error plot and escape 
-        if model_selected == None: 
+        if model_selected is None: 
             return make_error_figure()
 
 
-
-        # Otherwise, load history and profile for selected mass/modelnum from preloaded dictionaries 
-        mass_selected = model_selected.mass 
-        modelnum_selected = model_selected.model_example 
-        profile = profiles_dict[(mass_selected, modelnum_selected)]
-        history = histories_dict[mass_selected]
-
-
-
+    
         # HR Diagram 
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
             hr = HR_diagram_plotting.HRDiagram() 
 
-            if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-                colors = dict(zip(histories_dict.keys(), ["tab:blue", "tab:orange", "tab:green", "tab:red"]))
-                for mass_i, history_i in histories_dict.items(): 
-                    if mass_i == mass_selected: 
-                        hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i])
-                    else: 
-                        hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i], alpha=0.3)
+            # if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            #     colors = dict(zip(histories_dict.keys(), ["tab:blue", "tab:orange", "tab:green", "tab:red"]))
+            #     for mass_i, history_i in histories_dict.items(): 
+            #         if mass_i == mass_selected: 
+            #             hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i])
+            #         else: 
+            #             hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i], alpha=0.3)
 
 
             hr.label_spectraltypes() 
@@ -768,7 +759,7 @@ def _():
 def _():
     import utils.load_data as load_data 
     import utils.helpers as helpers 
-    return (helpers,)
+    return helpers, load_data
 
 
 @app.cell(hide_code=True)

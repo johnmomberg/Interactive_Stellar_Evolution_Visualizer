@@ -75,7 +75,7 @@ class ProfilePlot:
 
         # Set title and subtitle 
         ax.set_title(config.title, fontsize=20, pad=25) 
-        ax.text(0.5, 1.025, f"{profile.total_mass:.1f} $M_{{sun}}$ star at {mticker.EngFormatter(places=2)(profile.age)} years old", 
+        ax.text(0.5, 1.025, f"{profile.initial_mass:.1f} $M_{{sun}}$ star at {mticker.EngFormatter(places=2)(profile.age)} years old", 
                 transform=ax.transAxes, 
                 fontsize=12, ha='center')
 
@@ -177,7 +177,7 @@ class ProfilePlot:
 
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 
-        specific_L = np.max(profile.luminosity)*physical_constants.L_sun / (profile.total_mass*physical_constants.M_sun) 
+        specific_L = np.max(profile.luminosity)*physical_constants.L_sun / (profile.initial_mass*physical_constants.M_sun) 
         max_fusion = np.max(profile.eps_nuc) 
         if max_fusion>specific_L: 
             ax.set_ylim((specific_L/10, max_fusion)) 
