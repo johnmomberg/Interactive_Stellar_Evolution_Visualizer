@@ -9,19 +9,22 @@ def _(
     HR_diagram_str,
     available_substages_tabs,
     comparison_mode_radio,
-    comparison_mode_str,
     comparison_mode_title,
     controls_subtitle,
     fig2,
     flowchart,
     flowchart_subtitle_hstack,
+    freeselection_str,
     full_title,
     history_str,
+    massfirst_str,
     mo,
+    noselection_str,
     plot_mode_radio,
     plot_mode_title,
     profile_str,
     secondary_plot_subtitle,
+    stagefirst_str,
     userguide_subtitle_hstack,
     userguide_text,
 ):
@@ -56,13 +59,24 @@ def _(
                 ], 
                 gap=0, align="center"), 
             "\u200b", 
-
-            comparison_mode_title,  
-            comparison_mode_radio, 
-            comparison_mode_str, 
-            available_substages_tabs, 
+        
+            comparison_mode_title, 
+            mo.hstack(
+                [
+                    comparison_mode_radio, 
+                    mo.vstack(
+                        [
+                            noselection_str, 
+                            massfirst_str, 
+                            stagefirst_str, 
+                            freeselection_str
+                        ], 
+                        gap=0)
+                ], 
+                gap=0, align="center"), 
             "\u200b", 
-            mo.md("---"), 
+
+            available_substages_tabs, 
             "\u200b", 
 
             flowchart_subtitle_hstack, 
@@ -114,6 +128,8 @@ def _():
     # Plots to make work: 
     # HR diagram 
     # Comparison of de broglie wavelength to interparticle spacing 
+    # Plot ionization fraction as function of interior of star 
+    # Plot different species opacities (metals, electrons, hydrogen, etc)
 
     # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, to make it easier to see the interesting properties that happen all near the end of the star's life
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
@@ -181,7 +197,7 @@ def _(mo):
     return controls_subtitle, secondary_plot_subtitle
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, ui_options):
     # Comparison mode radio 
     comparison_mode_title = mo.md("<h3>Choose mass/evolutionary stage highlighted by secondary plot</h3>") 
@@ -190,7 +206,7 @@ def _(mo, ui_options):
     return comparison_mode_radio, comparison_mode_title
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, stellar_evolution_data):
     # Dropdowns used by "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" 
 
@@ -207,31 +223,18 @@ def _(mo, stellar_evolution_data):
 
 
 @app.cell
-def _(
-    comparison_mode_radio,
-    mo,
-    mode1_massrange_dropdown,
-    mode2_parentstage_dropdown,
-    ui_options,
-):
-    # "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" within text 
+def _(mo, mode1_massrange_dropdown, mode2_parentstage_dropdown):
+    # Strings that go next to "comparison_mode_radio" containing dropdowns 
 
-    # String that appears depending on what comparison mode is selected. Includes a dropdown selector. 
-    comparison_mode1_str = mo.md(f"View the evolution of a {mode1_massrange_dropdown} mass star: ") 
-    comparison_mode2_str = mo.md(f"Compare how stars of different masses experience the {mode2_parentstage_dropdown} stage: ") 
+    noselection_str = mo.md(f"No selection: View entire flowchart")
+    massfirst_str = mo.md(f"Select mass first: View the evolution of a {mode1_massrange_dropdown} mass star")
+    stagefirst_str = mo.md(f"Select stage first: Compare how stars of different masses experience the {mode2_parentstage_dropdown} stage") 
+    freeselection_str = mo.md(f"Select a specific MESA file to load") 
 
-    comparison_mode_str = "\u200b" 
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-        comparison_mode_str = comparison_mode1_str 
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-        comparison_mode_str = comparison_mode2_str 
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
-        comparison_mode_str = "Hey" 
-
-    return (comparison_mode_str,)
+    return freeselection_str, massfirst_str, noselection_str, stagefirst_str
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, ui_options):
     # Plot mode section header ("plot_mode_title") and radio selector ("plot_mode_radio")  
     plot_mode_title = mo.md("<h3>Choose secondary plot</h3>") 
@@ -273,7 +276,7 @@ def _(ui_options):
     return (profile_plot_x_dropdown,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     comparison_mode_radio,
     helpers,
@@ -304,6 +307,9 @@ def _(
     profile_str = mo.md(
         f"Interior profile: {profile_plot_dropdown} vs {profile_plot_x_dropdown} of a "
         f"{helpers.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
+
+
+
 
 
     return (profile_str,)

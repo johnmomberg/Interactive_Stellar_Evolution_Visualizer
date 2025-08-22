@@ -27,10 +27,10 @@ class OptionBase:
 class CompareModeOption(OptionBase): 
     pass 
 
-COMPAREMODE_NOSELECTION = CompareModeOption(display="No selection") 
-COMPAREMODE_MASSFIRST = CompareModeOption(display="Select mass first") 
-COMPAREMODE_STAGEFIRST = CompareModeOption(display="Select stage first") 
-COMPAREMODE_FREE = CompareModeOption(display="Directly choose MESA file")
+COMPAREMODE_NOSELECTION = CompareModeOption(display="") 
+COMPAREMODE_MASSFIRST = CompareModeOption(display=" ") 
+COMPAREMODE_STAGEFIRST = CompareModeOption(display="  ") 
+COMPAREMODE_FREE = CompareModeOption(display="   ") 
 
 COMPAREMODE_OPTIONS = [COMPAREMODE_NOSELECTION, COMPAREMODE_MASSFIRST, COMPAREMODE_STAGEFIRST, COMPAREMODE_FREE]
 
