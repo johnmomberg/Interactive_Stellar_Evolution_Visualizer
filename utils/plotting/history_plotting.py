@@ -28,7 +28,7 @@ class HistoryPlot:
 
 
 
-    # Code shared by all profile plots 
+    # Code shared by all history plots 
     @staticmethod
     def _setup(history, config): 
 

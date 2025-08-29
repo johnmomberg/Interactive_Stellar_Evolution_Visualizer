@@ -5,113 +5,27 @@ app = marimo.App(width="full")
 
 
 @app.cell
-def _(
-    HR_diagram_str,
-    available_substages_tabs,
-    comparison_mode_radio,
-    comparison_mode_title,
-    controls_subtitle,
-    fig2,
-    flowchart,
-    flowchart_subtitle_hstack,
-    freeselection_str,
-    full_title,
-    history_str,
-    massfirst_str,
-    mo,
-    noselection_str,
-    plot_mode_radio,
-    plot_mode_title,
-    profile_str,
-    secondary_plot_subtitle,
-    stagefirst_str,
-    userguide_subtitle_hstack,
-    userguide_text,
-):
-    # MAIN 
-
-
-    full_interface = mo.vstack(
-        [
-            full_title, 
-            "\u200b", 
-            mo.md("---"), 
-            "\u200b", 
-
-            userguide_subtitle_hstack, 
-            userguide_text, 
-            "\u200b", 
-            mo.md("---"), 
-            "\u200b", 
-
-            controls_subtitle, 
-            plot_mode_title, 
-            mo.hstack(
-                [
-                    plot_mode_radio, 
-                    mo.vstack(
-                        [
-                            HR_diagram_str, 
-                            history_str, 
-                            profile_str
-                        ], 
-                        gap=0)
-                ], 
-                gap=0, align="center"), 
-            "\u200b", 
-        
-            comparison_mode_title, 
-            mo.hstack(
-                [
-                    comparison_mode_radio, 
-                    mo.vstack(
-                        [
-                            noselection_str, 
-                            massfirst_str, 
-                            stagefirst_str, 
-                            freeselection_str
-                        ], 
-                        gap=0)
-                ], 
-                gap=0, align="center"), 
-            "\u200b", 
-
-            available_substages_tabs, 
-            "\u200b", 
-
-            flowchart_subtitle_hstack, 
-            flowchart, 
-            "\u200b", 
-            mo.md("---"), 
-            "\u200b", 
-
-            secondary_plot_subtitle, 
-            mo.mpl.interactive(fig2), 
-            "\u200b", 
-            mo.md("---"), 
-
-        ], 
-        gap=0.7 
-    ) 
-
-
-    full_interface 
-
-
-
-    return
-
-
-@app.cell
 def _():
     # To do: 
 
 
+
+    # If the mass of the progenitor is between 7 and 9 solar masses (M☉), the core temperature will be sufficient to fuse carbon but not neon, in which case an oxygen–neon–magnesium (ONeMg or ONe) white dwarf may form. (https://en.wikipedia.org/wiki/White_dwarf)
+
+
+
+    # Flowchart: 
+    # Add color and spectral type on MS to left side 
+    # Add "we are are" showing currently selected mass and model number 
+
     # HR DIAGRAM: 
     # Add transparent tracks of available but un-selected substages for comparison 
+    # Add model numbers 
 
-
-
+    # History plots: 
+    # "We are here" vertical line showing selected model number 
+    # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, to make it easier to see the interesting properties that happen all near the end of the star's life
+    # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
 
 
     # Make marimo notebook available on github: 
@@ -126,23 +40,14 @@ def _():
     # Apply to temperature/KE per particle plots 
 
     # Plots to make work: 
-    # HR diagram 
     # Comparison of de broglie wavelength to interparticle spacing 
     # Plot ionization fraction as function of interior of star 
     # Plot different species opacities (metals, electrons, hydrogen, etc)
 
-    # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, to make it easier to see the interesting properties that happen all near the end of the star's life
-    # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
-
-    # Add a fourth option to comparison_mode_selector that lets the user type in the filepath to a MESA file and then provides a dropdown of all available profiles which they can select from. 
-
-    # Add "we are here" to flowchart: mass and modelnum. Calc which substage the modelnum is within its boundaries. 
-
-    # Add "we are here" back to time plots 
-
-    # Add "1.0 M_sun star at 5 G years age (model number 296)" to profile plot titles 
 
     # I don't like the way I'm currently finding the available substages. The dictionary key which is currently calculated like set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color) should be an attribute of the substage class. for example, i have mode1_abbrev. i should have mode1_key which would replace mode1_abbrev_with_massrange and do whatever i need to to, such as appending the mass range. 
+
+
 
     return
 
@@ -150,7 +55,9 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     # Create title string "full_title"
-    full_title = mo.md("<h1>Stellar Evolution Interactive Tool</h1>") 
+
+    with mo.status.spinner(title="Creating title text...") as _: 
+        full_title = mo.md("<h1>Stellar Evolution Interactive Tool</h1>") 
 
     return (full_title,)
 
@@ -158,20 +65,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     # User Guide section header "userguide_subtitle" with switch to minimize it "userguide_switch"
-    userguide_subtitle = mo.md("<h2>Tutorial/Documentation</h2>") 
-    userguide_switch = mo.ui.switch(value=True, label="Hide/show")
-    userguide_subtitle_hstack = mo.hstack([userguide_subtitle, userguide_switch], justify="space-between", align="center")
+    with mo.status.spinner(title="Creating User Guide section...") as _: 
+        userguide_subtitle = mo.md("<h2>Tutorial/Documentation</h2>") 
+        userguide_switch = mo.ui.switch(value=True, label="Hide/show")
+        userguide_subtitle_hstack = mo.hstack([userguide_subtitle, userguide_switch], justify="space-between", align="center")
 
     return userguide_subtitle_hstack, userguide_switch
 
 
 @app.cell(hide_code=True)
-def _(userguide_switch):
+def _(mo, userguide_switch):
     # User guide text (shows up if user guide is not minimized) "userguide_text"
 
-    userguide_text = "" 
-    if userguide_switch.value == True: 
-        userguide_text = "To do: create user guide/tutorial/documentation for this app. "
+    with mo.status.spinner(title="Setting User Guide section text...") as _: 
+        userguide_text = "" 
+        if userguide_switch.value == True: 
+            userguide_text = "To do: create user guide/tutorial/documentation for this app. "
 
 
     return (userguide_text,)
@@ -180,9 +89,10 @@ def _(userguide_switch):
 @app.cell(hide_code=True)
 def _(mo):
     # Flowchart header "flowchart_subtitle" with switch to minimize it "flowchart_switch"
-    flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
-    flowchart_switch = mo.ui.switch(value=True, label="Hide/show")
-    flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_switch], justify="space-between", align="center")
+    with mo.status.spinner(title="Creating flowchart section...") as _: 
+        flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
+        flowchart_switch = mo.ui.switch(value=True, label="Hide/show")
+        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_switch], justify="space-between", align="center")
 
 
     return flowchart_subtitle_hstack, flowchart_switch
@@ -191,54 +101,62 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     # Controls section header ("controls_subtitle") and secondary plot section header ("secondary_plot_subtitle")
-    controls_subtitle = mo.md("<h2>Controls</h2>") 
-    secondary_plot_subtitle = mo.md("<h2>Secondary Plot</h2>") 
+    with mo.status.spinner(title="Creating Controls section subheaders...") as _: 
+        controls_subtitle = mo.md("<h2>Controls</h2>") 
+        secondary_plot_subtitle = mo.md("<h2>Secondary Plot</h2>") 
 
     return controls_subtitle, secondary_plot_subtitle
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, ui_options):
     # Comparison mode radio 
-    comparison_mode_title = mo.md("<h3>Choose mass/evolutionary stage highlighted by secondary plot</h3>") 
-    comparison_mode_radio = ui_options.create_radio(ui_options.COMPAREMODE_OPTIONS) 
+    with mo.status.spinner(title="Creating Comparison Mode selector and subheader...") as _: 
+        comparison_mode_title = mo.md("<h3>Choose mass/evolutionary stage highlighted by secondary plot</h3>") 
+        comparison_mode_radio = ui_options.create_radio(ui_options.COMPAREMODE_OPTIONS) 
 
     return comparison_mode_radio, comparison_mode_title
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, stellar_evolution_data):
     # Dropdowns used by "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" 
 
-    # Mode1 
-    unique_masses = sorted({m for s in stellar_evolution_data.SUBSTAGES_LIST for m in [s.mass_min, s.mass_max]})
-    mode1_massrange_options = [f"{unique_masses[i]:.1f}-{unique_masses[i+1]:.1f}" for i in range(len(unique_masses)-1)]
-    mode1_massrange_dropdown = mo.ui.dropdown(mode1_massrange_options, value=next(iter(mode1_massrange_options)))
+    with mo.status.spinner(title="Creating comparison mode dropdowns...") as _: 
 
-    # Mode2 
-    mode2_parentstage_options = {stage.full_name: stage for stage in stellar_evolution_data.ParentStage}
-    mode2_parentstage_dropdown = mo.ui.dropdown(options=mode2_parentstage_options, value=next(iter(mode2_parentstage_options))) 
+        
+        # Mode1 
+        unique_masses = sorted({m for s in stellar_evolution_data.SUBSTAGES_LIST for m in [s.mass_min, s.mass_max]})
+        mode1_massrange_options = [f"{unique_masses[i]:.1f}-{unique_masses[i+1]:.1f}" for i in range(len(unique_masses)-1)]
+        mode1_massrange_dropdown = mo.ui.dropdown(mode1_massrange_options, value=next(iter(mode1_massrange_options)))
+    
+        # Mode2 
+        mode2_parentstage_options = {stage.full_name: stage for stage in stellar_evolution_data.ParentStage}
+        mode2_parentstage_dropdown = mo.ui.dropdown(options=mode2_parentstage_options, value=next(iter(mode2_parentstage_options))) 
 
     return mode1_massrange_dropdown, mode2_parentstage_dropdown, unique_masses
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, mode1_massrange_dropdown, mode2_parentstage_dropdown):
     # Strings that go next to "comparison_mode_radio" containing dropdowns 
 
-    noselection_str = mo.md(f"No selection: View entire flowchart")
-    massfirst_str = mo.md(f"Select mass first: View the evolution of a {mode1_massrange_dropdown} mass star")
-    stagefirst_str = mo.md(f"Select stage first: Compare how stars of different masses experience the {mode2_parentstage_dropdown} stage") 
-    freeselection_str = mo.md(f"Select a specific MESA file to load") 
+    with mo.status.spinner(title="Creating Comparison Mode radio options...") as _: 
+
+        noselection_str = mo.md(f"No selection: View entire flowchart")
+        massfirst_str = mo.md(f"Select mass first: View the evolution of a {mode1_massrange_dropdown} mass star")
+        stagefirst_str = mo.md(f"Select stage first: Compare how stars of different masses experience the {mode2_parentstage_dropdown} stage") 
+        freeselection_str = mo.md(f"Select a specific MESA file to load") 
 
     return freeselection_str, massfirst_str, noselection_str, stagefirst_str
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, ui_options):
     # Plot mode section header ("plot_mode_title") and radio selector ("plot_mode_radio")  
-    plot_mode_title = mo.md("<h3>Choose secondary plot</h3>") 
-    plot_mode_radio = ui_options.create_radio(ui_options.PLOTMODE_OPTIONS)
+    with mo.status.spinner(title="Creating Plot Mode selector and subheader...") as _: 
+        plot_mode_title = mo.md("<h3>Choose secondary plot</h3>") 
+        plot_mode_radio = ui_options.create_radio(ui_options.PLOTMODE_OPTIONS)
 
     return plot_mode_radio, plot_mode_title
 
@@ -246,7 +164,8 @@ def _(mo, ui_options):
 @app.cell(hide_code=True)
 def _(mo):
     # Plot mode HR diagram string "HR_diagram_str"
-    HR_diagram_str = mo.md("HR diagram")
+    with mo.status.spinner(title="Creating HR Diagram plot mode text...") as _: 
+        HR_diagram_str = mo.md("HR diagram")
 
     return (HR_diagram_str,)
 
@@ -254,29 +173,32 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo, ui_options):
     # Plot mode history string "history_str" which contains the dropdown "history_plot_dropdown" 
-    history_plot_dropdown = ui_options.create_dropdown(ui_options.HISTORYPLOT_OPTIONS)
-    history_str = mo.md(f"History: {history_plot_dropdown} vs time") 
+    with mo.status.spinner(title="Creating History plot mode dropdown and text...") as _: 
+        history_plot_dropdown = ui_options.create_dropdown(ui_options.HISTORYPLOT_OPTIONS)
+        history_str = mo.md(f"History: {history_plot_dropdown} vs time") 
 
     return history_plot_dropdown, history_str
 
 
 @app.cell(hide_code=True)
-def _(ui_options):
+def _(mo, ui_options):
     # Plot mode profile Y coord dropdown ("profile_plot_dropdown") 
-    profile_plot_dropdown = ui_options.create_dropdown(ui_options.PROFILEPLOT_OPTIONS) 
+    with mo.status.spinner(title="Creating Profile plot mode dropdown...") as _: 
+        profile_plot_dropdown = ui_options.create_dropdown(ui_options.PROFILEPLOT_OPTIONS) 
 
     return (profile_plot_dropdown,)
 
 
 @app.cell(hide_code=True)
-def _(ui_options):
+def _(mo, ui_options):
     # Plot mode profile x coord dropdown ("profile_plot_x_dropdown") 
-    profile_plot_x_dropdown = ui_options.create_dropdown(ui_options.PROFILEXAXIS_OPTIONS)
+    with mo.status.spinner(title="Creating Profile X Coord plot mode dropdown...") as _: 
+        profile_plot_x_dropdown = ui_options.create_dropdown(ui_options.PROFILEXAXIS_OPTIONS)
 
     return (profile_plot_x_dropdown,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
     helpers,
@@ -288,36 +210,38 @@ def _(
 ):
     # Plot mode profile string ("profile_str") which contains two dropdowns: "profile_plot_dropdown" and "profile_plot_x_dropdown" 
 
+    with mo.status.spinner(title="Creating Profile plot mode text...") as _: 
 
-    # Default values (if no substage is selected): Display an empty white line 
-    substage_selected_str = "______" 
-    substage_selected_color = "white"
-
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-        substage_selected_str = substage_selected.mode1_interior_plot_title 
-
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-        substage_selected_str = substage_selected.mode2_interior_plot_title 
-
-    # Text color of substage's name in the displayed text should match its flowchart color 
-    if substage_selected: 
-        substage_selected_color = substage_selected.flowchart_color 
-
-
-    profile_str = mo.md(
-        f"Interior profile: {profile_plot_dropdown} vs {profile_plot_x_dropdown} of a "
-        f"{helpers.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
-
-
-
+        # Default values (if no substage is selected): Display an empty white line 
+        substage_selected_str = "______" 
+        substage_selected_color = "white"
+    
+        if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            substage_selected_str = substage_selected.mode1_interior_plot_title 
+    
+        if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+            substage_selected_str = substage_selected.mode2_interior_plot_title 
+    
+        # Text color of substage's name in the displayed text should match its flowchart color 
+        if substage_selected: 
+            substage_selected_color = substage_selected.flowchart_color 
+    
+    
+        profile_str = mo.md(
+            f"Interior profile: {profile_plot_dropdown} vs {profile_plot_x_dropdown} of a "
+            f"{helpers.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
 
 
-    return (profile_str,)
+
+
+
+    return profile_str, substage_selected_color, substage_selected_str
 
 
 @app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
+    mo,
     mode1_massrange_dropdown,
     mode2_parentstage_dropdown,
     stellar_evolution_data,
@@ -325,22 +249,24 @@ def _(
 ):
     # Identify available substages 
 
-    selected_massrange = [float(num) for num in mode1_massrange_dropdown.value.split('-')] 
-    selected_parentstage = mode2_parentstage_dropdown.value 
-
-    if comparison_mode_radio.value == ui_options.COMPAREMODE_NOSELECTION or comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
-        available_substages = []
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-        available_substages = [
-            s for s in stellar_evolution_data.SUBSTAGES_LIST 
-            if not (s.mass_max <= selected_massrange[0] 
-                    or s.mass_min >= selected_massrange[1])]
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-        available_substages = [
-            s for s in stellar_evolution_data.SUBSTAGES_LIST 
-            if s.parent_stage.name == selected_parentstage.name] 
+    with mo.status.spinner(title="Identifying available substages...") as _: 
+    
+        selected_massrange = [float(num) for num in mode1_massrange_dropdown.value.split('-')] 
+        selected_parentstage = mode2_parentstage_dropdown.value 
+    
+        if comparison_mode_radio.value == ui_options.COMPAREMODE_NOSELECTION or comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+            available_substages = []
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            available_substages = [
+                s for s in stellar_evolution_data.SUBSTAGES_LIST 
+                if not (s.mass_max <= selected_massrange[0] 
+                        or s.mass_min >= selected_massrange[1])]
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+            available_substages = [
+                s for s in stellar_evolution_data.SUBSTAGES_LIST 
+                if s.parent_stage.name == selected_parentstage.name] 
 
     return available_substages, selected_massrange
 
@@ -349,33 +275,92 @@ def _(
 def _(available_substages, comparison_mode_radio, helpers, mo, ui_options):
     # Create available substage tab selector (if there are any available substages)
 
-    if len(available_substages) == 0: 
-        available_substages_tabs = "" 
 
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+    with mo.status.spinner(title="Creating substages selector...") as _: 
 
-        available_substages_options = {
-            helpers.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
-            sub.mode1_desc 
-            for sub in available_substages}
-
-        available_substages_tabs = mo.ui.tabs(
-            available_substages_options, 
-            value=list(available_substages_options.keys())[0]) 
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-
-        available_substages_options = {
-            helpers.set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
-            sub.mode2_desc_with_massrange 
-            for sub in available_substages} 
-
-        available_substages_tabs = mo.ui.tabs(
-            available_substages_options, 
-            value=list(available_substages_options.keys())[0]) 
+        if len(available_substages) == 0: 
+            available_substages_tabs = "" 
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+    
+            available_substages_options = {
+                helpers.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
+                sub.mode1_desc 
+                for sub in available_substages}
+    
+            available_substages_tabs = mo.ui.tabs(
+                available_substages_options, 
+                value=list(available_substages_options.keys())[0]) 
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+    
+            available_substages_options = {
+                helpers.set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
+                sub.mode2_desc_with_massrange 
+                for sub in available_substages} 
+    
+            available_substages_tabs = mo.ui.tabs(
+                available_substages_options, 
+                value=list(available_substages_options.keys())[0]) 
 
 
     return (available_substages_tabs,)
+
+
+@app.cell(hide_code=True)
+def _(mo, stellar_evolution_data):
+    # Create history browser free selection mode 
+
+    with mo.status.spinner(title="Creating History data file browser...") as _: 
+
+        history_browser = mo.ui.file_browser( 
+            multiple=False, 
+            selection_mode="directory", 
+            restrict_navigation=True, 
+            label="Choose MESA data folder", 
+            initial_path=stellar_evolution_data.data_folder)
+
+
+    return (history_browser,)
+
+
+@app.cell(hide_code=True)
+def _(history, mo):
+    # Create profile dropdown for free selection mode 
+
+    with mo.status.spinner(title="Creating Profile data dropdown selector...") as _: 
+
+        if history is not None: 
+            profile_dropdown = mo.ui.dropdown(
+                label="Select Profile from the selected MESA data folder", 
+                options=history.model_numbers_available) 
+        else: 
+            profile_dropdown = None 
+
+
+
+    return (profile_dropdown,)
+
+
+@app.cell(hide_code=True)
+def _(
+    available_substages_tabs,
+    comparison_mode_radio,
+    history_browser,
+    mo,
+    profile_dropdown,
+    ui_options,
+):
+    # "model_selector": either use "available_substages_tabs" or an hstack of "history_browser" and "profile_dropdown", depending on value of "comparison_mode_radio" 
+
+    with mo.status.spinner(title="Choosing model selector...") as _: 
+
+        if comparison_mode_radio.value in [ui_options.COMPAREMODE_NOSELECTION, ui_options.COMPAREMODE_MASSFIRST, ui_options.COMPAREMODE_STAGEFIRST]: 
+            model_selector = available_substages_tabs 
+        if comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+            model_selector = mo.hstack([history_browser.style(width="800px"), profile_dropdown], justify='space-around') 
+
+    return (model_selector,)
 
 
 @app.cell(hide_code=True)
@@ -384,24 +369,27 @@ def _(
     available_substages_tabs,
     comparison_mode_radio,
     helpers,
+    mo,
     ui_options,
 ):
     # Identify available substage tab that is currently selected (if there are any available substages)
 
-    if len(available_substages) == 0: 
-        substage_selected = None 
+    with mo.status.spinner(title="Identifying currently selected substage...") as _: 
 
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-        substage_selected = [
-            s for s in available_substages 
-            if helpers.set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
-        ][0] 
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-        substage_selected = [
-            s for s in available_substages 
-            if helpers.set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
-        ][0]
+        if len(available_substages) == 0: 
+            substage_selected = None 
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            substage_selected = [
+                s for s in available_substages 
+                if helpers.set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
+            ][0] 
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+            substage_selected = [
+                s for s in available_substages 
+                if helpers.set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
+            ][0]
 
     return (substage_selected,)
 
@@ -409,44 +397,90 @@ def _(
 @app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
+    mo,
     selected_massrange,
     substage_selected,
     ui_options,
 ):
     # Identify model used to represent selected substage 
 
-    if substage_selected is None: 
-        model_selected = None 
+    with mo.status.spinner(title="Finding model to represent selected substage...") as _: 
 
-    elif len(substage_selected.models) == 0: 
-        model_selected = None 
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-        model_selected = next((m for m in substage_selected.models if selected_massrange[0]<=m.mass<=selected_massrange[1]), None)
-
-    elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-        model_selected = next((m for m in substage_selected.models if m.is_default), substage_selected.models[0])
+        if substage_selected is None: 
+            model_selected = None 
+    
+        elif len(substage_selected.models) == 0: 
+            model_selected = None 
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            model_selected = next((m for m in substage_selected.models if selected_massrange[0]<=m.mass<=selected_massrange[1]), None)
+    
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+            model_selected = next((m for m in substage_selected.models if m.is_default), substage_selected.models[0])
 
     return (model_selected,)
 
 
-@app.cell
-def _(load_data, model_selected):
-    # Load selected history and profile from the selected mass and model 
+@app.cell(hide_code=True)
+def _(
+    Path,
+    comparison_mode_radio,
+    history_browser,
+    load_data,
+    mo,
+    model_selected,
+    ui_options,
+):
+    # Load selected history 
 
-    if model_selected is not None: 
-        history = load_data.load_history(model_selected.MESA_folder_path)
-        profile = load_data.load_profile(model_selected.MESA_folder_path, model_selected.model_example, history)
+    with mo.status.spinner(title="Loading MESA history file...") as _: 
+
+        if model_selected is not None: 
+            history = load_data.load_history(model_selected.MESA_folder_path)
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+            if len(history_browser.value) > 0: 
+                history = load_data.load_history(Path(history_browser.value[0].id))
+            else: 
+                history = None 
+        else: 
+            history = None
 
 
-    return history, profile
+    return (history,)
 
 
 @app.cell(hide_code=True)
 def _(
+    Path,
+    history,
+    history_browser,
+    load_data,
+    mo,
+    model_selected,
+    profile_dropdown,
+):
+    # Load selected profile 
+
+    with mo.status.spinner(title="Loading MESA profile file...") as _: 
+
+        if model_selected is not None: 
+            profile = load_data.load_profile(model_selected.MESA_folder_path, model_selected.model_example, history)
+
+        elif profile_dropdown is not None and profile_dropdown.value is not None: 
+            modelnum = profile_dropdown.value 
+            profile = load_data.load_profile(Path(history_browser.value[0].id), modelnum, history)
+
+        else: profile = None 
+
+    return (profile,)
+
+
+@app.cell
+def _(
     available_substages,
     comparison_mode_radio,
     flowchart_switch,
+    lru_cache,
     mo,
     mpatches,
     np,
@@ -499,13 +533,17 @@ def _(
 
 
 
-
+    @lru_cache(maxsize=32) 
     # Function to draw the flowchart, updating highlights/labels based on selection
     def draw_flowchart():
 
         # Allow flowchart to be minimized 
         if flowchart_switch.value == False: 
-            return "" 
+            return "Flowchart minimized by user" 
+
+        # If the user is freely selecting a MESA file, minimize the flowchart 
+        if comparison_mode_radio.value==ui_options.COMPAREMODE_FREE: 
+            return "Flowchart unavailable"
 
         fig, ax = plt.subplots(figsize=(15, 5))
         fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=1)
@@ -624,8 +662,9 @@ def _(
 
 
 
+    with mo.status.spinner(title="Drawing flowchart...") as _: 
+        flowchart = draw_flowchart()
 
-    flowchart = draw_flowchart()
     return (flowchart,)
 
 
@@ -635,13 +674,15 @@ def _(
     comparison_mode_radio,
     history,
     history_plot_dropdown,
-    model_selected,
+    lru_cache,
+    mo,
     plot_mode_radio,
-    plt,
     profile,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
     profile_plotting,
+    substage_selected_color,
+    substage_selected_str,
     ui_options,
 ):
     # Create figure showing interior plot 
@@ -651,25 +692,17 @@ def _(
 
 
 
-
+    @lru_cache(maxsize=32) 
     def create_fig2(): 
 
-        # Create small figure with an error message 
-        def make_error_figure(message="Error"):
-                fig, ax = plt.subplots(figsize=(6, 3))
-                ax.text(0.5, 0.5, message, ha="center", va="center", fontsize=12, color="gray")
-                ax.axis("off")
-                fig.tight_layout()
-                return fig
-
-        # If no data has been selected or no data is available for the current selection, return an error plot and escape 
-        if model_selected is None: 
-            return make_error_figure()
 
 
-    
         # HR Diagram 
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
+
+            if history is None: 
+                return "Select a History file to view HR diagram" 
+
             hr = HR_diagram_plotting.HRDiagram() 
 
             # if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
@@ -680,26 +713,33 @@ def _(
             #         else: 
             #             hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i], alpha=0.3)
 
-
+            hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$")
+        
             hr.label_spectraltypes() 
             hr.legend() 
             fig2 = hr.fig 
-            return fig2
+            return mo.mpl.interactive(fig2) 
 
 
 
         # History plots 
         if plot_mode_radio.value == ui_options.PLOTMODE_HISTORY: 
 
+            if history is None: 
+                return "Select a History file to view history plot" 
+
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history) 
             # history_plotting.add_substage_highlight(fig2, model_selected, history) 
-            return fig2 
+            return mo.mpl.interactive(fig2) 
 
 
 
         # Interior profile plots 
         if plot_mode_radio.value == ui_options.PLOTMODE_PROFILE:
+
+            if history is None or profile is None: 
+                return "Select a Profile file to view profile plot" 
 
             # Create profile plot depending on selected options in dropdown 
             selected_plot_func = profile_plot_dropdown.value.plot_func 
@@ -707,26 +747,24 @@ def _(
             fig2 = selected_plot_func(profile, selected_x_axis, history)
 
             # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
-            if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-                substage_str = model_selected.parent_substage.mode1_interior_plot_title
-            if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-                substage_str = model_selected.parent_substage.mode2_interior_plot_title
             profile_str = profile_plot_dropdown.value.title_str
-            title_str_list = [profile_str, substage_str, "star"]  
+            title_str_list = [profile_str, substage_selected_str, "star"]  
 
             # List of colors used in title (i.e., "black" + "red" + "black") 
-            substage_color = model_selected.parent_substage.flowchart_color 
-            title_colors_list = ['black', substage_color, 'black'] 
+            title_colors_list = ['black', substage_selected_color, 'black'] 
 
             # Add colored region to title 
-            profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
-            return fig2
+            if comparison_mode_radio.value != ui_options.COMPAREMODE_FREE: 
+                profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
+            return mo.mpl.interactive(fig2) 
 
 
 
 
 
-    fig2 = create_fig2() 
+    with mo.status.spinner(title="Drawing secondary plot...") as _: 
+
+        secondary_plot = create_fig2() 
 
 
 
@@ -735,52 +773,159 @@ def _(
 
 
 
-    return (fig2,)
+    return (secondary_plot,)
 
 
 @app.cell(hide_code=True)
 def _():
     # Imports/setup 
 
-    # Standard packages 
-    import os 
-    import numpy as np 
-    from pathlib import Path 
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
-    import matplotlib.colors as mcolors 
-
-    # Nonstandard packages 
     import marimo as mo
-    import mesa_reader as mr 
 
-    plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
-    data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
 
-    return mo, mpatches, np, plt
+    with mo.status.spinner(title="Importing packages...") as _: 
+
+        # Standard packages 
+        import os 
+        import numpy as np 
+        from pathlib import Path 
+        import matplotlib.pyplot as plt
+        import matplotlib.patches as mpatches
+        import matplotlib.colors as mcolors 
+        from functools import lru_cache 
+    
+        # Nonstandard packages 
+        import mesa_reader as mr 
+    
+        plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
+
+
+    return Path, lru_cache, mo, mpatches, np, plt
 
 
 @app.cell(hide_code=True)
-def _():
-    import utils.load_data as load_data 
-    import utils.helpers as helpers 
+def _(mo):
+    with mo.status.spinner(title="Importing packages...") as _: 
+        import utils.load_data as load_data 
+        import utils.helpers as helpers 
     return helpers, load_data
 
 
 @app.cell(hide_code=True)
-def _():
-    import utils.plotting.history_plotting as history_plotting 
-    import utils.plotting.profile_plotting as profile_plotting 
-    import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
+def _(mo):
+    with mo.status.spinner(title="Importing packages...") as _: 
+        import utils.plotting.history_plotting as history_plotting 
+        import utils.plotting.profile_plotting as profile_plotting 
+        import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
     return HR_diagram_plotting, profile_plotting
 
 
 @app.cell(hide_code=True)
-def _():
-    import utils.config.stellar_evolution_data as stellar_evolution_data 
-    import utils.config.ui_options as ui_options 
+def _(mo):
+    with mo.status.spinner(title="Importing packages...") as _: 
+        import utils.config.stellar_evolution_data as stellar_evolution_data 
+        import utils.config.ui_options as ui_options 
     return stellar_evolution_data, ui_options
+
+
+@app.cell
+def _(
+    HR_diagram_str,
+    comparison_mode_radio,
+    comparison_mode_title,
+    controls_subtitle,
+    flowchart,
+    flowchart_subtitle_hstack,
+    freeselection_str,
+    full_title,
+    history_str,
+    massfirst_str,
+    mo,
+    model_selector,
+    noselection_str,
+    plot_mode_radio,
+    plot_mode_title,
+    profile_str,
+    secondary_plot,
+    secondary_plot_subtitle,
+    stagefirst_str,
+    userguide_subtitle_hstack,
+    userguide_text,
+):
+    # MAIN 
+
+
+    full_interface = mo.vstack(
+        [
+            full_title, 
+            "\u200b", 
+            mo.md("---"), 
+            "\u200b", 
+
+            userguide_subtitle_hstack, 
+            userguide_text, 
+            "\u200b", 
+            mo.md("---"), 
+            "\u200b", 
+
+            controls_subtitle, 
+            plot_mode_title, 
+            mo.hstack(
+                [
+                    plot_mode_radio, 
+                    mo.vstack(
+                        [
+                            HR_diagram_str, 
+                            history_str, 
+                            profile_str
+                        ], 
+                        gap=0)
+                ], 
+                gap=0, align="center"), 
+            "\u200b", 
+
+            comparison_mode_title, 
+            mo.hstack(
+                [
+                    comparison_mode_radio, 
+                    mo.vstack(
+                        [
+                            noselection_str, 
+                            massfirst_str, 
+                            stagefirst_str, 
+                            freeselection_str
+                        ], 
+                        gap=0)
+                ], 
+                gap=0, align="center"), 
+            "\u200b", 
+            model_selector, 
+            "\u200b", 
+            mo.md("---"), 
+            "\u200b", 
+
+            flowchart_subtitle_hstack, 
+            flowchart, 
+            "\u200b", 
+            mo.md("---"), 
+            "\u200b", 
+
+            secondary_plot_subtitle, 
+            secondary_plot, 
+            "\u200b", 
+            mo.md("---"), 
+
+        ], 
+        gap=0.7 
+    ) 
+
+
+    full_interface 
+
+
+
+    return
 
 
 if __name__ == "__main__":
