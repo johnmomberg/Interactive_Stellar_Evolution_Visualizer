@@ -13,6 +13,8 @@ def _():
     # If the mass of the progenitor is between 7 and 9 solar masses (M☉), the core temperature will be sufficient to fuse carbon but not neon, in which case an oxygen–neon–magnesium (ONeMg or ONe) white dwarf may form. (https://en.wikipedia.org/wiki/White_dwarf)
 
 
+    # Add progress bar 
+
 
     # Flowchart: 
     # Add color and spectral type on MS to left side 
@@ -21,6 +23,7 @@ def _():
     # HR DIAGRAM: 
     # Add transparent tracks of available but un-selected substages for comparison 
     # Add model numbers 
+    # Add we are here point 
 
     # History plots: 
     # "We are here" vertical line showing selected model number 
@@ -730,6 +733,7 @@ def _(
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history) 
+
             # history_plotting.add_substage_highlight(fig2, model_selected, history) 
             return mo.mpl.interactive(fig2) 
 

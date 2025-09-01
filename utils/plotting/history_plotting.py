@@ -30,7 +30,7 @@ class HistoryPlot:
 
     # Code shared by all history plots 
     @staticmethod
-    def _setup(history, config): 
+    def _setup(history, config, modelnum_now): 
 
         # Initialize figure 
         fig, ax = plt.subplots(figsize=(10.7, 5))
@@ -60,7 +60,7 @@ class HistoryPlot:
         # Grid, ticks 
         ax.grid(alpha=0.5) 
         ax.tick_params(labelsize=14) 
-        add_model_labels_time(ax, history) 
+        add_model_labels_time(ax, history, modelnum_now) 
 
         return fig, ax 
     
@@ -68,7 +68,7 @@ class HistoryPlot:
 
     # History plot: center composition vs time 
     @classmethod
-    def composition(cls, history): 
+    def composition(cls, history, modelnum_now=None): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -76,7 +76,7 @@ class HistoryPlot:
             ylim=(0, 1),
             yscale="linear",
             title="Composition at center vs age")
-        fig, ax = cls._setup(history, config)
+        fig, ax = cls._setup(history, config, modelnum_now)
         
         # Loop through list of Isotope objects
         for isotope in plot_options.ISOTOPES:
@@ -150,7 +150,7 @@ class HistoryPlot:
 
 
 
-def add_model_labels_time(ax, history):
+def add_model_labels_time(ax, history, modelnum_now):
     """
     Adds a secondary x-axis with major (labeled) and 
     minor (unlabeled) ticks showing where models are available.
@@ -160,9 +160,19 @@ def add_model_labels_time(ax, history):
     all_models = history.model_numbers_available
     all_ages = history.star_age[all_models - 1]
 
-    def update_secondary_axis(event_ax):
+    def update_secondary_axis(event_ax): 
+
+        # Remove current versions so it doesn't duplicate every time you move the xlim 
         if hasattr(ax, "_model_label_ax2"):
             ax._model_label_ax2.remove()
+        if hasattr(ax, "_modelnum_now_text"):
+            ax._modelnum_now_text.remove()
+        if hasattr(ax, "_modelnum_now_axvline"):
+            ax._modelnum_now_axvline.remove()
+
+
+
+        ax2 = ax.secondary_xaxis('top') 
 
         # Calculate which ages and modelnums are actually in view of the current plot window 
         xmin, xmax = ax.get_xlim()
@@ -170,11 +180,16 @@ def add_model_labels_time(ax, history):
         ages_in_view = all_ages[indices_in_view]
         models_in_view = all_models[indices_in_view]
 
+        # Previously, I found a bug where if I zoomed the window to a region with no models and then zoomed back out, 
+        # the model numbers that should re-appear in frame were gone, and this function was broken until you reloaded the plot entirely. 
+        # This if statement fixes that bug by running the important stuff even if there's no models visible in the current window  
         if len(ages_in_view) == 0:
+            ax._model_label_ax2 = ax2  
+            ax2.set_xticks([])
             ax.figure.canvas.draw_idle()
             return
 
-        ax2 = ax.secondary_xaxis('top') 
+
 
         # Calculate location and labels of ticks 
         current_xmin, current_xmax = ax.get_xlim() 
@@ -203,10 +218,49 @@ def add_model_labels_time(ax, history):
         ax2.set_xticklabels(tick_labels, fontsize=6, rotation=90)
         ax2.tick_params(which='major', length=4)
 
+        ax._model_label_ax2 = ax2 
 
-        # --- Final cleanup ---
-        ax._model_label_ax2 = ax2
+
+
+        # Add vertical line to currently selected model number 
+        if modelnum_now is not None: 
+            xpos = history.star_age[modelnum_now-1] 
+
+            # modelnum_now_axvline = ax.axvline(xpos, color="black", ls="dashed")  
+            # ax._modelnum_now_axvline = modelnum_now_axvline 
+    
+            ax.axvline(xpos) 
+
+            if xpos < (xmax-xmin)/2 + xmin: 
+                text_pos = "left" 
+                text_offset = (xmax-xmin)/400
+                legend_pos = "upper right" 
+            else: 
+                text_pos = "right" 
+                text_offset = -(xmax-xmin)/400
+                legend_pos = "upper left" 
+            
+            if xmin < xpos < xmax: 
+                text = f"{modelnum_now}" 
+            else: 
+                text = ""
+
+            modelnum_now_text = ax.text(
+                xpos+text_offset, plt.ylim()[1]*0.9, 
+                text, 
+                rotation=90, va="center", ha=text_pos, fontsize=8, color="black", 
+                bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.2")) 
+    
+            # fontsize=ax.get_legend().get_texts()[0].get_fontsize() 
+            # ax.legend(fontsize=fontsize, loc=legend_pos) 
+
+            ax._modelnum_now_text = modelnum_now_text 
+
+
+
         ax.figure.canvas.draw_idle()
+
+
 
     ax.callbacks.connect('xlim_changed', update_secondary_axis)
     update_secondary_axis(ax)
