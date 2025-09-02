@@ -57,10 +57,17 @@ class SpectralType:
             midpoint = 1.2*self.temp_range[0] 
         return midpoint 
 
+    @property 
+    def mass_midpoint(self) -> float: 
+        midpoint = np.sqrt(self.MS_mass_range[1]*self.MS_mass_range[0])
+        if np.isfinite(midpoint) == False: 
+            midpoint = 1.2*self.MS_mass_range[0] 
+        return midpoint 
+
 
 
 SPECTRAL_TYPES = [ 
-    SpectralType(letter="O", temp_range=(33_000, 99999999), MS_mass_range=(16, np.infty), color="black"), 
+    SpectralType(letter="O", temp_range=(33_000, 99999999), MS_mass_range=(16, 99999999), color="black"), 
     SpectralType(letter="B", temp_range=(10_000, 33_000),   MS_mass_range=(2.1, 16),      color="white"), 
     SpectralType(letter="A", temp_range=(7_300, 10_000),    MS_mass_range=(1.4, 2.1),     color="black"), 
     SpectralType(letter="F", temp_range=(6_000, 7_300),     MS_mass_range=(1.04, 1.4),    color="white"), 

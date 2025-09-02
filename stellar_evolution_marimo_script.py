@@ -671,7 +671,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
@@ -732,7 +732,9 @@ def _(
                 return "Select a History file to view history plot" 
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
-            fig2 = selected_plot_func(history) 
+            if profile is not None: 
+                modelnum = profile.modelnum 
+            fig2 = selected_plot_func(history, modelnum_now=modelnum) 
 
             # history_plotting.add_substage_highlight(fig2, model_selected, history) 
             return mo.mpl.interactive(fig2) 

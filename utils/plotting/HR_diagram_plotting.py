@@ -156,11 +156,14 @@ def calc_log_ticks(left, right, remove_overlaps=True):
 
 
 class SpectralTypeBorderLocator(mticker.Locator):
-    def __init__(self):
-        pass 
+    def __init__(self, attribute="temp"):
+        self.attribute = attribute  
 
-    def __call__(self):
-        tick_positions = [st.temp_range[0] for st in plot_options.SPECTRAL_TYPES]
+    def __call__(self): 
+        if self.attribute == "temp": 
+            tick_positions = [st.temp_range[0] for st in plot_options.SPECTRAL_TYPES]
+        if self.attribute == "mass": 
+            tick_positions = [st.MS_mass_range[0] for st in plot_options.SPECTRAL_TYPES]
         return tick_positions 
 
 
@@ -168,31 +171,60 @@ class SpectralTypeBorderLocator(mticker.Locator):
 
 
 class SpectralTypeLabelLocator(mticker.Locator):
-    def __init__(self):
-        pass 
+    def __init__(self, attribute="temp"):
+        self.attribute=attribute 
 
     def __call__(self):
         
         window_left, window_right = self.axis.get_view_interval() 
-
         label_positions = [] 
 
-        for spectral_type in plot_options.SPECTRAL_TYPES: 
+        # HR Diagram: Reverse axis 
+        if window_left > window_right: 
 
-            st_mid = spectral_type.temp_midpoint 
-            st_right, st_left = spectral_type.temp_range 
+            for spectral_type in plot_options.SPECTRAL_TYPES: 
 
-            if window_left > st_left and st_right > window_right: 
-                label_positions.append(st_mid)
-            elif window_left > st_left and st_left > window_right > st_right: 
-                label_positions.append(np.sqrt(st_left*window_right))
-            elif st_right > window_right and st_left > window_left > st_right: 
-                label_positions.append(np.sqrt(window_left*st_right))
-            elif st_left > window_left and window_right > st_right: 
-                label_positions.append(np.sqrt(window_left*window_right))
-            else: 
-                label_positions.append(2*window_left) 
+                if self.attribute == "temp": 
+                    st_mid = spectral_type.temp_midpoint 
+                    st_right, st_left = spectral_type.temp_range 
+                if self.attribute == "mass": 
+                    st_mid = spectral_type.mass_midpoint  
+                    st_right, st_left = spectral_type.MS_mass_range 
 
+                if window_left > st_left and st_right > window_right: 
+                    label_positions.append(st_mid)
+                elif window_left > st_left and st_left > window_right > st_right: 
+                    label_positions.append(np.sqrt(st_left*window_right))
+                elif st_right > window_right and st_left > window_left > st_right: 
+                    label_positions.append(np.sqrt(window_left*st_right))
+                elif st_left > window_left and window_right > st_right: 
+                    label_positions.append(np.sqrt(window_left*window_right))
+                else: 
+                    label_positions.append(2*window_left) 
+
+        # Normal axis 
+        if window_left < window_right:
+
+            for spectral_type in plot_options.SPECTRAL_TYPES: 
+
+                if self.attribute == "temp": 
+                    st_mid = spectral_type.temp_midpoint 
+                    st_left, st_right = spectral_type.temp_range 
+                if self.attribute == "mass": 
+                    st_mid = spectral_type.mass_midpoint  
+                    st_left, st_right = spectral_type.MS_mass_range 
+
+                if window_left < st_left and st_right < window_right: 
+                    label_positions.append(st_mid)
+                elif window_left < st_left and st_left < window_right < st_right: 
+                    label_positions.append(np.sqrt(st_left*window_right))
+                elif st_right < window_right and st_left < window_left < st_right: 
+                    label_positions.append(np.sqrt(window_left*st_right))
+                elif st_left < window_left and window_right < st_right: 
+                    label_positions.append(np.sqrt(window_left*window_right))
+                else: 
+                    label_positions.append(0.5*window_left) 
+            
         return label_positions 
 
 
@@ -264,24 +296,35 @@ class HRDiagram:
         self.ax.legend(fontsize=14) 
 
 
+    @staticmethod 
+    def label_spectraltypes(ax, location="top", attribute="temp"): 
 
-    def label_spectraltypes(self): 
-
-        ax_labels = self.ax.secondary_xaxis(location="top") 
+        if location in ("top", "bottom"):
+            ax_labels = ax.secondary_xaxis(location=location)
+            axis = ax_labels.xaxis
+            span_func = ax.axvspan
+        elif location in ("left", "right"):
+            ax_labels = ax.secondary_yaxis(location=location)
+            axis = ax_labels.yaxis
+            span_func = ax.axhspan
 
         # Major ticks = borders (long lines, no labels)
-        ax_labels.xaxis.set_major_locator(SpectralTypeBorderLocator())
-        ax_labels.xaxis.set_major_formatter(mticker.NullFormatter())
+        axis.set_major_locator(SpectralTypeBorderLocator(attribute=attribute)) 
+        axis.set_major_formatter(mticker.NullFormatter())
         ax_labels.tick_params(length=20, which="major")
 
         # Minor ticks = labels (no lines, but show text)
-        ax_labels.xaxis.set_minor_locator(SpectralTypeLabelLocator())
-        ax_labels.xaxis.set_minor_formatter(SpectralTypeLabelFormatter())
+        axis.set_minor_locator(SpectralTypeLabelLocator(attribute=attribute))
+        axis.set_minor_formatter(SpectralTypeLabelFormatter())
         ax_labels.tick_params(length=0, which="minor", labelsize=14)  
 
-        for spectral_type in plot_options.SPECTRAL_TYPES: 
-            plt.axvspan(spectral_type.temp_range[1], spectral_type.temp_range[0], color=spectral_type.color, alpha=0.05)
+        if attribute=="temp": 
+            for spectral_type in plot_options.SPECTRAL_TYPES: 
+                span_func(spectral_type.temp_range[1], spectral_type.temp_range[0], color=spectral_type.color, alpha=0.05)
 
+        if attribute=="mass": 
+            for spectral_type in plot_options.SPECTRAL_TYPES: 
+                span_func(spectral_type.MS_mass_range[1], spectral_type.MS_mass_range[0], color=spectral_type.color, alpha=0.05)
 
 
 

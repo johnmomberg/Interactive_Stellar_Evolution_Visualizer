@@ -165,10 +165,6 @@ def add_model_labels_time(ax, history, modelnum_now):
         # Remove current versions so it doesn't duplicate every time you move the xlim 
         if hasattr(ax, "_model_label_ax2"):
             ax._model_label_ax2.remove()
-        if hasattr(ax, "_modelnum_now_text"):
-            ax._modelnum_now_text.remove()
-        if hasattr(ax, "_modelnum_now_axvline"):
-            ax._modelnum_now_axvline.remove()
 
 
 
@@ -219,48 +215,16 @@ def add_model_labels_time(ax, history, modelnum_now):
         ax2.tick_params(which='major', length=4)
 
         ax._model_label_ax2 = ax2 
+        ax.figure.canvas.draw_idle()
 
 
 
         # Add vertical line to currently selected model number 
         if modelnum_now is not None: 
             xpos = history.star_age[modelnum_now-1] 
-
-            # modelnum_now_axvline = ax.axvline(xpos, color="black", ls="dashed")  
-            # ax._modelnum_now_axvline = modelnum_now_axvline 
-    
-            ax.axvline(xpos) 
-
-            if xpos < (xmax-xmin)/2 + xmin: 
-                text_pos = "left" 
-                text_offset = (xmax-xmin)/400
-                legend_pos = "upper right" 
-            else: 
-                text_pos = "right" 
-                text_offset = -(xmax-xmin)/400
-                legend_pos = "upper left" 
+            ax.axvline(xpos, color="black", ls="dashed")  
             
-            if xmin < xpos < xmax: 
-                text = f"{modelnum_now}" 
-            else: 
-                text = ""
-
-            modelnum_now_text = ax.text(
-                xpos+text_offset, plt.ylim()[1]*0.9, 
-                text, 
-                rotation=90, va="center", ha=text_pos, fontsize=8, color="black", 
-                bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.2")) 
-    
-            # fontsize=ax.get_legend().get_texts()[0].get_fontsize() 
-            # ax.legend(fontsize=fontsize, loc=legend_pos) 
-
-            ax._modelnum_now_text = modelnum_now_text 
-
-
-
-        ax.figure.canvas.draw_idle()
-
-
+            
 
     ax.callbacks.connect('xlim_changed', update_secondary_axis)
     update_secondary_axis(ax)
