@@ -19,6 +19,7 @@ def _():
     # Flowchart: 
     # Add color and spectral type on MS to left side 
     # Add "we are are" showing currently selected mass and model number 
+    # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
 
     # HR DIAGRAM: 
     # Add transparent tracks of available but un-selected substages for comparison 
@@ -70,7 +71,7 @@ def _(mo):
     # User Guide section header "userguide_subtitle" with switch to minimize it "userguide_switch"
     with mo.status.spinner(title="Creating User Guide section...") as _: 
         userguide_subtitle = mo.md("<h2>Tutorial/Documentation</h2>") 
-        userguide_switch = mo.ui.switch(value=True, label="Hide/show")
+        userguide_switch = mo.ui.switch(value=True, label="Hide / show")
         userguide_subtitle_hstack = mo.hstack([userguide_subtitle, userguide_switch], justify="space-between", align="center")
 
     return userguide_subtitle_hstack, userguide_switch
@@ -94,11 +95,12 @@ def _(mo):
     # Flowchart header "flowchart_subtitle" with switch to minimize it "flowchart_switch"
     with mo.status.spinner(title="Creating flowchart section...") as _: 
         flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
-        flowchart_switch = mo.ui.switch(value=True, label="Hide/show")
-        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_switch], justify="space-between", align="center")
+        flowchart_switch = mo.ui.switch(value=True, label="Hide / show") 
+        flowchart_yaxis_switch = mo.ui.switch(value=False, label="Y-axis shows: Mass / spectral type (on MS)") 
+        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_yaxis_switch, flowchart_switch], justify="space-between", align="center")
 
 
-    return flowchart_subtitle_hstack, flowchart_switch
+    return flowchart_subtitle_hstack, flowchart_switch, flowchart_yaxis_switch
 
 
 @app.cell(hide_code=True)
@@ -480,9 +482,11 @@ def _(
 
 @app.cell
 def _(
+    HR_diagram_plotting,
     available_substages,
     comparison_mode_radio,
     flowchart_switch,
+    flowchart_yaxis_switch,
     lru_cache,
     mo,
     mpatches,
@@ -572,11 +576,17 @@ def _(
                 else "" 
                 for parent_stage in stellar_evolution_data.ParentStage
             ]
-
+    
         # Y axis: Mass
         ax.set_ylabel("Mass", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log")
+    
+        if flowchart_yaxis_switch.value==True: 
+            HR_diagram_plotting.HRDiagram.label_spectraltypes(ax, location="left", attribute="mass", label_boundaries=True) ###########  
+            custom_yticks = [] 
+            ax.set_ylabel("Spectral Type on Main Sequence", fontsize=18, labelpad=40) 
+
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
         ax.tick_params(axis="y", which="minor", length=0)
@@ -718,7 +728,7 @@ def _(
 
             hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$")
         
-            hr.label_spectraltypes() 
+            hr.label_spectraltypes(hr.ax) 
             hr.legend() 
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
@@ -734,8 +744,10 @@ def _(
             selected_plot_func = history_plot_dropdown.value.plot_func 
             if profile is not None: 
                 modelnum = profile.modelnum 
+            else: 
+                modelnum = None 
             fig2 = selected_plot_func(history, modelnum_now=modelnum) 
-
+        
             # history_plotting.add_substage_highlight(fig2, model_selected, history) 
             return mo.mpl.interactive(fig2) 
 

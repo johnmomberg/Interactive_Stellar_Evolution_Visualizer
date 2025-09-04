@@ -296,8 +296,9 @@ class HRDiagram:
         self.ax.legend(fontsize=14) 
 
 
+
     @staticmethod 
-    def label_spectraltypes(ax, location="top", attribute="temp"): 
+    def label_spectraltypes(ax, location="top", attribute="temp", label_boundaries=False): 
 
         if location in ("top", "bottom"):
             ax_labels = ax.secondary_xaxis(location=location)
@@ -310,8 +311,11 @@ class HRDiagram:
 
         # Major ticks = borders (long lines, no labels)
         axis.set_major_locator(SpectralTypeBorderLocator(attribute=attribute)) 
-        axis.set_major_formatter(mticker.NullFormatter())
-        ax_labels.tick_params(length=20, which="major")
+        if label_boundaries == False: 
+            axis.set_major_formatter(mticker.NullFormatter()) 
+        if label_boundaries == True: 
+            axis.set_major_formatter(mticker.FuncFormatter(lambda x, pos: f"{x}"))
+        ax_labels.tick_params(length=15, which="major")
 
         # Minor ticks = labels (no lines, but show text)
         axis.set_minor_locator(SpectralTypeLabelLocator(attribute=attribute))
