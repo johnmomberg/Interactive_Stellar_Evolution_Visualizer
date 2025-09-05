@@ -82,7 +82,7 @@ def _(mo, userguide_switch):
     # User guide text (shows up if user guide is not minimized) "userguide_text"
 
     with mo.status.spinner(title="Setting User Guide section text...") as _: 
-        userguide_text = "" 
+        userguide_text = "Tutorial minimized by user" 
         if userguide_switch.value == True: 
             userguide_text = "To do: create user guide/tutorial/documentation for this app. "
 
@@ -96,11 +96,15 @@ def _(mo):
     with mo.status.spinner(title="Creating flowchart section...") as _: 
         flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
         flowchart_switch = mo.ui.switch(value=True, label="Hide / show") 
-        flowchart_yaxis_switch = mo.ui.switch(value=False, label="Y-axis shows: Mass / spectral type (on MS)") 
-        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_yaxis_switch, flowchart_switch], justify="space-between", align="center")
+        flowchart_yaxis_dropdown = mo.ui.dropdown(options={"mass": 0, "spectral type (on MS)": 1}, value="mass", label="Flowchart y-axis shows...")
+        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_yaxis_dropdown, flowchart_switch], justify="space-between", align="center")
 
 
-    return flowchart_subtitle_hstack, flowchart_switch, flowchart_yaxis_switch
+    return (
+        flowchart_subtitle_hstack,
+        flowchart_switch,
+        flowchart_yaxis_dropdown,
+    )
 
 
 @app.cell(hide_code=True)
@@ -486,7 +490,7 @@ def _(
     available_substages,
     comparison_mode_radio,
     flowchart_switch,
-    flowchart_yaxis_switch,
+    flowchart_yaxis_dropdown,
     lru_cache,
     mo,
     mpatches,
@@ -540,8 +544,8 @@ def _(
 
 
 
-    @lru_cache(maxsize=32) 
     # Function to draw the flowchart, updating highlights/labels based on selection
+    @lru_cache(maxsize=32) 
     def draw_flowchart():
 
         # Allow flowchart to be minimized 
@@ -582,7 +586,7 @@ def _(
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log")
     
-        if flowchart_yaxis_switch.value==True: 
+        if flowchart_yaxis_dropdown.value==1: 
             HR_diagram_plotting.HRDiagram.label_spectraltypes(ax, location="left", attribute="mass", label_boundaries=True) ###########  
             custom_yticks = [] 
             ax.set_ylabel("Spectral Type on Main Sequence", fontsize=18, labelpad=40) 

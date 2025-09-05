@@ -101,7 +101,7 @@ class HistoryPlot:
 
     # History plot: fusion rate vs time 
     @classmethod
-    def fusion(cls, history): 
+    def fusion(cls, history, modelnum_now=None): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -109,7 +109,7 @@ class HistoryPlot:
             ylim=None,
             yscale="log",
             title="Fusion rate vs age")
-        fig, ax = cls._setup(history, config)
+        fig, ax = cls._setup(history, config, modelnum_now)
         
         # 3 fusion rates: Hydrogen, helium, and everything else (aka metals) 
         ax.plot(history.star_age, 10**history.log_LH, lw=2, label="Hydrogen", color="tab:blue")
@@ -131,7 +131,7 @@ class HistoryPlot:
 
     # History plot: radius vs time 
     @classmethod
-    def radius(cls, history): 
+    def radius(cls, history, modelnum_now=None): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -139,7 +139,7 @@ class HistoryPlot:
             ylim=None,
             yscale="log",
             title="Radius vs age")
-        fig, ax = cls._setup(history, config)
+        fig, ax = cls._setup(history, config, modelnum_now)
 
         # Plot radius vs age         
         ax.plot(history.star_age, 10**history.log_R, lw=2) 
@@ -224,7 +224,7 @@ def add_model_labels_time(ax, history, modelnum_now):
             xpos = history.star_age[modelnum_now-1] 
             ax.axvline(xpos, color="black", ls="dashed")  
             
-            
+
 
     ax.callbacks.connect('xlim_changed', update_secondary_axis)
     update_secondary_axis(ax)
