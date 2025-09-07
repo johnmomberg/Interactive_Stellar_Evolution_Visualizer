@@ -8,6 +8,7 @@ from matplotlib.font_manager import FontProperties
 
 import utils.config.physical_constants as physical_constants 
 import utils.config.plot_options as plot_options 
+import utils.config.ui_options as ui_options 
 
 
 
@@ -89,7 +90,7 @@ class ProfilePlot:
 
     # Profile plot: composition vs mass/radius
     @classmethod
-    def composition(cls, profile, xaxis, history=None): 
+    def composition(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Most plots don't require a history, but this one does. If the user forgets to provide it, raise an error. 
         if history is None: 
@@ -132,7 +133,7 @@ class ProfilePlot:
 
     # Profile plot: Convection vs mass/radius 
     @classmethod 
-    def convection(cls, profile, xaxis, history=None): 
+    def convection(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -158,7 +159,7 @@ class ProfilePlot:
 
     # Profile plot: fusion rate vs mass/radius 
     @classmethod 
-    def fusion(cls, profile, xaxis, history=None): 
+    def fusion(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -193,7 +194,7 @@ class ProfilePlot:
 
     # Profile plot: mu (mass/particule) vs mass/radius 
     @classmethod 
-    def mu(cls, profile, xaxis, history=None): 
+    def mu(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -229,7 +230,7 @@ class ProfilePlot:
 
     # Profile plot: temperature vs mass/radius 
     @classmethod 
-    def temp(cls, profile, xaxis, history=None): 
+    def temp(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -266,7 +267,7 @@ class ProfilePlot:
 
     # Profile plot: temperature gradient (radiative vs convective) vs mass/radius 
     @classmethod 
-    def tempgrad(cls, profile, xaxis, history=None): 
+    def tempgrad(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
