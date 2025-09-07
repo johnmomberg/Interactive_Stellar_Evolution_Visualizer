@@ -298,17 +298,22 @@ class HRDiagram:
 
 
 
+
+
     @staticmethod 
     def label_spectraltypes(ax, location="top", attribute="temp", label_boundaries=False): 
 
         if location in ("top", "bottom"):
             ax_labels = ax.secondary_xaxis(location=location)
             axis = ax_labels.xaxis
-            span_func = ax.axvspan
+            span_func = ax.axvspan 
+            label_func = ax_labels.set_xlabel
+
         elif location in ("left", "right"):
             ax_labels = ax.secondary_yaxis(location=location)
             axis = ax_labels.yaxis
-            span_func = ax.axhspan
+            span_func = ax.axhspan 
+            label_func = ax_labels.set_ylabel
 
         # Major ticks = borders (long lines, no labels)
         axis.set_major_locator(SpectralTypeBorderLocator(attribute=attribute)) 
@@ -330,6 +335,8 @@ class HRDiagram:
         if attribute=="mass": 
             for spectral_type in plot_options.SPECTRAL_TYPES: 
                 span_func(spectral_type.MS_mass_range[1], spectral_type.MS_mass_range[0], color=spectral_type.color, alpha=0.05)
+
+        label_func("Spectral type", fontsize=14)
 
 
 
@@ -377,6 +384,10 @@ class HRDiagram:
             if hasattr(ax, "_model_labels"):
                 for label in ax._model_labels: 
                     label.remove()  
+            if hasattr(ax, "_modelnum_now_point"): 
+                ax._modelnum_now_point.remove() 
+            if hasattr(ax, "_modelnum_now_label"): 
+                ax._modelnum_now_label.remove() 
             
 
 
@@ -400,6 +411,14 @@ class HRDiagram:
             log_Teff_in_view = log_Teff[ind_in_view]
             log_L_in_view = log_L[ind_in_view]
 
+            if len(log_Teff_in_view) == 0:
+                ax._model_points = ax.scatter([], []) 
+                ax._model_label_points = ax.scatter([], []) 
+                ax._model_labels = [] 
+                ax._modelnum_now_point = ax.scatter([], []) 
+                ax._modelnum_now_label = ax.text([], [], "") 
+                ax.figure.canvas.draw_idle()
+                return
 
 
             # 3) Calculate positions to place labels (subset of points with model numbers, so that labels don't overlap)
@@ -457,12 +476,12 @@ class HRDiagram:
             # Add points to all positions with models 
             ax._model_points = ax.scatter(
                 10**log_Teff_in_view, 10**log_L_in_view, 
-                zorder=10, color="white", ec="black", s=10) 
+                zorder=10, color="white", ec="black", s=5) 
 
             # Add points to the subset of positions with labels 
             ax._model_label_points = ax.scatter(
                 10**log_Teff_labeled, 10**log_L_labeled, 
-                zorder=30, color="gold", edgecolor="black", s=10) 
+                zorder=30, color="white", edgecolor="black", s=20) 
 
             # The labels themselves 
             ax._model_labels = [] 
@@ -477,16 +496,16 @@ class HRDiagram:
             if modelnum_now is not None: 
                 
                 # Point for the currently selected model 
-                ax._model_label_points = ax.scatter(
+                ax._modelnum_now_point = ax.scatter(
                     10**history.log_Teff[modelnum_now-1], 10**history.log_L[modelnum_now-1], 
-                    zorder=30, color="red", edgecolor="black", s=10) 
+                    zorder=30, color="gold", edgecolor="black", s=20) 
             
                 # Label the currently selected model 
-                ax._model_labels.append( ax.text(
+                ax._modelnum_now_label = ax.text(
                     10**history.log_Teff[modelnum_now-1], 10**history.log_L[modelnum_now-1], 
                     modelnum_now,  
                     fontsize=12, ha='left', va='bottom', zorder=20, clip_on=True, 
-                    bbox=dict(facecolor='white', edgecolor='black', alpha=1.0, boxstyle='round,pad=0.2')) )
+                    bbox=dict(facecolor='gold', edgecolor='black', alpha=1.0, boxstyle='round,pad=0.2')) 
 
 
 

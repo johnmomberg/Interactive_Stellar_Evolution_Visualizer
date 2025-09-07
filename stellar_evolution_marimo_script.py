@@ -473,18 +473,21 @@ def _(
     with mo.status.spinner(title="Loading MESA profile file...") as _: 
 
         if model_selected is not None: 
-            profile = load_data.load_profile(model_selected.MESA_folder_path, model_selected.model_example, history)
+            modelnum = model_selected.model_example 
+            profile = load_data.load_profile(model_selected.MESA_folder_path, modelnum, history) 
 
         elif profile_dropdown is not None and profile_dropdown.value is not None: 
             modelnum = profile_dropdown.value 
             profile = load_data.load_profile(Path(history_browser.value[0].id), modelnum, history)
 
-        else: profile = None 
+        else: 
+            modelnum = None 
+            profile = None 
 
-    return (profile,)
+    return modelnum, profile
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     available_substages,
@@ -685,7 +688,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
@@ -693,6 +696,7 @@ def _(
     history_plot_dropdown,
     lru_cache,
     mo,
+    modelnum,
     plot_mode_radio,
     profile,
     profile_plot_dropdown,
@@ -730,7 +734,8 @@ def _(
             #         else: 
             #             hr.add_path(history_i, label=f"{history_i.star_mass[0]:.1f} $M_{{sun}}$", color=colors[mass_i], alpha=0.3)
 
-            hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$")
+            hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$") 
+            hr.add_modelnum_labels(history, modelnum) 
         
             hr.label_spectraltypes(hr.ax) 
             hr.legend() 
@@ -746,10 +751,6 @@ def _(
                 return "Select a History file to view history plot" 
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
-            if profile is not None: 
-                modelnum = profile.modelnum 
-            else: 
-                modelnum = None 
             fig2 = selected_plot_func(history, modelnum_now=modelnum) 
         
             # history_plotting.add_substage_highlight(fig2, model_selected, history) 
