@@ -260,7 +260,7 @@ class HRDiagram:
         # X axis: Temperature 
         self.ax.set_xlabel("Effective Temperature (K)", fontsize=18, labelpad=14)
         self.ax.set_xscale("log")
-        self.ax.set_xlim((70000, 2000)) 
+        self.ax.set_xlim((80000, 1000)) 
         
         self.ax.xaxis.set_major_locator(MajorLogLocator()) 
         self.ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}")) 
@@ -272,7 +272,7 @@ class HRDiagram:
         # Y axis: Luminosity 
         self.ax.set_ylabel("Luminosity ($L_{{sun}}$)", fontsize=18, labelpad=14)
         self.ax.set_yscale("log")
-        self.ax.set_ylim((1e-3, 1e7))
+        self.ax.set_ylim((1e-6, 1e8))
 
         # Grid, ticks, title 
         self.ax.tick_params(labelsize=14, length=10, which="major") 
