@@ -282,7 +282,7 @@ class HRDiagram:
 
 
 
-    def add_path(self, history, color="tab:blue", label=None, lw=2, alpha=1): 
+    def add_path(self, history, color=None, label=None, lw=2, alpha=1): 
         self.ax.plot(
             10**history.log_Teff, 
             10**history.log_L, 

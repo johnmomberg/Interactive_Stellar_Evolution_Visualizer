@@ -8,8 +8,7 @@ from matplotlib.font_manager import FontProperties
 
 import utils.config.physical_constants as physical_constants 
 import utils.config.plot_options as plot_options 
-import utils.config.ui_options as ui_options 
-
+import utils.config.profile_xaxis_options as profile_xaxis_options
 
 
 
@@ -90,7 +89,7 @@ class ProfilePlot:
 
     # Profile plot: composition vs mass/radius
     @classmethod
-    def composition(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def composition(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Most plots don't require a history, but this one does. If the user forgets to provide it, raise an error. 
         if history is None: 
@@ -133,7 +132,7 @@ class ProfilePlot:
 
     # Profile plot: Convection vs mass/radius 
     @classmethod 
-    def convection(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def convection(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -159,7 +158,7 @@ class ProfilePlot:
 
     # Profile plot: fusion rate vs mass/radius 
     @classmethod 
-    def fusion(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def fusion(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -194,7 +193,7 @@ class ProfilePlot:
 
     # Profile plot: mu (mass/particule) vs mass/radius 
     @classmethod 
-    def mu(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def mu(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -230,13 +229,13 @@ class ProfilePlot:
 
     # Profile plot: temperature vs mass/radius 
     @classmethod 
-    def temp(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def temp(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
             ylabel="Energy (ergs)",
             ylim=None,
-            yscale="log",
+            yscale="linear",
             title="Interior temperature profile")
         fig, ax = cls._setup(profile, xaxis, config)
         x_arr = xaxis.get_values(profile)
@@ -256,7 +255,7 @@ class ProfilePlot:
         ymax1 = np.max(KE_per_N_temp[ind_within_xlim]) 
         ymax2 = np.max(KE_per_N_actual[ind_within_xlim]) 
         ymax = np.max([ymax1, ymax2])
-        ax.set_ylim(ymin, ymax) 
+        ax.set_ylim(0, ymax) 
 
         # Legend 
         ax.legend(fontsize=14) 
@@ -267,7 +266,7 @@ class ProfilePlot:
 
     # Profile plot: temperature gradient (radiative vs convective) vs mass/radius 
     @classmethod 
-    def tempgrad(cls, profile, xaxis=ui_options.PROFILEXAXIS_MASS, history=None): 
+    def tempgrad(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(

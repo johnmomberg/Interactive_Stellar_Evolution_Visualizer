@@ -6,17 +6,7 @@ from typing import Callable
 
 import utils.plotting.history_plotting as history_plotting 
 import utils.plotting.profile_plotting as profile_plotting 
-
-
-
-
-
-# Base class: each class will need a "display" keyword so no need to copy it many times 
-# Each instance of this class or a child class corresponds to one option in a particular dropdown or radio selector 
-# Using a class allows me to hold all info relevant to that option, such as the plotting function that it uses 
-@dataclass
-class OptionBase:
-    display: str # The string that is displayed next to this option in the dropdown 
+from utils.config.option_base import OptionBase 
 
 
 
@@ -109,28 +99,6 @@ PROFILEPLOT_FUSION = ProfilePlotOption(
     title_str="Fusion in interior of a")
 
 PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION]
-
-
-
-
-
-# Profile plot x-axis: either use mass coordinate or radius coordinate to represent the location within the interior 
-@dataclass
-class ProfileXAxisOption(OptionBase):
-    get_values: Callable  # function that takes profile and returns the array 
-    xlabel_units: str 
-
-PROFILEXAXIS_MASS = ProfileXAxisOption(
-    display="mass coordinate", 
-    get_values=lambda profile: profile.mass, 
-    xlabel_units="(mass coordinate ($M_{{sun}}$))" ) 
-
-PROFILEXAXIS_RADIUS = ProfileXAxisOption(
-    display="radius coordinate", 
-    get_values=lambda profile: profile.radius, 
-    xlabel_units="(radius coordinate ($R_{{sun}}$))" )
-
-PROFILEXAXIS_OPTIONS = [PROFILEXAXIS_MASS, PROFILEXAXIS_RADIUS]
 
 
 

@@ -303,7 +303,8 @@ subgiant_substage = SubStage(
             model_start=None, 
             model_end=None, 
             model_example=389, 
-            MESA_folder_path=data_folder/"M=1.0"
+            is_default=True, 
+            MESA_folder_path=data_folder/"M=1.0", 
         )
     ]
 )
@@ -370,6 +371,7 @@ red_giant_substage = SubStage(
             model_start=None, 
             model_end=None, 
             model_example=5000, 
+            is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
         ), 
         SubStageModel(
@@ -453,6 +455,7 @@ he_ms_substage=SubStage(
             model_start=None, 
             model_end=None, 
             model_example=10650, 
+            is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
         ), 
         SubStageModel( 
@@ -490,7 +493,8 @@ agb_substage=SubStage(
             model_start=None, 
             model_end=None, 
             model_example=12300, 
-            MESA_folder_path=data_folder/"M=1.0"
+            is_default=True, 
+            MESA_folder_path=data_folder/"M=1.0" 
         ), 
         SubStageModel( 
             mass=3.0, 
@@ -535,6 +539,7 @@ he_wd_substage=SubStage(
             model_start=None, 
             model_end=None, 
             model_example=10100, 
+            is_default=True, 
             MESA_folder_path=data_folder/"M=0.5"
         )    
     ]
