@@ -483,7 +483,7 @@ def _(
     return modelnum, profile
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -530,7 +530,7 @@ def _(
     return (unique_models_list,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     HR_diagram_plotting,
     available_substages,
@@ -550,7 +550,7 @@ def _(
 ):
     # Draw the flowchart
 
-
+    import matplotlib.ticker as mticker 
 
 
     def draw_substage_box(
@@ -633,9 +633,10 @@ def _(
         ax.set_yscale("log")
 
         if flowchart_yaxis_dropdown.value==1: 
-            HR_diagram_plotting.HRDiagram.label_spectraltypes(ax, location="left", attribute="mass", label_boundaries=True) ###########  
+            HR_diagram_plotting.label_spectraltypes(ax, location="left", attribute="mass", label_boundaries=True, do_axis_label=False)   
             custom_yticks = [] 
-            ax.set_ylabel("Spectral Type on Main Sequence", fontsize=18, labelpad=40) 
+            ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+            ax.set_ylabel("Spectral Type (on MS)", fontsize=18, labelpad=40) 
 
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
@@ -795,7 +796,7 @@ def _(
                 hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
 
             hr.add_modelnum_labels(history, modelnum)         
-            hr.label_spectraltypes(hr.ax) 
+            HR_diagram_plotting.label_spectraltypes(hr.ax) 
             hr.legend() 
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
