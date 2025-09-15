@@ -171,9 +171,9 @@ class ProfilePlot:
         
         # Plot fusion rates 
         ax.plot(x_arr, profile.eps_nuc, label = "Total fusion", lw=5, color="black")
-        ax.plot(x_arr, profile.pp, label = "Hydrogen (PP chain)", lw=2, color="tab:blue")
-        ax.plot(x_arr, profile.cno, label = "Hydrogen (CNO cycle)", lw=2, color="tab:orange")
-        ax.plot(x_arr, profile.tri_alfa, label = "Helium (triple alpha)", lw=2, color="tab:green")
+        ax.plot(x_arr, profile.pp, label = "Hydrogen \u2192 Helium (PP chain)", lw=2, color="tab:blue")
+        ax.plot(x_arr, profile.cno, label = "Hydrogen \u2192 Helium (CNO cycle)", lw=2, color="tab:orange")
+        ax.plot(x_arr, profile.tri_alfa, label = "Helium \u2192 Carbon (triple alpha)", lw=2, color="tab:green")
 
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 
