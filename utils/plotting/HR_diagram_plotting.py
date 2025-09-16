@@ -455,20 +455,20 @@ class SpectralType:
 # ---------------------------
 _O = [SpectralSubtype(label=f"O{n}", temp=t) for n, t in zip(range(3,10), [                     44900, 42900, 41400, 39500, 37100, 35100, 33100])]
 _B = [SpectralSubtype(label=f"B{n}", temp=t) for n, t in zip(range(0,10), [31400, 26000, 20600, 17000, 16400, 15700, 14500, 14000, 12300, 10700])]
-_A = [SpectralSubtype(label=f"A{n}", temp=t) for n, t in zip(range(0,10), [9700,  9300,  8800,  8600,  8250,  8100,  7910,  7760,  7590,  7400])]
-_F = [SpectralSubtype(label=f"F{n}", temp=t) for n, t in zip(range(0,10), [7220,  7020,  6820,  6750,  6670,  6550,  6350,  6280,  6180,  6050])]
-_G = [SpectralSubtype(label=f"G{n}", temp=t) for n, t in zip(range(0,10), [5930,  5860,  5770,  5720,  5680,  5660,  5600,  5550,  5480,  5380])]
-_K = [SpectralSubtype(label=f"K{n}", temp=t) for n, t in zip(range(0,10), [5270,  5170,  5100,  4830,  4600,  4440,  4300,  4100,  3990,  3930])]  
-_M = [SpectralSubtype(label=f"M{n}", temp=t) for n, t in zip(range(0,10), [3850,  3660,  3560,  3430,  3210,  3060,  2810,  2680,  2570,  2380])]  
+_A = [SpectralSubtype(label=f"A{n}", temp=t) for n, t in zip(range(0,10), [ 9700,  9300,  8800,  8600,  8250,  8100,  7910,  7760,  7590,  7400])]
+_F = [SpectralSubtype(label=f"F{n}", temp=t) for n, t in zip(range(0,10), [ 7220,  7020,  6820,  6750,  6670,  6550,  6350,  6280,  6180,  6050])]
+_G = [SpectralSubtype(label=f"G{n}", temp=t) for n, t in zip(range(0,10), [ 5930,  5860,  5770,  5720,  5680,  5660,  5600,  5550,  5480,  5380])]
+_K = [SpectralSubtype(label=f"K{n}", temp=t) for n, t in zip(range(0,10), [ 5270,  5170,  5100,  4830,  4600,  4440,  4300,  4100,  3990,  3930])]  
+_M = [SpectralSubtype(label=f"M{n}", temp=t) for n, t in zip(range(0,10), [ 3850,  3660,  3560,  3430,  3210,  3060,  2810,  2680,  2570,  2380])]  
 
 SPECTRAL_TYPES: List[SpectralType] = [
-    SpectralType(letter="O", temp_range=(33000.0, 500000.0), MS_mass_range=(16, 300), color="black", subtypes=_O),
-    SpectralType(letter="B", temp_range=(10000.0, 33000.0),  MS_mass_range=(2.1, 16),  color="white", subtypes=_B),
-    SpectralType(letter="A", temp_range=(7300.0, 10000.0),   MS_mass_range=(1.4, 2.1), color="black", subtypes=_A),
-    SpectralType(letter="F", temp_range=(6000.0, 7300.0),    MS_mass_range=(1.04, 1.4), color="white", subtypes=_F),
-    SpectralType(letter="G", temp_range=(5300.0, 6000.0),    MS_mass_range=(0.8, 1.04), color="black", subtypes=_G),
-    SpectralType(letter="K", temp_range=(3900.0, 5300.0),    MS_mass_range=(0.45, 0.8), color="white", subtypes=_K),
-    SpectralType(letter="M", temp_range=(2300.0, 3900.0),    MS_mass_range=(0.08, 0.45), color="black", subtypes=_M),
+    SpectralType(letter="O", temp_range=(33000.0, 500000.0), MS_mass_range=(16,    300),    color="black", subtypes=_O),
+    SpectralType(letter="B", temp_range=(10000.0,  33000.0), MS_mass_range=( 2.1,   16),    color="white", subtypes=_B),
+    SpectralType(letter="A", temp_range=( 7300.0,  10000.0), MS_mass_range=( 1.4,    2.1),  color="black", subtypes=_A),
+    SpectralType(letter="F", temp_range=( 6000.0,   7300.0), MS_mass_range=( 1.04,   1.4),  color="white", subtypes=_F),
+    SpectralType(letter="G", temp_range=( 5300.0,   6000.0), MS_mass_range=(  0.8,   1.04), color="black", subtypes=_G),
+    SpectralType(letter="K", temp_range=( 3900.0,   5300.0), MS_mass_range=(  0.45,  0.8),  color="white", subtypes=_K),
+    SpectralType(letter="M", temp_range=( 2300.0,   3900.0), MS_mass_range=(   0.08, 0.45), color="black", subtypes=_M),
 ]
 
 # build combo caches once
