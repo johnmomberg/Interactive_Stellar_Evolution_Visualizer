@@ -163,12 +163,13 @@ class HRDiagram:
 
     def __init__(self): 
 
+        # Setup 
         self.fig, self.ax = plt.subplots(figsize=(10.7, 7))
-        self.fig.subplots_adjust(top=0.87, bottom=0.15, left=0.12, right=0.96)
+        self.fig.subplots_adjust(top=0.85, bottom=0.13, left=0.12, right=0.96)
 
 
         # X axis: Temperature 
-        self.ax.set_xlabel("Effective Temperature (K)", fontsize=18, labelpad=14)
+        self.ax.set_xlabel("Surface temperature (K)", fontsize=18, labelpad=14)
         self.ax.set_xscale("log")
         self.ax.set_xlim((80000, 1000)) 
         
@@ -184,11 +185,12 @@ class HRDiagram:
         self.ax.set_yscale("log")
         self.ax.set_ylim((1e-6, 1e8))
 
+
+
         # Grid, ticks, title 
         self.ax.tick_params(labelsize=14, length=10, which="major") 
-        # self.ax.tick_params(length=0, which="minor") 
         self.ax.grid(alpha=0.5, which="both")
-        self.ax.set_title("Evolutionary Path on HR Diagram", fontsize=20, pad=15) 
+        self.ax.set_title("Evolutionary Path Across HR Diagram", fontsize=20, pad=15) 
 
 
 
