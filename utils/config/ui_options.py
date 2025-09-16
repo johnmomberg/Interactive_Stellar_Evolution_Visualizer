@@ -74,9 +74,14 @@ class ProfilePlotOption(OptionBase):
     title_str: str
 
 PROFILEPLOT_COMPOSITION = ProfilePlotOption(
-    display="Composition", 
+    display="Composition (linear)", 
     plot_func=profile_plotting.ProfilePlot.composition, 
-    title_str="Compostion in interior of a")
+    title_str="Compostion in interior of a") 
+
+PROFILEPLOT_COMPOSITION_LOG = ProfilePlotOption( 
+    display="Composition (log)", 
+    plot_func=profile_plotting.ProfilePlot.composition_log, 
+    title_str="Composition in interior of a")
 
 PROFILEPLOT_CONVECTION = ProfilePlotOption(
     display="Convection", 
@@ -98,7 +103,7 @@ PROFILEPLOT_FUSION = ProfilePlotOption(
     plot_func=profile_plotting.ProfilePlot.fusion, 
     title_str="Fusion in interior of a")
 
-PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION]
+PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION]
 
 
 

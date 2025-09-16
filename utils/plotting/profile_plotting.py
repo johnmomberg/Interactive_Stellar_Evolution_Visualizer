@@ -127,6 +127,50 @@ class ProfilePlot:
         ax.legend(fontsize=14) 
 
         return fig 
+    
+
+
+    # Profile plot: composition vs mass/radius
+    @classmethod
+    def composition_log(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
+
+        # Most plots don't require a history, but this one does. If the user forgets to provide it, raise an error. 
+        if history is None: 
+            raise ValueError("Composition plot requires 'history' to be provided")
+
+        # Setup 
+        ymin = 1e-9 
+        config = ProfilePlotConfigParams(
+            ylabel="Composition (mass fraction)",
+            ylim=(ymin, 1.2),
+            yscale="log",
+            title="Interior composition")
+        fig, ax = cls._setup(profile, xaxis, config)
+        x_arr = xaxis.get_values(profile)
+        
+        # Loop through list of Isotope objects
+        for isotope in plot_options.ISOTOPES:
+            composition_profile = getattr(profile, isotope.profile_key)
+
+            # Only plot profiles that are significant
+            if np.nanmax(composition_profile) > ymin:
+                ax.plot(
+                    x_arr,
+                    composition_profile,
+                    label=isotope.label,
+                    color=isotope.color,
+                    lw=3
+                ) 
+
+            # Add horizontal dashed lines showing the initial composition
+            if isotope.show_initial_abundance: 
+                composition_history = getattr(history, isotope.history_key)
+                ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
+
+        # Legend 
+        ax.legend(fontsize=14) 
+
+        return fig 
 
 
 
