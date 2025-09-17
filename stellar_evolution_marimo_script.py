@@ -560,8 +560,8 @@ def _(
         text_color, text_fontsize, text_y=None):
 
         # Define rectangle bounds
-        x1 = substage.parent_stage.flowchart_x + 0.02 
-        x2 = substage.parent_stage.flowchart_x+1 - 0.02 
+        x1 = substage.parent_stage.flowchart_x + 0.05 
+        x2 = substage.parent_stage.flowchart_x+1 - 0.05  
         y1 = substage.mass_min
         y2 = substage.mass_max
         width = x2 - x1
@@ -603,7 +603,7 @@ def _(
             return "Flowchart unavailable"
 
         fig, ax = plt.subplots(figsize=(15, 5))
-        fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=1)
+        fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=0.92)
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
             custom_yticks = unique_masses 
@@ -633,10 +633,10 @@ def _(
         ax.set_yscale("log")
 
         if flowchart_yaxis_dropdown.value==1: 
-            HR_diagram_plotting.label_spectraltypes(ax, location="left", attribute="mass", label_boundaries=True, do_axis_label=False)   
-            custom_yticks = [] 
-            ax.yaxis.set_minor_formatter(mticker.NullFormatter())
-            ax.set_ylabel("Spectral Type (on MS)", fontsize=18, labelpad=40) 
+            HR_diagram_plotting.label_spectraltypes(ax, location="right", attribute="mass", subtype_fraction_threshold=0.5, min_subtype_label_px=30)   
+            # custom_yticks = [] 
+            # ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+            # ax.set_ylabel("Spectral Type (on MS)", fontsize=18, labelpad=40) 
 
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
@@ -732,7 +732,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,

@@ -133,105 +133,105 @@ ISOTOPES = [
 
 
 
-# ==============================================================================
-# SPECTRAL TYPE DATA (Restructured for clarity and subtypes)
-# ==============================================================================
+# # ==============================================================================
+# # SPECTRAL TYPE DATA (Restructured for clarity and subtypes)
+# # ==============================================================================
 
-# This class defines the broad ranges for background shading and zoomed-out labels
-@dataclass
-class SpectralType:
-    """Represents a broad Spectral Type (O, B, A, etc.) with its plotting properties."""
-    letter: str
-    temp_range: tuple       # (lower bound, upper bound) in Kelvin
-    MS_mass_range: tuple    # (lower bound, upper bound) in Solar Masses
-    color: str
+# # This class defines the broad ranges for background shading and zoomed-out labels
+# @dataclass
+# class SpectralType:
+#     """Represents a broad Spectral Type (O, B, A, etc.) with its plotting properties."""
+#     letter: str
+#     temp_range: tuple       # (lower bound, upper bound) in Kelvin
+#     MS_mass_range: tuple    # (lower bound, upper bound) in Solar Masses
+#     color: str
 
-    @property
-    def temp_midpoint(self) -> float:
-        """Calculates geometric mean for logarithmic scale plotting."""
-        midpoint = np.sqrt(self.temp_range[1] * self.temp_range[0])
-        return midpoint if np.isfinite(midpoint) else 1.2 * self.temp_range[0]
+#     @property
+#     def temp_midpoint(self) -> float:
+#         """Calculates geometric mean for logarithmic scale plotting."""
+#         midpoint = np.sqrt(self.temp_range[1] * self.temp_range[0])
+#         return midpoint if np.isfinite(midpoint) else 1.2 * self.temp_range[0]
 
-    @property
-    def mass_midpoint(self) -> float:
-        """Calculates geometric mean for logarithmic scale plotting."""
-        midpoint = np.sqrt(self.MS_mass_range[1] * self.MS_mass_range[0])
-        return midpoint if np.isfinite(midpoint) else 1.2 * self.MS_mass_range[0]
+#     @property
+#     def mass_midpoint(self) -> float:
+#         """Calculates geometric mean for logarithmic scale plotting."""
+#         midpoint = np.sqrt(self.MS_mass_range[1] * self.MS_mass_range[0])
+#         return midpoint if np.isfinite(midpoint) else 1.2 * self.MS_mass_range[0]
 
-# This class defines the specific points for zoomed-in subtype labels
-@dataclass
-class SpectralSubtype:
-    """Represents a specific Spectral Subtype (A0, G2, etc.) at a precise point."""
-    label: str
-    temp: float         # Specific temperature in Kelvin
-    MS_mass: float      # Specific Main Sequence mass in Solar Masses 
+# # This class defines the specific points for zoomed-in subtype labels
+# @dataclass
+# class SpectralSubtype:
+#     """Represents a specific Spectral Subtype (A0, G2, etc.) at a precise point."""
+#     label: str
+#     temp: float         # Specific temperature in Kelvin
+#     MS_mass: float      # Specific Main Sequence mass in Solar Masses 
 
-# Data for the broad spectral types (for background shading)
-# Source: Wikipedia - Stellar Classification
-SPECTRAL_TYPES = [
-    SpectralType(letter="O", temp_range=(33_000, 500_000),  MS_mass_range=(16, 300),     color="black"),
-    SpectralType(letter="B", temp_range=(10_000, 33_000),  MS_mass_range=(2.1, 16),      color="white"),
-    SpectralType(letter="A", temp_range=(7_300, 10_000),   MS_mass_range=(1.4, 2.1),     color="black"),
-    SpectralType(letter="F", temp_range=(6_000, 7_300),    MS_mass_range=(1.04, 1.4),    color="white"),
-    SpectralType(letter="G", temp_range=(5_300, 6_000),    MS_mass_range=(0.8, 1.04),    color="black"),
-    SpectralType(letter="K", temp_range=(3_900, 5_300),    MS_mass_range=(0.45, 0.8),    color="white"),
-    SpectralType(letter="M", temp_range=(2_300, 3_900),    MS_mass_range=(0.08, 0.45),   color="black"),
-]
+# # Data for the broad spectral types (for background shading)
+# # Source: Wikipedia - Stellar Classification
+# SPECTRAL_TYPES = [
+#     SpectralType(letter="O", temp_range=(33_000, 500_000),  MS_mass_range=(16, 300),     color="black"),
+#     SpectralType(letter="B", temp_range=(10_000, 33_000),  MS_mass_range=(2.1, 16),      color="white"),
+#     SpectralType(letter="A", temp_range=(7_300, 10_000),   MS_mass_range=(1.4, 2.1),     color="black"),
+#     SpectralType(letter="F", temp_range=(6_000, 7_300),    MS_mass_range=(1.04, 1.4),    color="white"),
+#     SpectralType(letter="G", temp_range=(5_300, 6_000),    MS_mass_range=(0.8, 1.04),    color="black"),
+#     SpectralType(letter="K", temp_range=(3_900, 5_300),    MS_mass_range=(0.45, 0.8),    color="white"),
+#     SpectralType(letter="M", temp_range=(2_300, 3_900),    MS_mass_range=(0.08, 0.45),   color="black"),
+# ]
 
-# Data for the specific spectral subtypes (for detailed labels when zoomed in)
-SPECTRAL_SUBTYPES = [
-    SpectralSubtype(label="O3", temp=44900, MS_mass=1.0), 
-    SpectralSubtype(label="O4", temp=42900, MS_mass=1.0), 
-    SpectralSubtype(label="O5", temp=41400, MS_mass=1.0), 
-    SpectralSubtype(label="O6", temp=39500, MS_mass=1.0), 
-    SpectralSubtype(label="O7", temp=37100, MS_mass=1.0), 
-    SpectralSubtype(label="O8", temp=35100, MS_mass=1.0), 
-    SpectralSubtype(label="O9", temp=33100, MS_mass=1.0), 
+# # Data for the specific spectral subtypes (for detailed labels when zoomed in)
+# SPECTRAL_SUBTYPES = [
+#     SpectralSubtype(label="O3", temp=44900, MS_mass=1.0), 
+#     SpectralSubtype(label="O4", temp=42900, MS_mass=1.0), 
+#     SpectralSubtype(label="O5", temp=41400, MS_mass=1.0), 
+#     SpectralSubtype(label="O6", temp=39500, MS_mass=1.0), 
+#     SpectralSubtype(label="O7", temp=37100, MS_mass=1.0), 
+#     SpectralSubtype(label="O8", temp=35100, MS_mass=1.0), 
+#     SpectralSubtype(label="O9", temp=33100, MS_mass=1.0), 
 
-    SpectralSubtype(label="B0", temp=31400, MS_mass=1.0), 
-    SpectralSubtype(label="B1", temp=26000, MS_mass=1.0), 
-    SpectralSubtype(label="B2", temp=20600, MS_mass=1.0), 
-    SpectralSubtype(label="B3", temp=17000, MS_mass=1.0), 
-    SpectralSubtype(label="B4", temp=16400, MS_mass=1.0), 
-    SpectralSubtype(label="B5", temp=15700, MS_mass=1.0), 
-    SpectralSubtype(label="B6", temp=14500, MS_mass=1.0), 
-    SpectralSubtype(label="B7", temp=14000, MS_mass=1.0), 
-    SpectralSubtype(label="B8", temp=12300, MS_mass=1.0), 
-    SpectralSubtype(label="B9", temp=10700, MS_mass=1.0), 
+#     SpectralSubtype(label="B0", temp=31400, MS_mass=1.0), 
+#     SpectralSubtype(label="B1", temp=26000, MS_mass=1.0), 
+#     SpectralSubtype(label="B2", temp=20600, MS_mass=1.0), 
+#     SpectralSubtype(label="B3", temp=17000, MS_mass=1.0), 
+#     SpectralSubtype(label="B4", temp=16400, MS_mass=1.0), 
+#     SpectralSubtype(label="B5", temp=15700, MS_mass=1.0), 
+#     SpectralSubtype(label="B6", temp=14500, MS_mass=1.0), 
+#     SpectralSubtype(label="B7", temp=14000, MS_mass=1.0), 
+#     SpectralSubtype(label="B8", temp=12300, MS_mass=1.0), 
+#     SpectralSubtype(label="B9", temp=10700, MS_mass=1.0), 
 
-    SpectralSubtype(label="A0", temp=9700, MS_mass=1.0), 
-    SpectralSubtype(label="A1", temp=9300, MS_mass=1.0), 
-    SpectralSubtype(label="A2", temp=8800, MS_mass=1.0), 
-    SpectralSubtype(label="A3", temp=8600, MS_mass=1.0), 
-    SpectralSubtype(label="A4", temp=8250, MS_mass=1.0), 
-    SpectralSubtype(label="A5", temp=8100, MS_mass=1.0), 
-    SpectralSubtype(label="A6", temp=7910, MS_mass=1.0), 
-    SpectralSubtype(label="A7", temp=7760, MS_mass=1.0), 
-    SpectralSubtype(label="A8", temp=7590, MS_mass=1.0), 
-    SpectralSubtype(label="A9", temp=7400, MS_mass=1.0), 
+#     SpectralSubtype(label="A0", temp=9700, MS_mass=1.0), 
+#     SpectralSubtype(label="A1", temp=9300, MS_mass=1.0), 
+#     SpectralSubtype(label="A2", temp=8800, MS_mass=1.0), 
+#     SpectralSubtype(label="A3", temp=8600, MS_mass=1.0), 
+#     SpectralSubtype(label="A4", temp=8250, MS_mass=1.0), 
+#     SpectralSubtype(label="A5", temp=8100, MS_mass=1.0), 
+#     SpectralSubtype(label="A6", temp=7910, MS_mass=1.0), 
+#     SpectralSubtype(label="A7", temp=7760, MS_mass=1.0), 
+#     SpectralSubtype(label="A8", temp=7590, MS_mass=1.0), 
+#     SpectralSubtype(label="A9", temp=7400, MS_mass=1.0), 
 
-    SpectralSubtype(label="F0", temp=7220, MS_mass=1.0), 
-    SpectralSubtype(label="F1", temp=7020, MS_mass=1.0), 
-    SpectralSubtype(label="F2", temp=6820, MS_mass=1.0), 
-    SpectralSubtype(label="F3", temp=6750, MS_mass=1.0), 
-    SpectralSubtype(label="F4", temp=6670, MS_mass=1.0), 
-    SpectralSubtype(label="F5", temp=6550, MS_mass=1.0), 
-    SpectralSubtype(label="F6", temp=6350, MS_mass=1.0), 
-    SpectralSubtype(label="F7", temp=6280, MS_mass=1.0), 
-    SpectralSubtype(label="F8", temp=6180, MS_mass=1.0), 
-    SpectralSubtype(label="F9", temp=6050, MS_mass=1.0), 
+#     SpectralSubtype(label="F0", temp=7220, MS_mass=1.0), 
+#     SpectralSubtype(label="F1", temp=7020, MS_mass=1.0), 
+#     SpectralSubtype(label="F2", temp=6820, MS_mass=1.0), 
+#     SpectralSubtype(label="F3", temp=6750, MS_mass=1.0), 
+#     SpectralSubtype(label="F4", temp=6670, MS_mass=1.0), 
+#     SpectralSubtype(label="F5", temp=6550, MS_mass=1.0), 
+#     SpectralSubtype(label="F6", temp=6350, MS_mass=1.0), 
+#     SpectralSubtype(label="F7", temp=6280, MS_mass=1.0), 
+#     SpectralSubtype(label="F8", temp=6180, MS_mass=1.0), 
+#     SpectralSubtype(label="F9", temp=6050, MS_mass=1.0), 
 
-    SpectralSubtype(label="G0", temp=5930, MS_mass=1.0), 
-    SpectralSubtype(label="G1", temp=5860, MS_mass=1.0), 
-    SpectralSubtype(label="G2", temp=5770, MS_mass=1.0), 
-    SpectralSubtype(label="G3", temp=5720, MS_mass=1.0), 
-    SpectralSubtype(label="G4", temp=5680, MS_mass=1.0), 
-    SpectralSubtype(label="G5", temp=5660, MS_mass=1.0), 
-    SpectralSubtype(label="G6", temp=5600, MS_mass=1.0), 
-    SpectralSubtype(label="G7", temp=5550, MS_mass=1.0), 
-    SpectralSubtype(label="G8", temp=5480, MS_mass=1.0), 
-    SpectralSubtype(label="G9", temp=5380, MS_mass=1.0), 
-]
+#     SpectralSubtype(label="G0", temp=5930, MS_mass=1.0), 
+#     SpectralSubtype(label="G1", temp=5860, MS_mass=1.0), 
+#     SpectralSubtype(label="G2", temp=5770, MS_mass=1.0), 
+#     SpectralSubtype(label="G3", temp=5720, MS_mass=1.0), 
+#     SpectralSubtype(label="G4", temp=5680, MS_mass=1.0), 
+#     SpectralSubtype(label="G5", temp=5660, MS_mass=1.0), 
+#     SpectralSubtype(label="G6", temp=5600, MS_mass=1.0), 
+#     SpectralSubtype(label="G7", temp=5550, MS_mass=1.0), 
+#     SpectralSubtype(label="G8", temp=5480, MS_mass=1.0), 
+#     SpectralSubtype(label="G9", temp=5380, MS_mass=1.0), 
+# ]
 
 
 

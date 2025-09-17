@@ -1,15 +1,17 @@
 import numpy as np 
 from fractions import Fraction 
 import functools 
-
-import matplotlib.pyplot as plt 
-import matplotlib.ticker as mticker 
-
-import utils.config.plot_options as plot_options 
-
 from dataclasses import dataclass, field
 import itertools
 from typing import List, Tuple, Dict
+
+import matplotlib.pyplot as plt 
+import matplotlib.ticker as mticker 
+from matplotlib.axes import Axes
+
+import utils.config.plot_options as plot_options 
+
+
 
 
 
@@ -404,8 +406,8 @@ class HRDiagram:
 @dataclass
 class SpectralSubtype:
     label: str
-    temp: float       # Teff in Kelvin
-    MS_mass: float = 1.0
+    temp: float       
+    MS_mass: float 
 
 @dataclass
 class SpectralType:
@@ -450,25 +452,177 @@ class SpectralType:
             combos.sort(key=lambda d: d['min_log_spacing'], reverse=True)
             self.combo_cache[k] = combos
 
-# ---------------------------
-# Default spectral data
-# ---------------------------
-_O = [SpectralSubtype(label=f"O{n}", temp=t) for n, t in zip(range(3,10), [                     44900, 42900, 41400, 39500, 37100, 35100, 33100])]
-_B = [SpectralSubtype(label=f"B{n}", temp=t) for n, t in zip(range(0,10), [31400, 26000, 20600, 17000, 16400, 15700, 14500, 14000, 12300, 10700])]
-_A = [SpectralSubtype(label=f"A{n}", temp=t) for n, t in zip(range(0,10), [ 9700,  9300,  8800,  8600,  8250,  8100,  7910,  7760,  7590,  7400])]
-_F = [SpectralSubtype(label=f"F{n}", temp=t) for n, t in zip(range(0,10), [ 7220,  7020,  6820,  6750,  6670,  6550,  6350,  6280,  6180,  6050])]
-_G = [SpectralSubtype(label=f"G{n}", temp=t) for n, t in zip(range(0,10), [ 5930,  5860,  5770,  5720,  5680,  5660,  5600,  5550,  5480,  5380])]
-_K = [SpectralSubtype(label=f"K{n}", temp=t) for n, t in zip(range(0,10), [ 5270,  5170,  5100,  4830,  4600,  4440,  4300,  4100,  3990,  3930])]  
-_M = [SpectralSubtype(label=f"M{n}", temp=t) for n, t in zip(range(0,10), [ 3850,  3660,  3560,  3430,  3210,  3060,  2810,  2680,  2570,  2380])]  
+
+
+
+# _O = [
+#     SpectralSubtype(label=f"O{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(3, 10),
+#         [44900, 42900, 41400, 39500, 37100, 35100, 33100],  # temps
+#         [120.0, 85.31, 60.0, 43.71, 30.85, 23.0, 19.63],    # masses
+#     )
+# ]
+
+# _B = [
+#     SpectralSubtype(label=f"B{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [31400, 26000, 20600, 17000, 16400, 15700, 14500, 14000, 12300, 10700],  # temps
+#         [17.7, 11.0, 7.3, 5.4, 5.1, 4.7, 4.3, 3.92, 3.38, 2.75],                 # masses
+#     )
+# ]
+
+# _A = [
+#     SpectralSubtype(label=f"A{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [9700, 9300, 8800, 8600, 8250, 8100, 7910, 7760, 7590, 7400],  # temps
+#         [2.18, 2.05, 1.98, 1.93, 1.88, 1.86, 1.83, 1.81, 1.77, 1.75],  # masses
+#     )
+# ]
+
+# _F = [
+#     SpectralSubtype(label=f"F{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [7220, 7020, 6820, 6750, 6670, 6550, 6350, 6280, 6180, 6050],  # temps
+#         [1.61, 1.50, 1.46, 1.44, 1.38, 1.33, 1.25, 1.21, 1.18, 1.13],  # masses
+#     )
+# ]
+
+
+# _G = [
+#     SpectralSubtype(label=f"G{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [5930, 5860, 5770, 5720, 5680, 5660, 5600, 5550, 5480, 5380],  # temps
+#         [1.06, 1.03, 1.00, 0.99, 0.985, 0.98, 0.97, 0.95, 0.94, 0.90],  # masses
+#     )
+# ]
+
+# _K = [
+#     SpectralSubtype(label=f"K{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [5270, 5170, 5100, 4830, 4600, 4440, 4300, 4100, 3990, 3930],  # temps
+#         [0.88, 0.86, 0.82, 0.78, 0.73, 0.70, 0.69, 0.64, 0.62, 0.59],  # masses
+#     )
+# ]
+
+# _M = [
+#     SpectralSubtype(label=f"M{n}", temp=t, MS_mass=m)
+#     for n, t, m in zip(
+#         range(0, 10),
+#         [3850, 3660, 3560, 3430, 3210, 3060, 2810, 2680, 2570, 2380],  # temps
+#         [0.57, 0.50, 0.44, 0.37, 0.23, 0.162, 0.102, 0.090, 0.085, 0.079],  # masses
+#     )
+# ]
+
+
+
+
+
+# From Pecaut & Mamajek (2013) mean dwarf MS data (Teff, Msun) https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt 
+
+_O = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["O3V", "O4V", "O5V", "O5.5V", "O6V", "O6.5V", "O7V", "O7.5V", "O8V", "O8.5V", "O9V", "O9.5V"],
+        [ 44900, 42900, 41400, 40500,   39500, 38300,   37100, 36100,   35100, 34300,   33300, 31900],
+        [ 59.0,  48.0,  43.0,  38.0,    35.0,  31.0,    28.0,  26.0,    23.6,  21.9,    20.2,  18.7],
+    )
+]
+
+_B = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["B0V", "B0.5V", "B1V", "B1.5V", "B2V", "B2.5V", "B3V", "B4V", "B5V", "B6V", "B7V", "B8V", "B9V", "B9.5V"],
+        [ 31400, 29000,   26000, 24500,   20600, 18500,   17000, 16400, 15700, 14500, 14000, 12300, 10700, 10400],
+        [ 17.7,  14.8,    11.8,  9.9,     7.3,   6.1,     5.4,   5.1,   4.7,   4.3,   3.92,  3.38,  2.75,  2.68],
+    )
+]
+
+_A = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["A0V", "A1V", "A2V", "A3V", "A4V", "A5V", "A6V", "A7V", "A8V", "A9V"],
+        [ 9700,  9300,  8800,  8600,  8250,  8100,  7910,  7760,  7590,  7400],
+        [ 2.18,  2.05,  1.98,  1.93,  1.88,  1.86,  1.83,  1.81,  1.77,  1.75],
+    )
+]
+
+_F = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["F0V", "F1V", "F2V", "F3V", "F4V", "F5V", "F6V", "F7V", "F8V", "F9V", "F9.5V"],
+        [ 7220,  7020,  6820,  6750,  6670,  6550,  6350,  6280,  6180,  6050,  5990],
+        [ 1.61,  1.50,  1.46,  1.44,  1.38,  1.33,  1.25,  1.21,  1.18,  1.13,  1.08],
+    )
+]
+
+_G = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["G0V", "G1V", "G2V", "G3V", "G4V", "G5V", "G6V", "G7V", "G8V", "G9V"],
+        [ 5930,  5860,  5770,  5720,  5680,  5660,  5600,  5550,  5480,  5380],
+        [ 1.06,  1.03,  1.00,  0.99,  0.985, 0.98,  0.97,  0.95,  0.94,  0.90],
+    )
+]
+
+_K = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["K0V", "K1V", "K2V", "K3V", "K4V"," K5V", "K6V", "K7V", "K8V", "K9V"],
+        [ 5270,  5170,  5100,  4830,  4600,  4440,  4300,  4100,  3990,  3930],
+        [ 0.88,  0.86,  0.82,  0.78,  0.73,  0.70,  0.69,  0.64,  0.62,  0.59],
+    )
+]
+
+_M = [
+    SpectralSubtype(label=label, temp=t, MS_mass=m)
+    for label, t, m in zip(
+        ["M0V", "M0.5V", "M1V", "M1.5V", "M2V", "M2.5V", "M3V", "M3.5V", "M4V", "M4.5V", "M5V", "M5.5V", "M6V", "M6.5V", "M7V", "M7.5V", "M8V", "M8.5V", "M9V", "M9.5V"],
+        [ 3850,  3770,    3660,  3620,    3560,  3470,    3430,  3270,    3210,  3110,    3060,  2930,    2810,  2740,    2680,  2630,    2570,  2420,    2380,  2350],
+        [ 0.57,  0.544,   0.50,  0.482,   0.44,  0.421,   0.37,  0.300,   0.23,  0.217,   0.162, 0.156,   0.137, 0.126,   0.120, 0.116,   0.114, 0.104,   0.102, 0.101],
+    )
+] 
+
+_L = [
+    SpectralSubtype(label=label, temp=t, MS_mass=None)
+    for label, t in zip(
+        ["L0V", "L1V", "L2V", "L3V", "L4V", "L5V", "L6V", "L7V", "L8V", "L9V"],
+        [ 2270,  2160,  2060,  1920,  1870,  1710,  1550,  1530,  1420,  1370],
+    )
+]
+
+_T = [
+    SpectralSubtype(label=label, temp=t, MS_mass=None)
+    for label, t in zip(
+        ["T0V", "T1V", "T2V", "T3V", "T4V", "T4.5V", "T5V", "T5.5V", "T6V", "T7V", "T7.5V", "T8V", "T9V"],
+        [ 1255,  1240,  1220,  1200,  1180,  1170,    1160,  1040,    950,   825,   750,     680,   560],
+    )
+]
+
+_Y = [
+    SpectralSubtype(label=label, temp=t, MS_mass=None)
+    for label, t in zip(
+        ["Y0V", "Y0.5V", "Y1V", "Y1.5V", "Y2V", "Y4V"],
+        [ 450,   400,     360,    325,    320,   250],
+    )
+]
+
+
+
 
 SPECTRAL_TYPES: List[SpectralType] = [
-    SpectralType(letter="O", temp_range=(33000.0, 500000.0), MS_mass_range=(16,    300),    color="black", subtypes=_O),
-    SpectralType(letter="B", temp_range=(10000.0,  33000.0), MS_mass_range=( 2.1,   16),    color="white", subtypes=_B),
-    SpectralType(letter="A", temp_range=( 7300.0,  10000.0), MS_mass_range=( 1.4,    2.1),  color="black", subtypes=_A),
-    SpectralType(letter="F", temp_range=( 6000.0,   7300.0), MS_mass_range=( 1.04,   1.4),  color="white", subtypes=_F),
-    SpectralType(letter="G", temp_range=( 5300.0,   6000.0), MS_mass_range=(  0.8,   1.04), color="black", subtypes=_G),
-    SpectralType(letter="K", temp_range=( 3900.0,   5300.0), MS_mass_range=(  0.45,  0.8),  color="white", subtypes=_K),
-    SpectralType(letter="M", temp_range=( 2300.0,   3900.0), MS_mass_range=(   0.08, 0.45), color="black", subtypes=_M),
+    SpectralType(letter="O", temp_range=(31_650, 999_999_999_999), MS_mass_range=(18.2, 300),  color="black", subtypes=_O),
+    SpectralType(letter="B", temp_range=(10_000, 31_650),          MS_mass_range=(2.33, 18.2), color="white", subtypes=_B),
+    SpectralType(letter="A", temp_range=(7_300, 10_000),           MS_mass_range=(1.68, 2.33), color="black", subtypes=_A),
+    SpectralType(letter="F", temp_range=(5_960, 7_300),            MS_mass_range=(1.07, 1.68), color="white", subtypes=_F),
+    SpectralType(letter="G", temp_range=(5_330, 5_960),            MS_mass_range=(0.89, 1.07), color="black", subtypes=_G),
+    SpectralType(letter="K", temp_range=(3_890, 5_330),            MS_mass_range=(0.58, 0.89), color="white", subtypes=_K),
+    SpectralType(letter="M", temp_range=(2_310, 3_890),            MS_mass_range=(0.1, 0.58),  color="black", subtypes=_M),
 ]
 
 # build combo caches once
@@ -546,9 +700,21 @@ class SmartSpectralLabelLocator(mticker.Locator):
                 except Exception:
                     pass
 
-        def xdata_to_px(xdata: float) -> float:
-            disp = axis.axes.transData.transform((xdata, 0.0))
-            return float(disp[0])
+        axis_name = getattr(axis, "axis_name", None)
+
+        # replace existing xdata_to_px with this:
+        def data_to_px(val: float) -> float:
+            """Transform a data coordinate (val) on the axis this locator is attached to
+            into pixels along that axis (horizontal pixels for x-axis, vertical pixels for y-axis)."""
+            # axis.axis_name is 'x' for xaxis and 'y' for yaxis in Matplotlib
+            if axis_name == "x":
+                # transform (x, y) -> display coords; return horizontal pixel
+                disp = axis.axes.transData.transform((val, 0.0))
+                return float(disp[0])
+            else:
+                # y-axis: transform (x, y) and return vertical pixel coordinate
+                disp = axis.axes.transData.transform((0.0, val))
+                return float(disp[1])
 
         ensure_renderer()
         # attempt to get pixel width info
@@ -563,9 +729,11 @@ class SmartSpectralLabelLocator(mticker.Locator):
             if self.attribute == "temp":
                 st_min, st_max = st.temp_range
                 st_mid = st.temp_midpoint
-            else:
+            elif self.attribute == "mass":
                 st_min, st_max = st.MS_mass_range
-                st_mid = st.mass_midpoint
+                st_mid = st.mass_midpoint 
+            else: 
+                raise ValueError("'attribute' must be either 'temp' or 'mass' ")
 
             # fraction of axis view this type occupies (in log-space)
             frac = log_fraction_overlap((st_min, st_max), (left, right))
@@ -584,10 +752,14 @@ class SmartSpectralLabelLocator(mticker.Locator):
 
             # Subtype selection
             if st.subtypes and frac >= self.subtype_fraction_threshold:
+                if self.attribute == "temp": 
+                    attr = "temp" 
+                if self.attribute == "mass": 
+                    attr = "MS_mass" 
                 # candidates strictly within the currently visible portion
-                candidate_indices = [i for i, sub in enumerate(st.subtypes) if (sub.temp > left) and (sub.temp < right)]
+                candidate_indices = [i for i, sub in enumerate(st.subtypes) if (getattr(sub, attr) > left) and (getattr(sub, attr) < right)]
                 if not candidate_indices:
-                    continue
+                    continue 
 
                 # if pixel info not available, choose up to 3 evenly spaced subtypes
                 if view_px_width is None:
@@ -598,12 +770,12 @@ class SmartSpectralLabelLocator(mticker.Locator):
                         print(f"[locator] no px info -> pick {len(selected)} evenly spaced for {st.letter}")
                 else:
                     # pixel positions for candidate temps
-                    cand_temps = np.array([st.subtypes[i].temp for i in candidate_indices], dtype=float)
-                    cand_px = np.array([xdata_to_px(t) for t in cand_temps], dtype=float)
+                    cand_temps = np.array([getattr(st.subtypes[i], attr) for i in candidate_indices], dtype=float)
+                    cand_px = np.array([data_to_px(t) for t in cand_temps], dtype=float)
 
                     # pixel coords for visible edges of the spectral-type region
-                    left_px = xdata_to_px(in_view_min)
-                    right_px = xdata_to_px(in_view_max)
+                    left_px = data_to_px(in_view_min)
+                    right_px = data_to_px(in_view_max)
                     if right_px < left_px:
                         left_px, right_px = right_px, left_px
 
@@ -709,19 +881,33 @@ class SmartSpectralLabelLocator(mticker.Locator):
                             if self.verbose:
                                 print(f"[locator] {st.letter}: accepted_k={accepted_k}")
 
+                # def get_parent_axes(axis):
+                #     # If it's already an Axes, return it
+                #     if isinstance(axis, Axes):
+                #         return axis
+                #     # XAxis/YAxis usually expose .axes -> parent Axes
+                #     if hasattr(axis, "axes") and isinstance(axis.axes, Axes):
+                #         return axis.axes
+                #     # SecondaryAxis often exposes .ax -> host Axes
+                #     if hasattr(axis, "ax") and isinstance(axis.ax, Axes):
+                #         return axis.ax
+                #     # fallback
+                #     return plt.gca() 
+                # parent_ax = get_parent_axes(axis)   
+
                 # append selected ticks/labels/optional lines
                 for sub in selected:
-                    tick_positions.append(sub.temp)
-                    self._label_map[sub.temp] = sub.label
-                    # if self.draw_subtype_lines:
-                    #     axis.axes.axvline(sub.temp, ymin=0, ymax=1, linestyle=':', linewidth=0.6, alpha=0.5, zorder=1)
+                    tick_positions.append(getattr(sub, attr))
+                    self._label_map[getattr(sub, attr)] = f"{sub.label} \n({getattr(sub, attr):,})" 
 
         # order ticks consistent with axis direction
         if axis.get_view_interval()[0] > axis.get_view_interval()[1]:
             tick_positions = sorted(tick_positions, reverse=True)
         else:
             tick_positions = sorted(tick_positions)
-        return tick_positions
+        return tick_positions 
+    
+
 
 
 
@@ -786,7 +972,7 @@ def label_spectraltypes(
             axis.set_major_formatter(mticker.ScalarFormatter()) 
     else:
         axis.set_major_formatter(mticker.NullFormatter())
-    axis.set_tick_params(which="major", length=12)
+    axis.set_tick_params(which="major", length=20)
 
     locator = SmartSpectralLabelLocator(
         attribute=attribute,
@@ -798,18 +984,18 @@ def label_spectraltypes(
     )
     axis.set_minor_locator(locator)
     axis.set_minor_formatter(SmartSpectralLabelFormatter(locator))
-    axis.set_tick_params(which="minor", length=6, labelsize=14, pad=6)
+    axis.set_tick_params(which="minor", length=4, labelsize=10)
 
     # paint background bands
     if attribute == "temp":
         for st in SPECTRAL_TYPES:
-            span_func(st.temp_range[1], st.temp_range[0], color=st.color, alpha=0.05)
+            span_func(st.temp_range[1], st.temp_range[0], color=st.color, alpha=0.1)
     else:
         for st in SPECTRAL_TYPES:
-            span_func(st.MS_mass_range[1], st.MS_mass_range[0], color=st.color, alpha=0.05)
+            span_func(st.MS_mass_range[1], st.MS_mass_range[0], color=st.color, alpha=0.1)
 
     if do_axis_label==True: 
-        set_label("Spectral type", fontsize=14)
+        set_label("Spectral type", fontsize=14, labelpad=10)
 
 
 
