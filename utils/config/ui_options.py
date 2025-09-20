@@ -101,9 +101,14 @@ PROFILEPLOT_TEMPGRAD = ProfilePlotOption(
 PROFILEPLOT_FUSION = ProfilePlotOption(
     display="Fusion rate", 
     plot_func=profile_plotting.ProfilePlot.fusion, 
-    title_str="Fusion in interior of a")
+    title_str="Fusion in interior of a") 
 
-PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION]
+PROFILEPLOT_DEGENERACY = ProfilePlotOption( 
+    display="Degeneracy", 
+    plot_func=profile_plotting.ProfilePlot.degeneracy, 
+    title_str="Degeneracy of electrons and baryons inside a")
+
+PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION, PROFILEPLOT_DEGENERACY]
 
 
 

@@ -344,6 +344,57 @@ class ProfilePlot:
 
 
 
+    # Profile plot: How close to degeneracy are the electrons and the baryons 
+    @classmethod 
+    def degeneracy(cls, profile, xaxis=profile_xaxis_options.PROFILEXAXIS_MASS, history=None): 
+
+        # Setup 
+        config = ProfilePlotConfigParams( 
+            ylabel="Interparticle spacing / de Broglie wavelength", 
+            ylim=(1e-3, 1e5), 
+            yscale="log", 
+            title="Degeneracy of electrons and baryons"
+        )
+        fig, ax = cls._setup(profile, xaxis, config) 
+        x_arr = xaxis.get_values(profile) 
+
+        # Number densities 
+        n_baryon = 10**profile.logRho / physical_constants.m_p 
+        n_free_e = n_baryon * profile.free_e 
+        n_total = n_baryon / profile.mu 
+        n_ion = n_total - n_free_e
+
+        # Average interparticle spacing 
+        interparticle_spacing_free_e = n_free_e**(-1/3) 
+        interparticle_spacing_baryon = n_baryon**(-1/3) 
+
+        # Kinetic energy per particle 
+        KE_electron = 3/2 * profile.pressure / n_free_e 
+        KE_baryon = 3/2 * profile.pressure / n_baryon 
+
+        # Momentum per particle 
+        p_electron = np.sqrt( (KE_electron / physical_constants.c)**2 + 2*KE_electron*physical_constants.m_e )
+        p_baryon = np.sqrt( (KE_baryon / physical_constants.c)**2 + 2*KE_baryon*physical_constants.m_p )
+
+        # De broglie wavelength 
+        deBroglie_wavelength_electron = physical_constants.h / p_electron 
+        deBroglie_wavelength_baryon = physical_constants.h / p_baryon
+
+        # Plot degeneracy 
+        ax.plot(x_arr, interparticle_spacing_free_e / deBroglie_wavelength_electron, lw=3, label="Electrons") 
+        ax.plot(x_arr, interparticle_spacing_baryon / deBroglie_wavelength_baryon, lw=3, label="Baryons") 
+
+        # Add line separating degenerate from nondegenerate 
+        ax.axhline(1, color="black") 
+
+        # Legend 
+        ax.legend(fontsize=14) 
+
+        return fig 
+
+
+
+
 
 
 def add_colored_title(fig, strings, colors, fontsize, y=0.95, spacing_pts=10):

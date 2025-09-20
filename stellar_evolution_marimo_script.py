@@ -92,15 +92,10 @@ def _(mo):
     with mo.status.spinner(title="Creating flowchart section...") as _: 
         flowchart_subtitle = mo.md("<h2>Flowchart</h2>") 
         flowchart_switch = mo.ui.switch(value=True, label="Hide / show") 
-        flowchart_yaxis_dropdown = mo.ui.dropdown(options={"mass": 0, "spectral type (on MS)": 1}, value="mass", label="Flowchart y-axis shows...")
-        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_yaxis_dropdown, flowchart_switch], justify="space-between", align="center")
+        flowchart_subtitle_hstack = mo.hstack([flowchart_subtitle, flowchart_switch], justify="space-between", align="center")
 
 
-    return (
-        flowchart_subtitle_hstack,
-        flowchart_switch,
-        flowchart_yaxis_dropdown,
-    )
+    return flowchart_subtitle_hstack, flowchart_switch
 
 
 @app.cell(hide_code=True)
@@ -487,45 +482,49 @@ def _(
 def _(
     available_substages,
     comparison_mode_radio,
+    mo,
     stellar_evolution_data,
     ui_options,
 ):
     # Create list of all unique models 
 
 
-    if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
-
-        # Create an empty dictionary to store the unique models.
-        # The keys will be the unique folder paths, and the values will be the model objects.
-        unique_models_dict = {}
-
-        # Loop through all substages and all their associated models
-        for substage in stellar_evolution_data.SUBSTAGES_LIST:
-            for model in substage.models:
-                # If we haven't seen this folder path before...
-                if model.MESA_folder_path not in unique_models_dict:
-                    # ...add the model object to our dictionary.
-                    unique_models_dict[model.MESA_folder_path] = model
-
-        # You now have a dictionary where each value is a unique SubStageModel object.
-        # You can get a list of just the objects by using .values()
-        unique_models_list = list(unique_models_dict.values())
+    with mo.status.spinner(title="Choosing models to display on HR diagram...") as _: 
 
 
-
-    elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
-
-        unique_models_list = [] 
-        for _substage in available_substages: 
-            if len(_substage.models) == 0: 
-                continue 
-            _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
-            unique_models_list.append(_model) 
-
-
-    else: 
-        unique_models_list = [] 
-
+        if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
+    
+            # Create an empty dictionary to store the unique models. 
+            # The keys will be the unique folder paths, and the values will be the model objects. 
+            unique_models_dict = {} 
+    
+            # Loop through all substages and all their associated models
+            for substage in stellar_evolution_data.SUBSTAGES_LIST:
+                for model in substage.models:
+                    # If we haven't seen this folder path before...
+                    if model.MESA_folder_path not in unique_models_dict:
+                        # ...add the model object to our dictionary.
+                        unique_models_dict[model.MESA_folder_path] = model
+    
+            # You now have a dictionary where each value is a unique SubStageModel object.
+            # You can get a list of just the objects by using .values()
+            unique_models_list = list(unique_models_dict.values())
+    
+    
+    
+        elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
+    
+            unique_models_list = [] 
+            for _substage in available_substages: 
+                if len(_substage.models) == 0: 
+                    continue 
+                _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
+                unique_models_list.append(_model) 
+    
+    
+        else: 
+            unique_models_list = [] 
+    
 
     return (unique_models_list,)
 
@@ -536,10 +535,10 @@ def _(
     available_substages,
     comparison_mode_radio,
     flowchart_switch,
-    flowchart_yaxis_dropdown,
     lru_cache,
     mo,
     mpatches,
+    mticker,
     np,
     plt,
     selected_massrange,
@@ -550,7 +549,7 @@ def _(
 ):
     # Draw the flowchart
 
-    import matplotlib.ticker as mticker 
+
 
 
     def draw_substage_box(
@@ -631,13 +630,8 @@ def _(
         ax.set_ylabel("Mass", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log")
-
-        if flowchart_yaxis_dropdown.value==1: 
-            HR_diagram_plotting.label_spectraltypes(ax, location="right", attribute="mass", subtype_fraction_threshold=0.5, min_subtype_label_px=30)   
-            # custom_yticks = [] 
-            # ax.yaxis.set_minor_formatter(mticker.NullFormatter())
-            # ax.set_ylabel("Spectral Type (on MS)", fontsize=18, labelpad=40) 
-
+        HR_diagram_plotting.label_spectraltypes(ax, location="right", attribute="mass", subtype_fraction_threshold=0.5, min_subtype_label_px=55)   
+        ax.yaxis.set_minor_formatter(mticker.NullFormatter())
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
         ax.tick_params(axis="y", which="minor", length=0)
@@ -866,29 +860,29 @@ def _():
 
 
 
-    with mo.status.spinner(title="Importing packages...") as _: 
+    with mo.status.spinner(title="Importing packages (general)...") as _: 
 
-        # Standard packages 
         import os 
         import numpy as np 
         from pathlib import Path 
+        from functools import lru_cache 
+
         import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
         import matplotlib.colors as mcolors 
-        from functools import lru_cache 
-
-        # Nonstandard packages 
+        import matplotlib.ticker as mticker 
+    
         import mesa_reader as mr 
 
         plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
 
-    return Path, lru_cache, mo, mpatches, np, plt
+    return Path, lru_cache, mo, mpatches, mticker, np, plt
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    with mo.status.spinner(title="Importing packages...") as _: 
+    with mo.status.spinner(title="Importing packages (helpers and load_data)...") as _: 
         import utils.load_data as load_data 
         import utils.helpers as helpers 
     return helpers, load_data
@@ -896,7 +890,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    with mo.status.spinner(title="Importing packages...") as _: 
+    with mo.status.spinner(title="Importing packages (plotting)...") as _: 
         import utils.plotting.history_plotting as history_plotting 
         import utils.plotting.profile_plotting as profile_plotting 
         import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
@@ -905,7 +899,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    with mo.status.spinner(title="Importing packages...") as _: 
+    with mo.status.spinner(title="Importing packages (config)...") as _: 
         import utils.config.stellar_evolution_data as stellar_evolution_data 
         import utils.config.ui_options as ui_options 
         import utils.config.profile_xaxis_options as profile_xaxis_options 
