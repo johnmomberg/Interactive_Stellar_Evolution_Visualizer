@@ -40,7 +40,7 @@ class ProfilePlot:
 
         # Create figure 
         fig, ax = plt.subplots(figsize=(10.7, 5))
-        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.10, right=0.95)
+        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.13, right=0.95)
 
         # Select either mass or radius as the x axis 
         x_arr = xaxis.get_values(profile)
@@ -276,7 +276,7 @@ class ProfilePlot:
 
         # Setup 
         config = ProfilePlotConfigParams(
-            ylabel="Energy (ergs)",
+            ylabel="Temperature (K)",
             ylim=None,
             yscale="linear",
             title="Interior temperature profile")
@@ -284,29 +284,25 @@ class ProfilePlot:
         x_arr = xaxis.get_values(profile)
 
 
+        # # Number densities 
+        # n_baryon = 10**profile.logRho / physical_constants.m_p 
+        # n_free_e = n_baryon * profile.free_e 
+        # n_total = n_baryon / profile.mu 
+        # n_ion = n_total - n_free_e
+
+        # # Kinetic energy per particle 
+        # KE_electron = 3/2 * profile.pressure / n_free_e 
+        # KE_baryon = 3/2 * profile.pressure / n_baryon 
+
+        # ax.plot(x_arr, KE_electron, lw=3, label="Electrons")
+        # ax.plot(x_arr, KE_baryon, lw=3, label="Baryons")
 
 
-        # Number densities 
-        n_baryon = 10**profile.logRho / physical_constants.m_p 
-        n_free_e = n_baryon * profile.free_e 
-        n_total = n_baryon / profile.mu 
-        n_ion = n_total - n_free_e
-
-        # Kinetic energy per particle 
-        KE_electron = 3/2 * profile.pressure / n_free_e 
-        KE_baryon = 3/2 * profile.pressure / n_baryon 
-
-        ax.plot(x_arr, KE_electron, lw=3, label="Electrons")
-        ax.plot(x_arr, KE_baryon, lw=3, label="Baryons")
-
-
-
-
-        # # Calculate kinetic energy per particle from the temperature (assuming ideal gas) + what it actually is 
-        KE_per_N_temp = 3/2*physical_constants.k*10**profile.logT 
-        KE_per_N_actual = 3/2 * profile.pressure * profile.mu*physical_constants.m_p / (10**profile.logRho)
-        ax.plot(x_arr, KE_per_N_temp, lw=3, label="Temperature (in energy units)") 
-        ax.plot(x_arr, KE_per_N_actual, lw=3, label="Kinetic Energy / particle") 
+        # Calculate kinetic energy per particle from the temperature (assuming ideal gas) + what it actually is 
+        KE_per_N_temp = 10**profile.logT 
+        KE_per_N_actual = profile.pressure * profile.mu*physical_constants.m_p / (10**profile.logRho) / physical_constants.k
+        ax.plot(x_arr, KE_per_N_temp, lw=3, label="Temperature (K)") 
+        ax.plot(x_arr, KE_per_N_actual, lw=3, label="KE / particle (converted to K)") 
       
         # Set y limit to focus on the core 
         xmax = 0.95*np.max(x_arr) 
@@ -318,6 +314,8 @@ class ProfilePlot:
         ymax2 = np.max(KE_per_N_actual[ind_within_xlim]) 
         ymax = np.max([ymax1, ymax2])
         ax.set_ylim(0, ymax) 
+
+        ax.yaxis.set_major_formatter(mticker.EngFormatter()) 
 
         # Legend 
         ax.legend(fontsize=14) 
