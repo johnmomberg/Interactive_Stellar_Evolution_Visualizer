@@ -989,10 +989,10 @@ def label_spectraltypes(
     # paint background bands
     if attribute == "temp":
         for st in SPECTRAL_TYPES:
-            span_func(st.temp_range[1], st.temp_range[0], color=st.color, alpha=0.1)
+            span_func(st.temp_range[1], st.temp_range[0], color=st.color, alpha=0.05)
     else:
         for st in SPECTRAL_TYPES:
-            span_func(st.MS_mass_range[1], st.MS_mass_range[0], color=st.color, alpha=0.1)
+            span_func(st.MS_mass_range[1], st.MS_mass_range[0], color=st.color, alpha=0.05)
 
     if do_axis_label==True: 
         set_label("Spectral type", fontsize=14, labelpad=10)

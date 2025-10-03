@@ -139,10 +139,10 @@ class ProfilePlot:
             raise ValueError("Composition plot requires 'history' to be provided")
 
         # Setup 
-        ymin = 1e-9 
+        ymin = 1e-9
         config = ProfilePlotConfigParams(
             ylabel="Composition (mass fraction)",
-            ylim=(ymin, 1.2),
+            ylim=(ymin, 1),
             yscale="log",
             title="Interior composition")
         fig, ax = cls._setup(profile, xaxis, config)
@@ -163,9 +163,8 @@ class ProfilePlot:
                 ) 
 
             # Add horizontal dashed lines showing the initial composition
-            if isotope.show_initial_abundance: 
-                composition_history = getattr(history, isotope.history_key)
-                ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
+            composition_history = getattr(history, isotope.history_key)
+            ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
 
         # Legend 
         ax.legend(fontsize=14) 
@@ -283,8 +282,27 @@ class ProfilePlot:
             title="Interior temperature profile")
         fig, ax = cls._setup(profile, xaxis, config)
         x_arr = xaxis.get_values(profile)
-        
-        # Calculate kinetic energy per particle from the temperature (assuming ideal gas) + what it actually is 
+
+
+
+
+        # Number densities 
+        n_baryon = 10**profile.logRho / physical_constants.m_p 
+        n_free_e = n_baryon * profile.free_e 
+        n_total = n_baryon / profile.mu 
+        n_ion = n_total - n_free_e
+
+        # Kinetic energy per particle 
+        KE_electron = 3/2 * profile.pressure / n_free_e 
+        KE_baryon = 3/2 * profile.pressure / n_baryon 
+
+        ax.plot(x_arr, KE_electron, lw=3, label="Electrons")
+        ax.plot(x_arr, KE_baryon, lw=3, label="Baryons")
+
+
+
+
+        # # Calculate kinetic energy per particle from the temperature (assuming ideal gas) + what it actually is 
         KE_per_N_temp = 3/2*physical_constants.k*10**profile.logT 
         KE_per_N_actual = 3/2 * profile.pressure * profile.mu*physical_constants.m_p / (10**profile.logRho)
         ax.plot(x_arr, KE_per_N_temp, lw=3, label="Temperature (in energy units)") 
@@ -350,7 +368,7 @@ class ProfilePlot:
 
         # Setup 
         config = ProfilePlotConfigParams( 
-            ylabel="Interparticle spacing / de Broglie wavelength", 
+            ylabel="Interparticle spacing / $\lambda_{dB}$", 
             ylim=(1e-3, 1e5), 
             yscale="log", 
             title="Degeneracy of electrons and baryons"

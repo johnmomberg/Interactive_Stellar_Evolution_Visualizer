@@ -29,6 +29,10 @@ def _():
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
 
 
+    # Add initial abundances to log-composition plot 
+    # Change temperature plot to temperature units 
+
+
     # Make marimo notebook available on github: 
     # Take URL to this notebook on github, which is: 
     # https://github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
@@ -493,11 +497,11 @@ def _(
 
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
-    
+
             # Create an empty dictionary to store the unique models. 
             # The keys will be the unique folder paths, and the values will be the model objects. 
             unique_models_dict = {} 
-    
+
             # Loop through all substages and all their associated models
             for substage in stellar_evolution_data.SUBSTAGES_LIST:
                 for model in substage.models:
@@ -505,26 +509,26 @@ def _(
                     if model.MESA_folder_path not in unique_models_dict:
                         # ...add the model object to our dictionary.
                         unique_models_dict[model.MESA_folder_path] = model
-    
+
             # You now have a dictionary where each value is a unique SubStageModel object.
             # You can get a list of just the objects by using .values()
             unique_models_list = list(unique_models_dict.values())
-    
-    
-    
+
+
+
         elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
-    
+
             unique_models_list = [] 
             for _substage in available_substages: 
                 if len(_substage.models) == 0: 
                     continue 
                 _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
                 unique_models_list.append(_model) 
-    
-    
+
+
         else: 
             unique_models_list = [] 
-    
+
 
     return (unique_models_list,)
 
@@ -559,8 +563,8 @@ def _(
         text_color, text_fontsize, text_y=None):
 
         # Define rectangle bounds
-        x1 = substage.parent_stage.flowchart_x + 0.05 
-        x2 = substage.parent_stage.flowchart_x+1 - 0.05  
+        x1 = substage.parent_stage.flowchart_x + 0.03 
+        x2 = substage.parent_stage.flowchart_x+1 - 0.03  
         y1 = substage.mass_min
         y2 = substage.mass_max
         width = x2 - x1
@@ -655,8 +659,8 @@ def _(
                     bg_alpha=1.0, 
                     border_color="black", 
                     border_linewidth=1, 
-                    text_color="black", 
-                    text_fontsize=12, 
+                    text_color="white", 
+                    text_fontsize=11, 
                 )
 
 
@@ -670,8 +674,8 @@ def _(
                         bg_alpha=1.0, 
                         border_color="black", 
                         border_linewidth=2, 
-                        text_color="black", 
-                        text_fontsize=12, 
+                        text_color="white", 
+                        text_fontsize=11, 
                         text_y=np.sqrt(selected_massrange[0]*selected_massrange[1])
                     ) 
                 else: 
@@ -679,11 +683,11 @@ def _(
                         ax, 
                         substage, 
                         bg_color=substage.flowchart_color, 
-                        bg_alpha=0.2, 
+                        bg_alpha=0.6, 
                         border_color="black", 
                         border_linewidth=1, 
-                        text_color="black", 
-                        text_fontsize=12, 
+                        text_color="white", 
+                        text_fontsize=11, 
                         text_y=np.sqrt(selected_massrange[0]*selected_massrange[1])
                     )
 
@@ -698,19 +702,19 @@ def _(
                         bg_alpha=1.0, 
                         border_color="black", 
                         border_linewidth=2, 
-                        text_color="black", 
-                        text_fontsize=12 
+                        text_color="white", 
+                        text_fontsize=11 
                     ) 
                 else: 
                     draw_substage_box(
                         ax, 
                         substage, 
                         bg_color=substage.flowchart_color, 
-                        bg_alpha=0.2, 
+                        bg_alpha=0.6, 
                         border_color="black", 
                         border_linewidth=1, 
-                        text_color="black", 
-                        text_fontsize=12, 
+                        text_color="white", 
+                        text_fontsize=11, 
                     ) 
 
 
@@ -871,7 +875,7 @@ def _():
         import matplotlib.patches as mpatches
         import matplotlib.colors as mcolors 
         import matplotlib.ticker as mticker 
-    
+
         import mesa_reader as mr 
 
         plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
