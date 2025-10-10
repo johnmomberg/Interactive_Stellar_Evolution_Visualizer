@@ -81,7 +81,12 @@ PROFILEPLOT_COMPOSITION = ProfilePlotOption(
 PROFILEPLOT_COMPOSITION_LOG = ProfilePlotOption( 
     display="Composition (log)", 
     plot_func=profile_plotting.ProfilePlot.composition_log, 
-    title_str="Composition in interior of a")
+    title_str="Composition in interior of a") 
+
+PROFILEPLOT_MU = ProfilePlotOption( 
+    display="Mass/particle", 
+    plot_func=profile_plotting.ProfilePlot.mu, 
+    title_str=f"Mass/particle ($\mu$) in interior of a")
 
 PROFILEPLOT_CONVECTION = ProfilePlotOption(
     display="Convection", 
@@ -94,7 +99,7 @@ PROFILEPLOT_TEMP = ProfilePlotOption(
     title_str="Temperature in interior of a")
 
 PROFILEPLOT_TEMPGRAD = ProfilePlotOption(
-    display="Temperature gradient (heat transport)", 
+    display="Temp grad", 
     plot_func=profile_plotting.ProfilePlot.tempgrad, 
     title_str="Temperature gradient in interior of a")
 
@@ -106,9 +111,9 @@ PROFILEPLOT_FUSION = ProfilePlotOption(
 PROFILEPLOT_DEGENERACY = ProfilePlotOption( 
     display="Degeneracy", 
     plot_func=profile_plotting.ProfilePlot.degeneracy, 
-    title_str="Degeneracy of electrons and baryons inside a")
+    title_str="Degeneracy of electrons and baryons inside a") 
 
-PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION, PROFILEPLOT_DEGENERACY]
+PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_MU, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION, PROFILEPLOT_DEGENERACY]
 
 
 

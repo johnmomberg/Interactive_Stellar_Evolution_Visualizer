@@ -266,18 +266,19 @@ class ProfilePlot:
         x_arr = xaxis.get_values(profile)
         
         # Plot mass/particle
-        ax.plot(x_arr, profile.mu, color="black", lw=3, label="Actual") 
+        ax.plot(x_arr, profile.mu, color="black", lw=3, label=f"Current $\mu$") 
             
         # Horizontal lines at 1.34 and 0.6 to represent mu of pure helium and mu of envelope 
-        ax.axhline(0.62, color="dodgerblue", linestyle="dashed", lw=2, label="Theoretical: typical envelope")
-        ax.axhline(1.34, color="tab:orange", linestyle="dashed", lw=2, label="Theoretical: Pure helium")
-  
+        ax.axhline(0.62, color="black", linestyle="dashed", label=f"Initial $\mu$")
+        ax.axhline(1.34, color="tab:green", linestyle="dashed", label="Pure helium \n(theoretical)")
+        ax.axhline(1.75, color="#c02408", linestyle="dashed", label="C+O mixture \n(theoretical)") 
+
         # Set ylim 
         xmax = 0.95*np.max(x_arr) 
         ind_within_xlim = np.where(x_arr<xmax)
         mu_max = np.nanmax(profile.mu[ind_within_xlim]) 
         y_max = 1.44 
-        if mu_max > 1.34: 
+        if mu_max > 1.39: 
             y_max = 1.9 
         ax.set_ylim((0.5, y_max))
 
