@@ -455,73 +455,6 @@ class SpectralType:
 
 
 
-# _O = [
-#     SpectralSubtype(label=f"O{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(3, 10),
-#         [44900, 42900, 41400, 39500, 37100, 35100, 33100],  # temps
-#         [120.0, 85.31, 60.0, 43.71, 30.85, 23.0, 19.63],    # masses
-#     )
-# ]
-
-# _B = [
-#     SpectralSubtype(label=f"B{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [31400, 26000, 20600, 17000, 16400, 15700, 14500, 14000, 12300, 10700],  # temps
-#         [17.7, 11.0, 7.3, 5.4, 5.1, 4.7, 4.3, 3.92, 3.38, 2.75],                 # masses
-#     )
-# ]
-
-# _A = [
-#     SpectralSubtype(label=f"A{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [9700, 9300, 8800, 8600, 8250, 8100, 7910, 7760, 7590, 7400],  # temps
-#         [2.18, 2.05, 1.98, 1.93, 1.88, 1.86, 1.83, 1.81, 1.77, 1.75],  # masses
-#     )
-# ]
-
-# _F = [
-#     SpectralSubtype(label=f"F{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [7220, 7020, 6820, 6750, 6670, 6550, 6350, 6280, 6180, 6050],  # temps
-#         [1.61, 1.50, 1.46, 1.44, 1.38, 1.33, 1.25, 1.21, 1.18, 1.13],  # masses
-#     )
-# ]
-
-
-# _G = [
-#     SpectralSubtype(label=f"G{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [5930, 5860, 5770, 5720, 5680, 5660, 5600, 5550, 5480, 5380],  # temps
-#         [1.06, 1.03, 1.00, 0.99, 0.985, 0.98, 0.97, 0.95, 0.94, 0.90],  # masses
-#     )
-# ]
-
-# _K = [
-#     SpectralSubtype(label=f"K{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [5270, 5170, 5100, 4830, 4600, 4440, 4300, 4100, 3990, 3930],  # temps
-#         [0.88, 0.86, 0.82, 0.78, 0.73, 0.70, 0.69, 0.64, 0.62, 0.59],  # masses
-#     )
-# ]
-
-# _M = [
-#     SpectralSubtype(label=f"M{n}", temp=t, MS_mass=m)
-#     for n, t, m in zip(
-#         range(0, 10),
-#         [3850, 3660, 3560, 3430, 3210, 3060, 2810, 2680, 2570, 2380],  # temps
-#         [0.57, 0.50, 0.44, 0.37, 0.23, 0.162, 0.102, 0.090, 0.085, 0.079],  # masses
-#     )
-# ]
-
-
-
-
 
 # From Pecaut & Mamajek (2013) mean dwarf MS data (Teff, Msun) https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt 
 
@@ -880,20 +813,6 @@ class SmartSpectralLabelLocator(mticker.Locator):
                             selected = [st.subtypes[i] for i in accepted_indices]
                             if self.verbose:
                                 print(f"[locator] {st.letter}: accepted_k={accepted_k}")
-
-                # def get_parent_axes(axis):
-                #     # If it's already an Axes, return it
-                #     if isinstance(axis, Axes):
-                #         return axis
-                #     # XAxis/YAxis usually expose .axes -> parent Axes
-                #     if hasattr(axis, "axes") and isinstance(axis.axes, Axes):
-                #         return axis.axes
-                #     # SecondaryAxis often exposes .ax -> host Axes
-                #     if hasattr(axis, "ax") and isinstance(axis.ax, Axes):
-                #         return axis.ax
-                #     # fallback
-                #     return plt.gca() 
-                # parent_ax = get_parent_axes(axis)   
 
                 # append selected ticks/labels/optional lines
                 for sub in selected:
