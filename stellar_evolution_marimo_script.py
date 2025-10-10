@@ -37,6 +37,7 @@ def _():
     # Add "(on MS)" to right side label for flowchart spectral types 
     # Add "we are are" showing currently selected mass and model number 
     # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
+    # Re-think colors used in flowchart boxes/colors used to represent the substages 
 
 
 
@@ -63,6 +64,19 @@ def _():
     # Make it so which elements appear on the legend dynamically change depending on the zoom. 
     # For example: if you zoom in to 0-0.01, it should add elements that were too low concentration to see in the full zoom, 
     # and remove ones that aren't in the current window 
+
+
+
+    # Degeneracy profile plot 
+
+    # Add "Degenerate" and "Not degenerate" labels to regions above and below 1 or use different bg colors/highlight degen region 
+    # Clarify the y label 
+
+
+
+    # Fusion profile plot 
+
+    # Re-think color of CNO cycle fusion (orange represents helium 3 in composition plot... maybe use blue but with different linestyle from PP chain?)
 
 
 

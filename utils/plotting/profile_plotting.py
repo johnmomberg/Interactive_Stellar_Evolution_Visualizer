@@ -106,12 +106,19 @@ class ProfilePlot:
         fig, ax = cls._setup(profile, xaxis, config)
         x_arr = xaxis.get_values(profile)
         
-        # Loop through list of Isotope objects
-        for isotope in plot_options.ISOTOPES:
-            composition_profile = getattr(profile, isotope.profile_key)
+        # Sort elements by maximum value so it plots the most important ones first 
+        isotope_values = [
+            (isotope, np.nanmax(getattr(profile, isotope.profile_key)))
+            for isotope in plot_options.ISOTOPES
+        ]
+        isotope_values.sort(key=lambda x: x[1], reverse=True)
 
-            # Only plot profiles that are significant
-            if np.nanmax(composition_profile) > 0.01:
+        # Loop through list of Isotope objects 
+        for isotope, max_val in isotope_values: 
+
+            # Only plot elements the star actually has             
+            if max_val > 0: 
+                composition_profile = getattr(profile, isotope.profile_key)
                 ax.plot(
                     x_arr,
                     composition_profile,
@@ -150,12 +157,19 @@ class ProfilePlot:
         fig, ax = cls._setup(profile, xaxis, config)
         x_arr = xaxis.get_values(profile)
         
-        # Loop through list of Isotope objects
-        for isotope in plot_options.ISOTOPES:
-            composition_profile = getattr(profile, isotope.profile_key)
+        # Sort elements by maximum value so it plots the most important ones first 
+        isotope_values = [
+            (isotope, np.nanmax(getattr(profile, isotope.profile_key)))
+            for isotope in plot_options.ISOTOPES
+        ]
+        isotope_values.sort(key=lambda x: x[1], reverse=True)
+
+        # Loop through list of Isotope objects 
+        for isotope, max_val in isotope_values: 
 
             # Only plot profiles that are significant
-            if np.nanmax(composition_profile) > ymin:
+            if max_val > 0: 
+                composition_profile = getattr(profile, isotope.profile_key)
                 ax.plot(
                     x_arr,
                     composition_profile,
