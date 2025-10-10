@@ -39,8 +39,8 @@ class ProfilePlot:
     def _setup(profile, xaxis, config): 
 
         # Create figure 
-        fig, ax = plt.subplots(figsize=(10.7, 5))
-        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.13, right=0.95)
+        fig, ax = plt.subplots(figsize=(12.5, 5))
+        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.10, right=0.83)
 
         # Select either mass or radius as the x axis 
         x_arr = xaxis.get_values(profile)
@@ -126,7 +126,7 @@ class ProfilePlot:
                 ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
     
@@ -169,7 +169,7 @@ class ProfilePlot:
             ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
 
@@ -195,7 +195,7 @@ class ProfilePlot:
         ax.plot(x_arr, 10**profile.log_D_thrm, label="Thermohaline", lw=3) 
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
 
@@ -216,9 +216,9 @@ class ProfilePlot:
         
         # Plot fusion rates 
         ax.plot(x_arr, profile.eps_nuc, label = "Total fusion", lw=5, color="black")
-        ax.plot(x_arr, profile.pp, label = "Hydrogen \u2192 Helium (PP chain)", lw=2, color="tab:blue")
-        ax.plot(x_arr, profile.cno, label = "Hydrogen \u2192 Helium (CNO cycle)", lw=2, color="tab:orange")
-        ax.plot(x_arr, profile.tri_alfa, label = "Helium \u2192 Carbon (triple alpha)", lw=2, color="tab:green")
+        ax.plot(x_arr, profile.pp, label = "Hydrogen \n\u2192 Helium \n(PP chain)", lw=2, color="tab:blue")
+        ax.plot(x_arr, profile.cno, label = "Hydrogen \n\u2192 Helium \n(CNO cycle)", lw=2, color="tab:orange")
+        ax.plot(x_arr, profile.tri_alfa, label = "Helium \n\u2192 Carbon \n(triple alpha)", lw=2, color="tab:green")
 
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 
@@ -230,7 +230,7 @@ class ProfilePlot:
             ax.set_ylim((specific_L/10, specific_L*1000))
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
     
@@ -266,7 +266,7 @@ class ProfilePlot:
         ax.set_ylim((0.5, y_max))
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
     
@@ -304,7 +304,7 @@ class ProfilePlot:
         KE_per_N_temp = 10**profile.logT 
         KE_per_N_actual = profile.pressure * profile.mu*physical_constants.m_p / (10**profile.logRho) / physical_constants.k
         ax.plot(x_arr, KE_per_N_temp, lw=3, label="Temperature (K)") 
-        ax.plot(x_arr, KE_per_N_actual, lw=3, label="KE / particle (converted to K)") 
+        ax.plot(x_arr, KE_per_N_actual, lw=3, label="KE/particle") 
       
         # Set y limit to focus on the core 
         xmax = 0.95*np.max(x_arr) 
@@ -320,7 +320,7 @@ class ProfilePlot:
         ax.yaxis.set_major_formatter(mticker.EngFormatter()) 
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
     
@@ -341,8 +341,8 @@ class ProfilePlot:
 
         # 3 temperature gradients: Actual/observed, plus theoretical radiative and adiabatic for comparison 
         ax.plot(x_arr, profile.gradT, lw=5, color="black", label="Actual") 
-        ax.plot(x_arr, profile.grada, lw=2, color="red", label="Theoretical, adiabatic")
-        ax.plot(x_arr, profile.gradr, lw=2, color="limegreen", label="Theoretical, radiative")
+        ax.plot(x_arr, profile.grada, lw=2, color="red", label="Adiabatic \n(theoretical)")
+        ax.plot(x_arr, profile.gradr, lw=2, color="limegreen", label="Radiative \n(theoretical)")
 
         # Set ylim         
         old_ymin = min(profile.gradT) 
@@ -356,7 +356,7 @@ class ProfilePlot:
         ax.set_ylim(new_ymin, new_ymax)
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
 
@@ -406,7 +406,7 @@ class ProfilePlot:
         ax.axhline(1, color="black") 
 
         # Legend 
-        ax.legend(fontsize=14) 
+        ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
         return fig 
 

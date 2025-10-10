@@ -89,7 +89,7 @@ PROFILEPLOT_CONVECTION = ProfilePlotOption(
     title_str="Convective regions in interior of a")
 
 PROFILEPLOT_TEMP = ProfilePlotOption(
-    display="Temperature (degeneracy)", 
+    display="Temperature", 
     plot_func=profile_plotting.ProfilePlot.temp, 
     title_str="Temperature in interior of a")
 
