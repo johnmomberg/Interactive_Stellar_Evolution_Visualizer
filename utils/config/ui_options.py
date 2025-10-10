@@ -114,10 +114,20 @@ PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PRO
 
 
 
+# Available model numbers dropdown, used when loading your own MESA file 
+@dataclass 
+class AvailableModelnumsOption(OptionBase): 
+    modelnum: int 
+    age: float 
+
+
+
+
+
 # Using a list of options defined above, create a Marimo dropdown or radio selector 
-def create_dropdown(options_list, default_index=0):
+def create_dropdown(options_list, default_index=0, label=""):
     options_dict = {opt.display: opt for opt in options_list} 
-    dropdown = mo.ui.dropdown(options=options_dict, value=list(options_dict.keys())[default_index]) 
+    dropdown = mo.ui.dropdown(options=options_dict, value=list(options_dict.keys())[default_index], label=label) 
     return dropdown 
 
 def create_radio(options_list, default_index=0):

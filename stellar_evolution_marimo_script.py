@@ -53,6 +53,15 @@ def _():
 
 
 
+    # Look in a 6-10 solar mass star, the carbon and nitrogen abundances after helium fusion has ignited. 
+    # At some point, nitrogen should plummet while carbon stays at the same level. 
+    # C+N should go down. Normally is constant because you're just turning C into N, but now we're depleting the N as well. 
+    # High temp: C+N rises because you're creating C and there is no N 
+    # There should be a thin layer that used to be in the core but isn't anymore. C+N will drop. 
+
+    # Show a linear plot of composition but zoom in to 0 to 0.01 instead of 0 to 1. 
+
+
     return
 
 
@@ -328,18 +337,29 @@ def _(mo, stellar_evolution_data):
     return (history_browser,)
 
 
-@app.cell(hide_code=True)
-def _(history, mo):
+@app.cell
+def _(history, mo, ui_options):
     # Create profile dropdown for free selection mode 
 
     with mo.status.spinner(title="Creating Profile data dropdown selector...") as _: 
 
         if history is not None: 
-            profile_dropdown = mo.ui.dropdown(
+
+            profile_dropdown = ui_options.create_dropdown(
                 label="Select Profile from the selected MESA data folder", 
-                options=history.model_numbers_available) 
+                options_list = [
+                    ui_options.AvailableModelnumsOption(
+                        modelnum=modelnum, 
+                        age=history.star_age[modelnum-1], 
+                        display=f"Modelnum={modelnum}, Age={history.age_strings[modelnum-1]} yrs") 
+                    for modelnum in history.model_numbers_available]
+            )
+
         else: 
-            profile_dropdown = None 
+            profile_dropdown = None  
+        
+
+
 
 
 
@@ -472,7 +492,7 @@ def _(
             profile = load_data.load_profile(model_selected.MESA_folder_path, modelnum, history) 
 
         elif profile_dropdown is not None and profile_dropdown.value is not None: 
-            modelnum = profile_dropdown.value 
+            modelnum = profile_dropdown.value.modelnum 
             profile = load_data.load_profile(Path(history_browser.value[0].id), modelnum, history)
 
         else: 

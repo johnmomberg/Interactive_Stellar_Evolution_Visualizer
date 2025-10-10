@@ -1,6 +1,7 @@
 import mesa_reader as mr 
 import numpy as np 
 from functools import lru_cache 
+import matplotlib.ticker as mticker 
 
 
 
@@ -21,7 +22,18 @@ def load_history(MESA_folder_path):
         history = mr.MesaData(str(MESA_folder_path/"trimmed_history.data"))  
         folder_mesa = mr.MesaLogDir(MESA_folder_path, history_file="trimmed_history.data") 
 
-    history.model_numbers_available = folder_mesa.model_numbers
+    # Add list of available model numbers to History object 
+    history.model_numbers_available = folder_mesa.model_numbers 
+
+    # Calculate the number of sig figs required to display each age so that it's distinct from its neighbors 
+    ages = history.star_age
+    deltas_left = np.diff(ages, prepend=ages[0])
+    deltas_right = np.diff(ages, append=ages[-1])
+    min_diffs = np.minimum(deltas_left, deltas_right)
+    n_sig = np.clip(np.ceil(-np.log10(min_diffs / np.abs(ages))), 2, 8).astype(int) + 1 
+    age_strings = [mticker.EngFormatter()(float(f'{ages[i]:.{n_sig[i]}g}')) for i in range(len(ages))] 
+    history.age_strings = age_strings 
+
     return history 
 
 
@@ -43,7 +55,8 @@ def load_profile(MESA_folder_path, modelnum, history=None):
     profile.index = modelnum-1 
     if history is not None: 
         profile.age = history.star_age[profile.index] 
-        profile.initial_mass = history.star_mass[0]
+        profile.age_string = history.age_strings[profile.index] 
+        profile.initial_mass = history.star_mass[0] 
     return profile 
 
 
