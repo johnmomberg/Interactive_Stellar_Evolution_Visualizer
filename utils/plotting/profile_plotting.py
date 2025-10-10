@@ -384,13 +384,17 @@ class ProfilePlot:
 
         # Setup 
         config = ProfilePlotConfigParams( 
-            ylabel="Interparticle spacing / $\lambda_{dB}$", 
-            ylim=(1e-3, 1e5), 
+            ylabel="Relative spacing  ($n^{-1/3}$ / $\lambda_{dB}$)", 
+            ylim=(1e-2, 1e4), 
             yscale="log", 
             title="Degeneracy of electrons and baryons"
         )
         fig, ax = cls._setup(profile, xaxis, config) 
         x_arr = xaxis.get_values(profile) 
+
+        # Use shading to represent transition from ideal to degenerate 
+        ax.axhspan(ymin=1, ymax=1e10, color="green", alpha=0.07, label="Particles \nfar apart \n(Ideal)") 
+        ax.axhspan(ymin=1e-8, ymax=1, color="red", alpha=0.07, label="Particles \noverlapping \n(Degen)")
 
         # Number densities 
         n_baryon = 10**profile.logRho / physical_constants.m_p 
@@ -415,9 +419,18 @@ class ProfilePlot:
         deBroglie_wavelength_baryon = physical_constants.h / p_baryon
 
         # Plot degeneracy 
-        ax.plot(x_arr, interparticle_spacing_free_e / deBroglie_wavelength_electron, lw=3, label="Electrons") 
-        ax.plot(x_arr, interparticle_spacing_baryon / deBroglie_wavelength_baryon, lw=3, label="Baryons") 
+        electron_color = "tab:blue" 
+        baryon_color = "tab:orange"
+        ax.plot(x_arr, interparticle_spacing_free_e / deBroglie_wavelength_electron, lw=3, label="Electrons", color=electron_color) 
+        ax.plot(x_arr, interparticle_spacing_baryon / deBroglie_wavelength_baryon, lw=3, label="Baryons", color=baryon_color) 
 
+        # Find where sign changes (crosses the threshold) 
+        threshold = 1 
+        for (y, color) in [(interparticle_spacing_free_e / deBroglie_wavelength_electron, electron_color), (interparticle_spacing_baryon / deBroglie_wavelength_baryon, baryon_color)]: 
+            crossings = np.where(np.diff(np.sign(y - threshold)) != 0)[0]
+            for crossing in crossings: 
+                plt.axvline(x_arr[crossing], color=color, ls="dotted") 
+        
         # Add line separating degenerate from nondegenerate 
         ax.axhline(1, color="black") 
 

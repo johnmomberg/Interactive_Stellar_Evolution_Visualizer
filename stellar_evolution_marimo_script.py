@@ -59,18 +59,17 @@ def _():
 
 
 
-    # Composition profile plots 
+    # Profile plots 
 
-    # Make it so which elements appear on the legend dynamically change depending on the zoom. 
-    # For example: if you zoom in to 0-0.01, it should add elements that were too low concentration to see in the full zoom, 
-    # and remove ones that aren't in the current window 
+    # X-axis tick locations are currently hardcoded based on initial zoom, and don't correctly adjust as you pan/zoom the plot 
 
 
 
-    # Degeneracy profile plot 
+    # Mu profile plot 
 
-    # Add "Degenerate" and "Not degenerate" labels to regions above and below 1 or use different bg colors/highlight degen region 
-    # Clarify the y label 
+    # Add mu plot to list of available profile plots in the dropdown 
+    # Fix auto adjusting y limits 
+    # Add horizontal lines to represent the mu of pure helium, H+He, etc 
 
 
 
