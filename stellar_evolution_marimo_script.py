@@ -73,12 +73,6 @@ def _():
 
 
 
-    # Fusion profile plot 
-
-    # Re-think color of CNO cycle fusion (orange represents helium 3 in composition plot... maybe use blue but with different linestyle from PP chain?)
-
-
-
     # How to make  marimo notebook available on github 
 
     # Take URL to this notebook on github, which is: 
