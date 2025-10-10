@@ -10,56 +10,77 @@ def _():
 
 
 
-    # If the mass of the progenitor is between 7 and 9 solar masses (M☉), the core temperature will be sufficient to fuse carbon but not neon, in which case an oxygen–neon–magnesium (ONeMg or ONe) white dwarf may form. (https://en.wikipedia.org/wiki/White_dwarf)
 
 
-    # Add progress bar 
 
 
-    # Flowchart: 
+    # Research questions 
+
+    # Look in a 6 and 10 solar mass star, the carbon and nitrogen abundances after helium fusion has ignited. 
+    # At some point, nitrogen should plummet while carbon stays at the same level. 
+    # C+N should go down. Normally is constant because you're just turning C into N, but now we're depleting the N as well. 
+    # High temp: C+N rises because you're creating C and there is no N 
+    # There should be a thin layer that used to be in the core but isn't anymore. C+N will drop. 
+
+
+
+    # Additional data 
+
+    # 7-9 solar masses: Fuses carbon but not neon, forms an oxygen–neon–magnesium (ONeMg or ONe) white dwarf (https://en.wikipedia.org/wiki/White_dwarf)
+    # Find ages to stop simulation in order to get each flowchart point (goal: middle of the stage)
+    # Add support for high mass stars (separate flowchart entirely?) 
+
+
+
+    # Flowchart 
+
+    # Add "(on MS)" to right side label for flowchart spectral types 
     # Add "we are are" showing currently selected mass and model number 
     # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
 
-    # HR DIAGRAM: 
+
+
+    # HR diagram 
+
+    # Run build_combo_cache() command once, save data to a CSV, and then load the CSV 
     # Add transparent tracks of available but un-selected substages for comparison 
-
-    # History plots: 
-    # "We are here" vertical line showing selected model number 
-    # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, to make it easier to see the interesting properties that happen all near the end of the star's life
-    # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
+    # Finish incorporting Mode1 and Mode2 colored tracks of HR diagram paths based on the Paint pictures I made earlier 
 
 
-    # Add initial abundances to log-composition plot 
-    # Change temperature plot to temperature units 
+
+    # History plots 
+
+    # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, 
+    # to make it easier to see the interesting properties that happen all near the end of the star's life
+    # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. 
+    # Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
+    # Colored regions on history plot that correspond to each stage and get highlighted if its selected 
 
 
-    # Make marimo notebook available on github: 
+
+    # Composition profile plots 
+
+    # Make it so which elements appear on the legend dynamically change depending on the zoom. 
+    # For example: if you zoom in to 0-0.01, it should add elements that were too low concentration to see in the full zoom, 
+    # and remove ones that aren't in the current window 
+
+
+
+    # How to make  marimo notebook available on github 
+
     # Take URL to this notebook on github, which is: 
     # https://github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
     # Replace the https://github.com/ part with https://marimo.app/github.com/ , which gives: 
     # https://marimo.app/github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
 
 
-    # Fix ylims of fusion vs time plot 
-    # Bring ylim-setting code into its own function: one for log plots and one for linear plots 
-
-    # Plots to make work: 
-    # Comparison of de broglie wavelength to interparticle spacing 
-    # Plot ionization fraction as function of interior of star 
-    # Plot different species opacities (metals, electrons, hydrogen, etc)
-
-
-    # I don't like the way I'm currently finding the available substages. The dictionary key which is currently calculated like set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color) should be an attribute of the substage class. for example, i have mode1_abbrev. i should have mode1_key which would replace mode1_abbrev_with_massrange and do whatever i need to to, such as appending the mass range. 
 
 
 
-    # Look in a 6-10 solar mass star, the carbon and nitrogen abundances after helium fusion has ignited. 
-    # At some point, nitrogen should plummet while carbon stays at the same level. 
-    # C+N should go down. Normally is constant because you're just turning C into N, but now we're depleting the N as well. 
-    # High temp: C+N rises because you're creating C and there is no N 
-    # There should be a thin layer that used to be in the core but isn't anymore. C+N will drop. 
 
-    # Show a linear plot of composition but zoom in to 0 to 0.01 instead of 0 to 1. 
+
+
+
 
 
     return
