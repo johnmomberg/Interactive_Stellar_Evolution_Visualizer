@@ -219,7 +219,9 @@ class ProfilePlot:
         ax.plot(x_arr, profile.pp, label = "Hydrogen \n\u2192 Helium \n(PP chain)", lw=2, color="tab:blue")
         ax.plot(x_arr, profile.cno, label = "Hydrogen \n\u2192 Helium \n(CNO cycle)", lw=2, color="tab:orange")
         ax.plot(x_arr, profile.tri_alfa, label = "Helium \n\u2192 Carbon \n(triple alpha)", lw=2, color="tab:green")
-
+        metal_fusion = profile.eps_nuc - profile.pp - profile.cno - profile.tri_alfa 
+        ax.plot(x_arr, metal_fusion, label="Heavier \nelements", lw=2, color="tab:red") 
+        
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 
         specific_L = np.max(profile.luminosity)*physical_constants.L_sun / (profile.initial_mass*physical_constants.M_sun) 
