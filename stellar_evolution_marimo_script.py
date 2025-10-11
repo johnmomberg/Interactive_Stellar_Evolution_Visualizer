@@ -59,6 +59,13 @@ def _():
 
 
 
+    # Fusion history plot 
+
+    # Add separate lines for CNO cycle fusion and PP fusion 
+    # Coordinate colors with the colors used by profile plots 
+
+
+
     # Profile plots 
 
     # X-axis tick locations are currently hardcoded based on initial zoom, and don't correctly adjust as you pan/zoom the plot 
@@ -67,9 +74,7 @@ def _():
 
     # Mu profile plot 
 
-    # Add mu plot to list of available profile plots in the dropdown 
-    # Fix auto adjusting y limits 
-    # Add horizontal lines to represent the mu of pure helium, H+He, etc 
+    # Replace dotted line for C+O with a narrow axhspan showing the range of full carbon to full oxygen 
 
 
 
@@ -81,6 +86,12 @@ def _():
     # https://marimo.app/github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
 
 
+
+    # Misc 
+
+    # Check colors of all plots 
+    # Check linestyles and linewidths 
+    # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1))
 
 
 
