@@ -47,22 +47,25 @@ class ProfilePlot:
         x_units_str = xaxis.xlabel_units
 
         # Set xlabel (mass or radius) and xlim  
-        ax.set_xlabel(f"Location inside star {x_units_str}", fontsize=18, labelpad=0)
+        ax.set_xlabel(f"Location inside star {x_units_str}", fontsize=18)
         ax.set_xlim(0, 1.001*np.max(x_arr))
 
-        # Add extra xtick labels to left side (core) and right side (surface) of plot 
-        xticks = ax.get_xticks() 
-        xticks = np.append(xticks, np.max(x_arr))
-        xtick_labels = [
-            "0\n(Core)" if float(f"{xticks[i]:.3g}") == 0 else
-            f"\n(Surface)" if i == len(xticks)-1 else
-            f"{xticks[i]:.3g}" 
-            for i in range(len(xticks)) 
-        ]
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xtick_labels)
-        ax.set_xlim(0, 1.001*np.max(x_arr))
 
+        # Add text labels to left side ("Center") and right side ("Surface") of x axis  
+        ax.text(
+            0, -0.11,       
+            "(Center)",
+            transform=ax.get_xaxis_transform(),  
+            ha="center", va="top", fontsize=12, 
+        )
+
+        ax.text(
+            np.max(x_arr), -0.11,       
+            "(Surface)",
+            transform=ax.get_xaxis_transform(),  
+            ha="center", va="top", fontsize=12, 
+        )
+        
         # Set ylabel and yscale  
         ax.set_ylabel(config.ylabel, fontsize=18, labelpad=14) 
         ax.set_yscale(config.yscale) 
@@ -100,7 +103,7 @@ class ProfilePlot:
         # Setup 
         config = ProfilePlotConfigParams(
             ylabel="Composition (mass fraction)",
-            ylim=(0, 1),
+            ylim=(-0.01, 1.01),
             yscale="linear",
             title="Interior composition")
         fig, ax = cls._setup(profile, xaxis, config)
