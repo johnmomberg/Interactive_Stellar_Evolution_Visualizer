@@ -145,7 +145,28 @@ class HistoryPlot:
         ax.plot(history.star_age, 10**history.log_R, lw=2) 
 
         return fig 
-    
+
+
+
+    # History plot: mass vs time 
+    @classmethod
+    def mass(cls, history, modelnum_now=None): 
+
+        # Setup 
+        config = HistoryPlotConfigParams(
+            ylabel="Mass ($M_{{sun}}$)",
+            ylim=None,
+            yscale="linear",
+            title="Mass vs age")
+        fig, ax = cls._setup(history, config, modelnum_now)
+
+        # Plot mass vs age         
+        ax.plot(history.star_age, history.star_mass, lw=2) 
+
+        ax.set_ylim(0, 1.05*np.nanmax(history.star_mass))
+
+        return fig 
+
 
 
 

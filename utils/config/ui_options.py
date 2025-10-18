@@ -57,11 +57,15 @@ HISTORYPLOT_RADIUS = HistoryPlotOption(
     display="Radius", 
     plot_func=history_plotting.HistoryPlot.radius) 
 
+HISTORYPLOT_MASS = HistoryPlotOption( 
+    display="Mass", 
+    plot_func=history_plotting.HistoryPlot.mass)
+
 HISTORYPLOT_FUSION = HistoryPlotOption(
     display="Fusion rate", 
     plot_func=history_plotting.HistoryPlot.fusion)
 
-HISTORYPLOT_OPTIONS = [HISTORYPLOT_COMPOSITION, HISTORYPLOT_RADIUS, HISTORYPLOT_FUSION]
+HISTORYPLOT_OPTIONS = [HISTORYPLOT_COMPOSITION, HISTORYPLOT_RADIUS, HISTORYPLOT_MASS, HISTORYPLOT_FUSION]
 
 
 
