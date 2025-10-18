@@ -66,13 +66,6 @@ def _():
 
 
 
-    # New history plot 
-
-    # Mass vs time (similar to radius vs time)
-
-
-
-
     # Mu profile plot 
 
     # Replace dotted line for C+O with a narrow axhspan showing the range of full carbon to full oxygen 
