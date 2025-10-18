@@ -66,11 +66,6 @@ def _():
 
 
 
-    # Profile plots 
-
-    # X-axis tick locations are currently hardcoded based on initial zoom, and don't correctly adjust as you pan/zoom the plot 
-
-
 
     # Mu profile plot 
 
@@ -376,7 +371,7 @@ def _(mo, stellar_evolution_data):
     return (history_browser,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(history, mo, ui_options):
     # Create profile dropdown for free selection mode 
 
@@ -396,7 +391,7 @@ def _(history, mo, ui_options):
 
         else: 
             profile_dropdown = None  
-        
+
 
 
 
@@ -636,6 +631,7 @@ def _(
             edgecolor=border_color,
             facecolor=bg_color, 
             alpha=bg_alpha, 
+            zorder=0 
         )
         ax.add_patch(rect)
 
@@ -664,7 +660,7 @@ def _(
         if comparison_mode_radio.value==ui_options.COMPAREMODE_FREE: 
             return "Flowchart unavailable"
 
-        fig, ax = plt.subplots(figsize=(15, 5))
+        fig, ax = plt.subplots(figsize=(15, 8))
         fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=0.92)
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
@@ -692,14 +688,20 @@ def _(
         # Y axis: Mass
         ax.set_ylabel("Mass", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
-        ax.set_yscale("log")
-        HR_diagram_plotting.label_spectraltypes(ax, location="right", attribute="mass", subtype_fraction_threshold=0.5, min_subtype_label_px=55)   
+        ax.set_yscale("log") 
+    
+        HR_diagram_plotting.label_spectraltypes(
+            ax, 
+            location="right", 
+            attribute="mass", 
+            subtype_fraction_threshold=0.5, min_subtype_label_px=55, 
+            axis_label="Spectral type (on MS)")   
+    
         ax.yaxis.set_minor_formatter(mticker.NullFormatter())
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
         ax.tick_params(axis="y", which="minor", length=0)
-        for y in custom_yticks:
-            ax.axhline(y, color="black", lw=0.5, ls=(0, (4, 3.6123)), zorder=0)
+        ax.grid(alpha=0.5, axis="y", color="black")
 
         # X axis: Evolution
         ax.set_xlabel("Evolutionary phase", fontsize=18, labelpad=14)

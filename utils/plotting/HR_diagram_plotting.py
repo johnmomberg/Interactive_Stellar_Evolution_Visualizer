@@ -4,6 +4,7 @@ import functools
 from dataclasses import dataclass, field
 import itertools
 from typing import List, Tuple, Dict
+from itertools import cycle
 
 import matplotlib.pyplot as plt 
 import matplotlib.ticker as mticker 
@@ -861,34 +862,44 @@ def label_spectraltypes(
     draw_subtype_lines: bool = True,
     fallback_fraction: float = 0.0,
     verbose: bool = False, 
-    do_axis_label: bool = True, 
+    axis_label: str = "Spectral type", 
 ):
     """
     Attach spectral-type labels (major letters + dynamic subtypes) to 'ax' via a secondary axis.
-    """
+    """ 
+
+    # Thousands formatter 
+    def thousands_formatter(x, pos=None):
+        val = x / 1000.0
+        if val.is_integer():
+            return f"{int(val)}k"
+        return f"{val:.1f}k"
+
+    # Is spectral type axis on the top/bottom (x axis) or left/right (y axis)? 
     if location in ("top", "bottom"):
         sec = ax.secondary_xaxis(location=location)
         axis = sec.xaxis
-        span_func = ax.axvspan
+        span_func = ax.axvspan 
+        line_func = ax.axvline 
         set_label = sec.set_xlabel
     else:
         sec = ax.secondary_yaxis(location=location)
         axis = sec.yaxis
-        span_func = ax.axhspan
-        set_label = sec.set_ylabel
+        span_func = ax.axhspan 
+        line_func = ax.axhline 
+        set_label = sec.set_ylabel 
+
+    # Are we plotting the temperature or MS mass? 
+    if attribute=="temp": 
+        attribute_range = "temp_range" 
+        formatter = mticker.FuncFormatter(thousands_formatter)
+    else: 
+        attribute_range = "MS_mass_range" 
+        formatter = mticker.ScalarFormatter() 
 
     axis.set_major_locator(SpectralTypeBorderLocator(attribute=attribute))
     if label_boundaries: 
-
-        if attribute == "temp": 
-            def thousands_formatter(x, pos=None):
-                val = x / 1000.0
-                if val.is_integer():
-                    return f"{int(val)}k"
-                return f"{val:.1f}k"
-            axis.set_major_formatter(mticker.FuncFormatter(thousands_formatter))
-        else: 
-            axis.set_major_formatter(mticker.ScalarFormatter()) 
+        axis.set_major_formatter(formatter) 
     else:
         axis.set_major_formatter(mticker.NullFormatter())
     axis.set_tick_params(which="major", length=20)
@@ -905,16 +916,25 @@ def label_spectraltypes(
     axis.set_minor_formatter(SmartSpectralLabelFormatter(locator))
     axis.set_tick_params(which="minor", length=4, labelsize=10)
 
-    # paint background bands
-    if attribute == "temp":
-        for st in SPECTRAL_TYPES:
-            span_func(st.temp_range[1], st.temp_range[0], color=st.color, alpha=0.05)
-    else:
-        for st in SPECTRAL_TYPES:
-            span_func(st.MS_mass_range[1], st.MS_mass_range[0], color=st.color, alpha=0.05)
 
-    if do_axis_label==True: 
-        set_label("Spectral type", fontsize=14, labelpad=10)
+
+    st_boundary_colorbands = True   
+    st_boundary_lines = False 
+
+    # paint background bands 
+    if st_boundary_colorbands == True: 
+        colors = cycle(["black", "white"])
+        for st in SPECTRAL_TYPES:
+            span_func(getattr(st, attribute_range)[1], getattr(st, attribute_range)[0], color=next(colors), alpha=0.03)
+
+    # Add lines separating out each spectral type 
+    if st_boundary_lines == True: 
+        for st in SPECTRAL_TYPES: 
+            line_func(getattr(st, attribute_range)[0], color="black", lw=0.5, ls=(0,(3,12)))
+
+    # Add label ("Spectral type" by default)
+    set_label(axis_label, fontsize=14, labelpad=10)
+
 
 
 
