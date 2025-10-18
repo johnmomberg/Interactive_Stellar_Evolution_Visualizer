@@ -34,7 +34,6 @@ def _():
 
     # Flowchart 
 
-    # Add "(on MS)" to right side label for flowchart spectral types 
     # Add "we are are" showing currently selected mass and model number 
     # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
     # Re-think colors used in flowchart boxes/colors used to represent the substages 
@@ -63,12 +62,6 @@ def _():
 
     # Add separate lines for CNO cycle fusion and PP fusion 
     # Coordinate colors with the colors used by profile plots 
-
-
-
-    # Mu profile plot 
-
-    # Replace dotted line for C+O with a narrow axhspan showing the range of full carbon to full oxygen 
 
 
 
@@ -685,7 +678,7 @@ def _(
             ]
 
         # Y axis: Mass
-        ax.set_ylabel("Mass", fontsize=18, labelpad=14)
+        ax.set_ylabel("Initial Mass ($M_{{sun}}$)", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log") 
     
