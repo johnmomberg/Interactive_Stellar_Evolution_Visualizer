@@ -126,11 +126,11 @@ hayashi_substage = SubStage(
             MESA_folder_path=data_folder/"M=0.2"
         ), 
         SubStageModel(
-            mass=0.5,
+            mass=0.4,
             model_start=None,
             model_end=None,
-            model_example=150,
-            MESA_folder_path=data_folder/"M=0.5"
+            model_example=200,
+            MESA_folder_path=data_folder/"M=0.4"
         ), 
         SubStageModel(
             mass=1.0,
@@ -167,9 +167,24 @@ henyey_substage = SubStage(
     mode2_desc="Henyey track", 
     mode2_interior_plot_title="Henyey track", 
     
-    mass_min=0.3, 
+    mass_min=0.5, 
     mass_max=6.0, 
     models=[
+        SubStageModel(
+            mass=1.0,
+            model_start=None,
+            model_end=None,
+            model_example=220, 
+            is_default=True, 
+            MESA_folder_path=data_folder/"M=1.0"
+        ),  
+        SubStageModel(
+            mass=3.0,
+            model_start=None,
+            model_end=None,
+            model_example=225, 
+            MESA_folder_path=data_folder/"M=3.0"
+        ),  
     ]
 )
 
@@ -197,7 +212,7 @@ low_ms_substage = SubStage(
             mass=0.2,
             model_start=None,
             model_end=None,
-            model_example=250,
+            model_example=273,
             MESA_folder_path=data_folder/"M=0.2"
         ), 
     ]
@@ -224,11 +239,11 @@ med_ms_substage = SubStage(
     mass_max=1.5, 
     models=[
         SubStageModel(
-            mass=0.5,
+            mass=0.4,
             model_start=None,
             model_end=None,
-            model_example=250,
-            MESA_folder_path=data_folder/"M=0.5"
+            model_example=309,
+            MESA_folder_path=data_folder/"M=0.4"
         ), 
         SubStageModel(
             mass=1.0,
@@ -292,11 +307,11 @@ subgiant_substage = SubStage(
     mass_max=1.5, 
     models=[
         SubStageModel(
-            mass=0.5, 
+            mass=0.4, 
             model_start=None, 
             model_end=None, 
-            model_example=350, 
-            MESA_folder_path=data_folder/"M=0.5"
+            model_example=450, 
+            MESA_folder_path=data_folder/"M=0.4"
         ), 
         SubStageModel( 
             mass=1.0, 
@@ -333,7 +348,7 @@ hertzsprung_gap_substage = SubStage(
             mass=3.0, 
             model_start=None, 
             model_end=None, 
-            model_example=348, 
+            model_example=363, 
             MESA_folder_path=data_folder/"M=3.0"
         )
     ]
@@ -360,11 +375,11 @@ red_giant_substage = SubStage(
     mass_max=6.0, 
     models=[
         SubStageModel(
-            mass=0.5, 
+            mass=0.4, 
             model_start=None, 
             model_end=None, 
-            model_example=7000, 
-            MESA_folder_path=data_folder/"M=0.5"
+            model_example=3000, 
+            MESA_folder_path=data_folder/"M=0.4"
         ),
         SubStageModel(
             mass=1.0, 
@@ -401,7 +416,7 @@ he_flash_substage=SubStage(
     mode2_desc="Unstable helium ignition (helium flash)", 
     mode2_interior_plot_title="He flash", 
     
-    mass_min=0.8, 
+    mass_min=0.5, 
     mass_max=2.0, 
     models=[
     ]
@@ -447,7 +462,7 @@ he_ms_substage=SubStage(
     mode2_desc="Helium main sequence", 
     mode2_interior_plot_title="He MS", 
     
-    mass_min=0.8, 
+    mass_min=0.5, 
     mass_max=6.0, 
     models=[
         SubStageModel( 
@@ -485,7 +500,7 @@ agb_substage=SubStage(
     mode2_desc="Asymptotic giant", 
     mode2_interior_plot_title="AGB", 
     
-    mass_min=0.8, 
+    mass_min=0.5, 
     mass_max=6.0, 
     models=[
         SubStageModel( 
@@ -500,7 +515,7 @@ agb_substage=SubStage(
             mass=3.0, 
             model_start=None, 
             model_end=None, 
-            model_example=1000, 
+            model_example=1700, 
             MESA_folder_path=data_folder/"M=3.0"
         )    
     ]
@@ -525,7 +540,7 @@ he_wd_substage=SubStage(
     
 
     mass_min = 0.1, 
-    mass_max = 0.8,
+    mass_max = 0.5,
     models=[
         SubStageModel( 
             mass=0.2, 
@@ -535,12 +550,12 @@ he_wd_substage=SubStage(
             MESA_folder_path=data_folder/"M=0.2"
         ), 
         SubStageModel( 
-            mass=0.5, 
+            mass=0.4, 
             model_start=None, 
             model_end=None, 
-            model_example=10100, 
+            model_example=5159, 
             is_default=True, 
-            MESA_folder_path=data_folder/"M=0.5"
+            MESA_folder_path=data_folder/"M=0.4"
         )    
     ]
 )
@@ -562,7 +577,7 @@ co_wd_substage=SubStage(
     mode2_desc="Carbon + oxygen white dwarf",   
     mode2_interior_plot_title="C+O WD", 
     
-    mass_min = 0.8, 
+    mass_min = 0.5, 
     mass_max = 6.0,
     models=[
         SubStageModel( 

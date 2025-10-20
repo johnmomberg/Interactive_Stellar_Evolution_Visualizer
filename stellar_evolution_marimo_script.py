@@ -37,6 +37,7 @@ def _():
     # Add "we are are" showing currently selected mass and model number 
     # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
     # Re-think colors used in flowchart boxes/colors used to represent the substages 
+    # Add spectral types to mass selection ("0.1-0.3" become "0.1-0.3 (M1-K3)", etc)
 
 
 
@@ -55,6 +56,8 @@ def _():
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. 
     # Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
     # Colored regions on history plot that correspond to each stage and get highlighted if its selected 
+
+    # If modelnum_now is provided, the legend should display the *current value* of each line on the plot 
 
 
 
@@ -681,14 +684,14 @@ def _(
         ax.set_ylabel("Initial Mass ($M_{{sun}}$)", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log") 
-    
+
         HR_diagram_plotting.label_spectraltypes(
             ax, 
             location="right", 
             attribute="mass", 
             subtype_fraction_threshold=0.5, min_subtype_label_px=55, 
             axis_label="Spectral type (on MS)")   
-    
+
         ax.yaxis.set_minor_formatter(mticker.NullFormatter())
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
