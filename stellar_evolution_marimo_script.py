@@ -41,11 +41,17 @@ def _():
 
 
 
+
+
     # HR diagram 
 
     # Run build_combo_cache() command once, save data to a CSV, and then load the CSV 
     # Add transparent tracks of available but un-selected substages for comparison 
     # Finish incorporting Mode1 and Mode2 colored tracks of HR diagram paths based on the Paint pictures I made earlier 
+    # Title sometimes gets cropped out if we can see spectral sub-type labels (K1, K2, K3, etc)
+
+
+
 
 
 
@@ -56,7 +62,6 @@ def _():
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. 
     # Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
     # Colored regions on history plot that correspond to each stage and get highlighted if its selected 
-
     # If modelnum_now is provided, the legend should display the *current value* of each line on the plot 
 
 
@@ -65,6 +70,24 @@ def _():
 
     # Add separate lines for CNO cycle fusion and PP fusion 
     # Coordinate colors with the colors used by profile plots 
+
+
+
+
+
+    # Profile plots 
+
+    # Fix number of decimal places in M=_ in subtitle 
+    # Add color to background of figure to align with the color of the selected substage 
+    # (i.e., if we're viewing the interior of the RED box of the flowchart, this plot should have a RED background)
+
+
+
+    # Temp grad profile plot 
+
+    # Radiative vs adiabatic temp gradients: theoretical = dashed? 
+
+
 
 
 
@@ -77,18 +100,13 @@ def _():
 
 
 
+
+
     # Misc 
 
     # Check colors of all plots 
     # Check linestyles and linewidths 
-    # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1))
-
-
-
-
-
-
-
+    # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1)) 
 
 
     return
@@ -786,7 +804,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
@@ -892,6 +910,11 @@ def _(
             # Add colored region to title 
             if comparison_mode_radio.value != ui_options.COMPAREMODE_FREE: 
                 profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
+
+                # Add selected color to background of plot to show this is a profile plot of that substage 
+                fig2.patch.set_facecolor(substage_selected_color)
+                fig2.patch.set_alpha(0.1)
+
             return mo.mpl.interactive(fig2) 
 
 
