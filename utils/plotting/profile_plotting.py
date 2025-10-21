@@ -40,7 +40,7 @@ class ProfilePlot:
 
         # Create figure 
         fig, ax = plt.subplots(figsize=(12.5, 5))
-        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.10, right=0.83)
+        fig.subplots_adjust(top=0.86, bottom=0.16, left=0.10, right=0.81)
 
         # Select either mass or radius as the x axis 
         x_arr = xaxis.get_values(profile)
@@ -233,11 +233,11 @@ class ProfilePlot:
         
         # Plot fusion rates 
         ax.plot(x_arr, profile.eps_nuc, label = "Total fusion", lw=2, color="black")
-        ax.plot(x_arr, profile.pp, label = "Hydrogen \n\u2192 Helium \n(PP chain)", lw=3, color="#00759C")
-        ax.plot(x_arr, profile.cno, label = "Hydrogen \n\u2192 Helium \n(CNO cycle)", lw=3, color="#71D2FF")
-        ax.plot(x_arr, profile.tri_alfa, label = "Helium \n\u2192 Carbon \n(triple alpha)", lw=3, color="tab:green")
+        ax.plot(x_arr, profile.pp, label = "Hydrogen \u2192 Helium \n(PP chain)", lw=3, color="#00759C")
+        ax.plot(x_arr, profile.cno, label = "Hydrogen \u2192 Helium \n(CNO cycle)", lw=3, color="#71D2FF")
+        ax.plot(x_arr, profile.tri_alfa, label = "Helium \u2192 Carbon \n(triple alpha)", lw=3, color="tab:green")
         metal_fusion = profile.eps_nuc - profile.pp - profile.cno - profile.tri_alfa 
-        ax.plot(x_arr, metal_fusion, label="Heavier \nelements", lw=3, color="tab:red") 
+        ax.plot(x_arr, metal_fusion, label="Heavier elements", lw=3, color="tab:red") 
         
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 

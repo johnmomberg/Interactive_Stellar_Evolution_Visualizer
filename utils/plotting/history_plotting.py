@@ -33,8 +33,8 @@ class HistoryPlot:
     def _setup(history, config, modelnum_now): 
 
         # Initialize figure 
-        fig, ax = plt.subplots(figsize=(12.5, 5))
-        fig.subplots_adjust(top=0.80, bottom=0.16, left=0.10, right=0.83)
+        fig, ax = plt.subplots(figsize=(12.8, 5))
+        fig.subplots_adjust(top=0.80, bottom=0.16, left=0.10, right=0.81)
 
         # xlabel, xlim, xaxis formatter
         ax.set_xlabel("Age (years)", fontsize=18, labelpad=14)
@@ -112,9 +112,9 @@ class HistoryPlot:
         fig, ax = cls._setup(history, config, modelnum_now)
         
         # 3 fusion rates: Hydrogen, helium, and everything else (aka metals) 
-        ax.plot(history.star_age, 10**history.log_LH, lw=2, label="Hydrogen \n\u2192 Helium", color="tab:blue")
-        ax.plot(history.star_age, 10**history.log_LHe, lw=2, label="Helium \n\u2192 Carbon", color="tab:green")
-        ax.plot(history.star_age, 10**history.log_LZ, lw=2, label="Heavier \nelements", color="tab:red")
+        ax.plot(history.star_age, 10**history.log_LH, lw=2, label="Hydrogen \u2192 Helium", color="tab:blue")
+        ax.plot(history.star_age, 10**history.log_LHe, lw=2, label="Helium \u2192 Carbon", color="tab:green")
+        ax.plot(history.star_age, 10**history.log_LZ, lw=2, label="Heavier elements", color="tab:red")
 
         # Use mass-luminosity relation on the MS to predict the range of fusion rates to use for y limits 
         L_guess = helpers.mass_luminosity_relation(history.star_mass[0]) 

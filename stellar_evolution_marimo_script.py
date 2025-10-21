@@ -75,10 +75,6 @@ def _():
 
 
 
-    # Profile plots 
-
-    # Fix number of decimal places in M=_ in subtitle 
-
 
 
     # Temp grad profile plot 
