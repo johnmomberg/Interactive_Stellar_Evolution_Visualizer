@@ -48,7 +48,6 @@ def _():
     # Run build_combo_cache() command once, save data to a CSV, and then load the CSV 
     # Add transparent tracks of available but un-selected substages for comparison 
     # Finish incorporting Mode1 and Mode2 colored tracks of HR diagram paths based on the Paint pictures I made earlier 
-    # Title sometimes gets cropped out if we can see spectral sub-type labels (K1, K2, K3, etc)
 
 
 
@@ -62,7 +61,12 @@ def _():
     # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. 
     # Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
     # Colored regions on history plot that correspond to each stage and get highlighted if its selected 
-    # If modelnum_now is provided, the legend should display the *current value* of each line on the plot 
+
+
+
+    # HR Diagram and history plot 
+
+    # "We are here" vertical line on history plot + "we are here" yellow label on HR diagram should align and both be labeled 
 
 
 

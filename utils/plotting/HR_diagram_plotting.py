@@ -168,7 +168,7 @@ class HRDiagram:
 
         # Setup 
         self.fig, self.ax = plt.subplots(figsize=(10.7, 7))
-        self.fig.subplots_adjust(top=0.85, bottom=0.13, left=0.12, right=0.96)
+        self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.12, right=0.96)
 
 
         # X axis: Temperature 
