@@ -80,7 +80,7 @@ class ProfilePlot:
         ax.set_title(config.title, fontsize=20, pad=25) 
         ax.text(
             0.5, 1.025, 
-            f"{profile.initial_mass:.1f} $M_{{sun}}$ star at {profile.age_string} years old (model number={profile.modelnum})", 
+            f"{round(profile.initial_mass, 10)} $M_{{sun}}$ star at {profile.age_string} years old (model number={profile.modelnum})", 
             transform=ax.transAxes, 
             fontsize=12, ha='center')
 

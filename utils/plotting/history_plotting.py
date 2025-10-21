@@ -53,7 +53,7 @@ class HistoryPlot:
             
         # Title, subtitle 
         ax.set_title(config.title, fontsize=20, pad=50)
-        ax.text(0.5, 1.14, f"{history.star_mass[0]:.1f} $M_{{sun}}$ star", 
+        ax.text(0.5, 1.14, f"{round(history.star_mass[0], 10)} $M_{{sun}}$ star", 
                 transform=ax.transAxes, 
                 fontsize=12, ha='center')
 

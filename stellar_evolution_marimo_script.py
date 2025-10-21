@@ -78,8 +78,6 @@ def _():
     # Profile plots 
 
     # Fix number of decimal places in M=_ in subtitle 
-    # Add color to background of figure to align with the color of the selected substage 
-    # (i.e., if we're viewing the interior of the RED box of the flowchart, this plot should have a RED background)
 
 
 
@@ -178,7 +176,7 @@ def _(mo, ui_options):
     return comparison_mode_radio, comparison_mode_title
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, stellar_evolution_data):
     # Dropdowns used by "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" 
 
@@ -193,6 +191,7 @@ def _(mo, stellar_evolution_data):
         # Mode2 
         mode2_parentstage_options = {stage.full_name: stage for stage in stellar_evolution_data.ParentStage}
         mode2_parentstage_dropdown = mo.ui.dropdown(options=mode2_parentstage_options, value=next(iter(mode2_parentstage_options))) 
+
 
     return mode1_massrange_dropdown, mode2_parentstage_dropdown, unique_masses
 
@@ -804,7 +803,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
