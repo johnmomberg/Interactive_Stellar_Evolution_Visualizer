@@ -803,12 +803,13 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
     history,
     history_plot_dropdown,
+    history_plotting,
     load_data,
     lru_cache,
     mo,
@@ -883,7 +884,7 @@ def _(
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history, modelnum_now=modelnum) 
 
-            # history_plotting.add_substage_highlight(fig2, model_selected, history) 
+            history_plotting.add_substage_highlight(fig2, model_selected, history) 
             return mo.mpl.interactive(fig2) 
 
 
@@ -976,7 +977,7 @@ def _(mo):
         import utils.plotting.history_plotting as history_plotting 
         import utils.plotting.profile_plotting as profile_plotting 
         import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
-    return HR_diagram_plotting, profile_plotting
+    return HR_diagram_plotting, history_plotting, profile_plotting
 
 
 @app.cell(hide_code=True)

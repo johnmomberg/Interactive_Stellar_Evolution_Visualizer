@@ -134,8 +134,8 @@ hayashi_substage = SubStage(
         ), 
         SubStageModel(
             mass=1.0,
-            model_start=None,
-            model_end=None,
+            model_start=1,
+            model_end=202,
             model_example=150, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
@@ -172,8 +172,8 @@ henyey_substage = SubStage(
     models=[
         SubStageModel(
             mass=1.0,
-            model_start=None,
-            model_end=None,
+            model_start=202,
+            model_end=240,
             model_example=220, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
@@ -247,8 +247,8 @@ med_ms_substage = SubStage(
         ), 
         SubStageModel(
             mass=1.0,
-            model_start=1,
-            model_end=300,
+            model_start=240, 
+            model_end=330,
             model_example=296, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
@@ -315,8 +315,8 @@ subgiant_substage = SubStage(
         ), 
         SubStageModel( 
             mass=1.0, 
-            model_start=None, 
-            model_end=None, 
+            model_start=330, 
+            model_end=415, 
             model_example=389, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0", 
@@ -383,8 +383,8 @@ red_giant_substage = SubStage(
         ),
         SubStageModel(
             mass=1.0, 
-            model_start=None, 
-            model_end=None, 
+            model_start=415, 
+            model_end=9500, 
             model_example=5000, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
@@ -419,6 +419,14 @@ he_flash_substage=SubStage(
     mass_min=0.5, 
     mass_max=2.0, 
     models=[
+        SubStageModel(
+            mass=1.0, 
+            model_start=9500, 
+            model_end=10500, 
+            model_example=9700, 
+            is_default=True, 
+            MESA_folder_path=data_folder/"M=1.0"
+        ), 
     ]
 )
 
@@ -467,8 +475,8 @@ he_ms_substage=SubStage(
     models=[
         SubStageModel( 
             mass=1.0, 
-            model_start=None, 
-            model_end=None, 
+            model_start=10500, 
+            model_end=10950, 
             model_example=10650, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0"
@@ -505,8 +513,8 @@ agb_substage=SubStage(
     models=[
         SubStageModel( 
             mass=1.0, 
-            model_start=None, 
-            model_end=None, 
+            model_start=10950, 
+            model_end=13600, 
             model_example=12300, 
             is_default=True, 
             MESA_folder_path=data_folder/"M=1.0" 
@@ -582,8 +590,8 @@ co_wd_substage=SubStage(
     models=[
         SubStageModel( 
             mass=1.0, 
-            model_start=None, 
-            model_end=None, 
+            model_start=13600, 
+            model_end=14300, 
             model_example=14300, 
             MESA_folder_path=data_folder/"M=1.0"
         ),   
