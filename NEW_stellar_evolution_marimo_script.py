@@ -4,7 +4,7 @@ __generated_with = "0.13.15"
 app = marimo.App(width="full")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     # To do: 
 
@@ -105,6 +105,7 @@ def _():
     # Check colors of all plots 
     # Check linestyles and linewidths 
     # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1)) 
+    # Collect all string representations of the mass as the same function. In subtitle of profile plot, label in HR diagram... somewhere else? 
 
 
     return
@@ -177,20 +178,64 @@ def _(mo, ui_options):
 
 
 @app.cell
-def _(mo, stellar_evolution_data):
+def _():
+    '''
+
+    What I have: 
+
+    ALL_PARENTSTAGES_LIST 
+    ALL_SUBSTAGES_LIST 
+    ALL_MODELS_LIST 
+
+
+
+    What I need:
+
+    unique_masses: [0.1, 0.3, 0.5, 1.5, 2.0, 6.0]
+    mode1_massrange_dropdown: Dropdown with ['0.1-0.3', '0.3-0.5', '0.5-1.5', '1.5-2.0', '2.0-6.0'] 
+    mode2_parentstage_dropdown: Dropdown with {'Hayashi track': <ParentStage.HAYASHI: ('Hayashi', 'Hayashi track', 0)>, 'Henyey track': <ParentStage.HENYEY: ('Henyey', 'Henyey track', 1)>, ... }
+
+    selected_massrange: [0.1, 0.3] (currently selected value of mode1_massrange_dropdown) 
+
+    selected_parentstage: ParentStage.HAYASHI (same for mode2_parentstage_dropdown) 
+
+    available_substages: list of substages shown in tabs. If mode1: all substages that match currently selected parentstage. If mode2: All substages that match currently selected massrange. 
+    available_substages_options
+    available_substages_tabs 
+
+    substage_selected: tab (from available_substages_tabs) that is currently selected 
+    model_selected: model used to represent that selected substage 
+    history: load_data using the model selected 
+    profile: same 
+    modelnum: model_example of model_selected 
+
+    unique_models_list: idek what this does? I think just collects one history file for each mass in order to plot on HR diagram 
+
+    ''' 
+
+
+
+
+
+
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo, stellar_evolution_data_new):
     # Dropdowns used by "comparison_mode_str": either "mode1_massrange_dropdown" or "mode2_parentstage_dropdown" 
 
     with mo.status.spinner(title="Creating comparison mode dropdowns...") as _: 
 
-
         # Mode1 
-        unique_masses = sorted({m for s in stellar_evolution_data.SUBSTAGES_LIST for m in [s.mass_min, s.mass_max]})
+        unique_masses = sorted({m for s in stellar_evolution_data_new.ALL_SUBSTAGES_LIST for m in [s.mass_min, s.mass_max]})
         mode1_massrange_options = [f"{unique_masses[i]:.1f}-{unique_masses[i+1]:.1f}" for i in range(len(unique_masses)-1)]
         mode1_massrange_dropdown = mo.ui.dropdown(mode1_massrange_options, value=next(iter(mode1_massrange_options)))
 
         # Mode2 
-        mode2_parentstage_options = {stage.full_name: stage for stage in stellar_evolution_data.ParentStage}
+        mode2_parentstage_options = {stage.full_name: stage for stage in stellar_evolution_data_new.ALL_PARENTSTAGES_LIST} 
         mode2_parentstage_dropdown = mo.ui.dropdown(options=mode2_parentstage_options, value=next(iter(mode2_parentstage_options))) 
+
 
 
     return mode1_massrange_dropdown, mode2_parentstage_dropdown, unique_masses
@@ -297,13 +342,13 @@ def _(
     return profile_str, substage_selected_color, substage_selected_str
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
     mo,
     mode1_massrange_dropdown,
     mode2_parentstage_dropdown,
-    stellar_evolution_data,
+    stellar_evolution_data_new,
     ui_options,
 ):
     # Identify available substages 
@@ -317,17 +362,60 @@ def _(
             available_substages = []
 
         elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-            available_substages = [
-                s for s in stellar_evolution_data.SUBSTAGES_LIST 
-                if not (s.mass_max <= selected_massrange[0] 
-                        or s.mass_min >= selected_massrange[1])]
+            available_substages = stellar_evolution_data_new.CustomList([
+                substage for substage in stellar_evolution_data_new.ALL_SUBSTAGES_LIST 
+                if not (substage.mass_max <= selected_massrange[0] 
+                        or substage.mass_min >= selected_massrange[1])])
 
         elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-            available_substages = [
-                s for s in stellar_evolution_data.SUBSTAGES_LIST 
-                if s.parent_stage.name == selected_parentstage.name] 
+            available_substages = stellar_evolution_data_new.CustomList([
+                substage for substage in stellar_evolution_data_new.ALL_SUBSTAGES_LIST 
+                if substage.parent_stage.id == selected_parentstage.id]) 
 
-    return available_substages, selected_massrange
+
+    return available_substages, selected_massrange, selected_parentstage
+
+
+@app.cell(hide_code=True)
+def _(
+    available_substages,
+    comparison_mode_radio,
+    mo,
+    selected_massrange,
+    selected_parentstage,
+    stellar_evolution_data_new,
+    ui_options,
+):
+    # Create available models 
+
+    with mo.status.spinner(title="Finding models to go with available substages...") as _: 
+
+        if comparison_mode_radio.value == ui_options.COMPAREMODE_NOSELECTION or comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+            available_models = []
+
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            available_models = stellar_evolution_data_new.CustomList(
+                [model for model in stellar_evolution_data_new.ALL_MODELS_LIST 
+                 if (model.mass<=selected_massrange[1]) & (model.mass>=selected_massrange[0])]) 
+
+        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+
+            potential_models = stellar_evolution_data_new.CustomList(
+                [model for model in stellar_evolution_data_new.ALL_MODELS_LIST 
+                 if (model.substage.parent_stage.id==selected_parentstage.id) ]) 
+
+            available_models = []
+            for substage in available_substages:
+                models_in_stage = [m for m in potential_models if m.substage.id == substage.id]
+                if models_in_stage:
+                    # Pick the one closest to the middle mass
+                    representative = sorted(models_in_stage, key=lambda m: m.mass)[len(models_in_stage)//2]
+                    available_models.append(representative)
+            available_models = stellar_evolution_data_new.CustomList(available_models)
+
+
+
+    return (available_models,)
 
 
 @app.cell(hide_code=True)
@@ -366,7 +454,7 @@ def _(available_substages, comparison_mode_radio, helpers, mo, ui_options):
     return (available_substages_tabs,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, stellar_evolution_data):
     # Create history browser free selection mode 
 
@@ -384,21 +472,21 @@ def _(mo, stellar_evolution_data):
 
 
 @app.cell(hide_code=True)
-def _(history, mo, ui_options):
+def _(history_selected, mo, ui_options):
     # Create profile dropdown for free selection mode 
 
     with mo.status.spinner(title="Creating Profile data dropdown selector...") as _: 
 
-        if history is not None: 
+        if history_selected is not None: 
 
             profile_dropdown = ui_options.create_dropdown(
                 label="Select Profile from the selected MESA data folder", 
                 options_list = [
                     ui_options.AvailableModelnumsOption(
-                        modelnum=modelnum, 
-                        age=history.star_age[modelnum-1], 
-                        display=f"Modelnum={modelnum}, Age={history.age_strings[modelnum-1]} yrs") 
-                    for modelnum in history.model_numbers_available]
+                        modelnum=modelnum_, 
+                        age=history_selected.star_age[modelnum_-1], 
+                        display=f"Modelnum={modelnum_}, Age={history_selected.age_strings[modelnum_-1]} yrs") 
+                    for modelnum_ in history_selected.model_numbers_available]
             )
 
         else: 
@@ -465,28 +553,12 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _(
-    comparison_mode_radio,
-    mo,
-    selected_massrange,
-    substage_selected,
-    ui_options,
-):
+def _(available_models, mo, substage_selected):
     # Identify model used to represent selected substage 
 
     with mo.status.spinner(title="Finding model to represent selected substage...") as _: 
 
-        if substage_selected is None: 
-            model_selected = None 
-
-        elif len(substage_selected.models) == 0: 
-            model_selected = None 
-
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-            model_selected = next((m for m in substage_selected.models if selected_massrange[0]<=m.mass<=selected_massrange[1]), None)
-
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-            model_selected = next((m for m in substage_selected.models if m.is_default), substage_selected.models[0])
+        model_selected = next((model for model in available_models if model.substage == substage_selected), None)
 
     return (model_selected,)
 
@@ -506,97 +578,95 @@ def _(
     with mo.status.spinner(title="Loading MESA history file...") as _: 
 
         if model_selected is not None: 
-            history = load_data.load_history(model_selected.MESA_folder_path)
+            history_selected = load_data.load_history(model_selected.MESA_folder_path)
         elif comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
             if len(history_browser.value) > 0: 
-                history = load_data.load_history(Path(history_browser.value[0].id))
+                history_selected = load_data.load_history(Path(history_browser.value[0].id))
             else: 
-                history = None 
+                history_selected = None 
         else: 
-            history = None
+            history_selected = None
 
 
-    return (history,)
+    return (history_selected,)
 
 
 @app.cell(hide_code=True)
 def _(
     Path,
-    history,
     history_browser,
+    history_selected,
     load_data,
     mo,
     model_selected,
     profile_dropdown,
 ):
-    # Load selected profile 
+    # Load selected profile and modelnum 
 
     with mo.status.spinner(title="Loading MESA profile file...") as _: 
 
         if model_selected is not None: 
-            modelnum = model_selected.model_example 
-            profile = load_data.load_profile(model_selected.MESA_folder_path, modelnum, history) 
+            modelnum_selected = model_selected.model_example 
+            profile_selected = load_data.load_profile(model_selected.MESA_folder_path, modelnum_selected, history_selected) 
 
         elif profile_dropdown is not None and profile_dropdown.value is not None: 
-            modelnum = profile_dropdown.value.modelnum 
-            profile = load_data.load_profile(Path(history_browser.value[0].id), modelnum, history)
+            modelnum_selected = profile_dropdown.value.modelnum 
+            profile_selected = load_data.load_profile(Path(history_browser.value[0].id), modelnum_selected, history_selected)
 
         else: 
-            modelnum = None 
-            profile = None 
+            modelnum_selected = None 
+            profile_selected = None 
 
-    return modelnum, profile
+    return modelnum_selected, profile_selected
 
 
 @app.cell
-def _(
-    available_substages,
-    comparison_mode_radio,
-    mo,
-    stellar_evolution_data,
-    ui_options,
-):
-    # Create list of all unique models 
+def _():
+    # # Create list of all unique models 
 
 
-    with mo.status.spinner(title="Choosing models to display on HR diagram...") as _: 
+    # with mo.status.spinner(title="Choosing models to display on HR diagram...") as _: 
 
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
+    #     if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
 
-            # Create an empty dictionary to store the unique models. 
-            # The keys will be the unique folder paths, and the values will be the model objects. 
-            unique_models_dict = {} 
+    #         # Create an empty dictionary to store the unique models. 
+    #         # The keys will be the unique folder paths, and the values will be the model objects. 
+    #         unique_models_dict = {} 
 
-            # Loop through all substages and all their associated models
-            for substage in stellar_evolution_data.SUBSTAGES_LIST:
-                for model in substage.models:
-                    # If we haven't seen this folder path before...
-                    if model.MESA_folder_path not in unique_models_dict:
-                        # ...add the model object to our dictionary.
-                        unique_models_dict[model.MESA_folder_path] = model
+    #         # Loop through all substages and all their associated models
+    #         for substage in stellar_evolution_data.SUBSTAGES_LIST:
+    #             for model in substage.models:
+    #                 # If we haven't seen this folder path before...
+    #                 if model.MESA_folder_path not in unique_models_dict:
+    #                     # ...add the model object to our dictionary.
+    #                     unique_models_dict[model.MESA_folder_path] = model
 
-            # You now have a dictionary where each value is a unique SubStageModel object.
-            # You can get a list of just the objects by using .values()
-            unique_models_list = list(unique_models_dict.values())
+    #         # You now have a dictionary where each value is a unique SubStageModel object.
+    #         # You can get a list of just the objects by using .values()
+    #         unique_models_list = list(unique_models_dict.values())
 
 
 
-        elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
+    #     elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
 
-            unique_models_list = [] 
-            for _substage in available_substages: 
-                if len(_substage.models) == 0: 
-                    continue 
-                _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
-                unique_models_list.append(_model) 
-
-
-        else: 
-            unique_models_list = [] 
+    #         unique_models_list = [] 
+    #         for _substage in available_substages: 
+    #             if len(_substage.models) == 0: 
+    #                 continue 
+    #             _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
+    #             unique_models_list.append(_model) 
 
 
-    return (unique_models_list,)
+    #     else: 
+    #         unique_models_list = [] 
+
+
+    unique_models_list = [] 
+
+
+
+    return
 
 
 @app.cell
@@ -613,6 +683,7 @@ def _(
     plt,
     selected_massrange,
     stellar_evolution_data,
+    stellar_evolution_data_new,
     substage_selected,
     ui_options,
     unique_masses,
@@ -677,7 +748,7 @@ def _(
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
             custom_yticks = unique_masses 
-            custom_xtick_labels = [parent_stage.short_name for parent_stage in stellar_evolution_data.ParentStage]
+            custom_xtick_labels = [parent_stage.short_name for parent_stage in stellar_evolution_data_new.ALL_PARENTSTAGES_LIST] 
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
             custom_yticks = [selected_massrange[0], selected_massrange[1]] 
@@ -685,7 +756,7 @@ def _(
                 parent_stage.short_name 
                 if parent_stage in [stage.parent_stage for stage in available_substages] 
                 else "" 
-                for parent_stage in stellar_evolution_data.ParentStage
+                for parent_stage in stellar_evolution_data_new.ALL_PARENTSTAGES_LIST
             ]
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
@@ -694,7 +765,7 @@ def _(
                 parent_stage.short_name 
                 if parent_stage in [stage.parent_stage for stage in available_substages] 
                 else "" 
-                for parent_stage in stellar_evolution_data.ParentStage
+                for parent_stage in stellar_evolution_data_new.ALL_PARENTSTAGES_LIST
             ]
 
         # Y axis: Mass
@@ -718,7 +789,7 @@ def _(
         # X axis: Evolution
         ax.set_xlabel("Evolutionary phase", fontsize=18, labelpad=14)
         ax.set_xlim(0, 9)
-        custom_xticks = np.arange(0, len(stellar_evolution_data.ParentStage)) + 0.5
+        custom_xticks = np.arange(0, len(stellar_evolution_data_new.ALL_PARENTSTAGES_LIST)) + 0.5
         ax.set_xticks(custom_xticks)
         ax.set_xticklabels(custom_xtick_labels, fontsize=14)
 
@@ -807,23 +878,19 @@ def _(
 def _(
     HR_diagram_plotting,
     comparison_mode_radio,
-    history,
     history_plot_dropdown,
-    history_plotting,
-    load_data,
+    history_selected,
     lru_cache,
     mo,
-    model_selected,
-    modelnum,
+    modelnum_selected,
     plot_mode_radio,
-    profile,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
     profile_plotting,
+    profile_selected,
     substage_selected_color,
     substage_selected_str,
     ui_options,
-    unique_models_list,
 ):
     # Create figure showing interior plot 
 
@@ -840,34 +907,37 @@ def _(
         # HR Diagram 
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
 
-            if history is None: 
+            if history_selected is None: 
                 return "Select a History file to view HR diagram" 
 
             hr = HR_diagram_plotting.HRDiagram() 
 
-            for model in unique_models_list: 
-                history_new = load_data.load_history(model.MESA_folder_path) 
+            # for model in unique_models_list: 
+            #     history_new = load_data.load_history(model.MESA_folder_path) 
 
-                if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
-                    color=model.parent_substage.flowchart_color 
-                elif comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
-                    color=None
+            #     if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
+            #         color=model.parent_substage.flowchart_color 
+            #     elif comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
+            #         color=None
 
-                if history_new.star_mass[0] == history.star_mass[0]: 
-                    hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
-                    continue
+            #     if history_new.star_mass[0] == history.star_mass[0]: 
+            #         hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
+            #         continue
 
-                hr.add_path(history_new, label=f"{history_new.star_mass[0]:.1f} $M_{{sun}}$", alpha=0.3, color=color) 
+            #     hr.add_path(history_new, label=f"{history_new.star_mass[0]:.1f} $M_{{sun}}$", alpha=0.3, color=color) 
 
-            if model_selected is not None: 
-                color = model_selected.parent_substage.flowchart_color
-            else: 
-                color = None 
+            # if model_selected is not None: 
+            #     color = model_selected.parent_substage.flowchart_color
+            # else: 
+            #     color = None 
 
-            if len(unique_models_list)==0: 
-                hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
+            # if len(unique_models_list)==0: 
+            #     hr.add_path(history_selected, label=f"{history_selected.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
 
-            hr.add_modelnum_labels(history, modelnum)         
+
+            hr.add_path(history_selected, label=f"{history_selected.star_mass[0]:.2f} $M_{{sun}}$")
+
+            hr.add_modelnum_labels(history_selected, modelnum_selected)         
             HR_diagram_plotting.label_spectraltypes(hr.ax) 
             hr.legend() 
             fig2 = hr.fig 
@@ -878,13 +948,13 @@ def _(
         # History plots 
         if plot_mode_radio.value == ui_options.PLOTMODE_HISTORY: 
 
-            if history is None: 
+            if history_selected is None: 
                 return "Select a History file to view history plot" 
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
-            fig2 = selected_plot_func(history, modelnum_now=modelnum) 
+            fig2 = selected_plot_func(history_selected, modelnum_now=modelnum_selected) 
 
-            history_plotting.add_substage_highlight(fig2, model_selected, history) 
+            # history_plotting.add_substage_highlight(fig2, model_selected, history_selected) 
             return mo.mpl.interactive(fig2) 
 
 
@@ -892,13 +962,13 @@ def _(
         # Interior profile plots 
         if plot_mode_radio.value == ui_options.PLOTMODE_PROFILE:
 
-            if history is None or profile is None: 
+            if history_selected is None or profile_selected is None: 
                 return "Select a Profile file to view profile plot" 
 
             # Create profile plot depending on selected options in dropdown 
             selected_plot_func = profile_plot_dropdown.value.plot_func 
             selected_x_axis = profile_plot_x_dropdown.value  
-            fig2 = selected_plot_func(profile, selected_x_axis, history)
+            fig2 = selected_plot_func(profile_selected, selected_x_axis, history_selected)
 
             # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
             profile_str = profile_plot_dropdown.value.title_str
@@ -977,7 +1047,7 @@ def _(mo):
         import utils.plotting.history_plotting as history_plotting 
         import utils.plotting.profile_plotting as profile_plotting 
         import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
-    return HR_diagram_plotting, history_plotting, profile_plotting
+    return HR_diagram_plotting, profile_plotting
 
 
 @app.cell(hide_code=True)
@@ -987,7 +1057,12 @@ def _(mo):
         import utils.config.stellar_evolution_data_new as stellar_evolution_data_new 
         import utils.config.ui_options as ui_options 
         import utils.config.profile_xaxis_options as profile_xaxis_options 
-    return profile_xaxis_options, stellar_evolution_data, ui_options
+    return (
+        profile_xaxis_options,
+        stellar_evolution_data,
+        stellar_evolution_data_new,
+        ui_options,
+    )
 
 
 @app.cell

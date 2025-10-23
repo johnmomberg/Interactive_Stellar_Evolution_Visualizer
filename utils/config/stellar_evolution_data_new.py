@@ -1,8 +1,36 @@
 from dataclasses import dataclass 
 from pathlib import Path 
+
+
+
 data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
 
 
+
+
+
+# Custom version of List that acts exactly the same, except when you print it, each item is displayed on its own line 
+class CustomList(list):
+    def __str__(self):
+        # Add header, body (each item on its own line), and footer
+        inner = "\n".join("  " + str(item) for item in self)
+        return f"CustomList([\n{inner}\n])"
+
+    def __repr__(self):
+        return self.__str__()
+
+
+
+
+
+# Base class that gives ParentStage, SubStage, and Model classes a __str__ and __repr__ function (so they print their ID's)
+@dataclass
+class BaseEntity:
+    def __str__(self):
+        return getattr(self, 'id', f"{self.__class__.__name__}()")
+
+    def __repr__(self):
+        return self.__str__()
 
 
 
@@ -15,10 +43,14 @@ data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
 
 
 @dataclass 
-class ParentStage:
+class ParentStage(BaseEntity):
     flowchart_x: int 
     short_name: str 
     full_name: str 
+
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"ParentStage({self.short_name}, x={self.flowchart_x})"
 
 
 ################################################################################
@@ -73,7 +105,7 @@ PARENT_WD = ParentStage(
 ################################################################################
 
 
-ALL_PARENTSTAGES_LIST = [ 
+ALL_PARENTSTAGES_LIST = CustomList([ 
     PARENT_HAYASHI, 
     PARENT_HENYEY, 
     PARENT_MS, 
@@ -83,7 +115,7 @@ ALL_PARENTSTAGES_LIST = [
     PARENT_HEMS, 
     PARENT_AGB, 
     PARENT_WD 
-]
+]) 
 
 
 ################################################################################
@@ -111,7 +143,7 @@ ALL_PARENTSTAGES_LIST = [
 
 
 @dataclass
-class SubStage:
+class SubStage(BaseEntity):
 
     parent_stage: ParentStage 
 
@@ -128,6 +160,18 @@ class SubStage:
 
     mass_min: float # Minimum mass that exhibits this substage 
     mass_max: float # Maximum mass that exhibits this substage 
+
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"SubStage({self.mode2_abbrev}, massrange={self.mass_min}-{self.mass_max})"
+
+    @property
+    def mode2_abbrev_with_massrange(self) -> str:
+        return f"{self.mass_min:.1f}-{self.mass_max:.1f}: {self.mode2_abbrev}"
+
+    @property
+    def mode2_desc_with_massrange(self) -> str:
+        return f"{self.mass_min:.1f}-{self.mass_max:.1f}: {self.mode2_desc}"
 
 
 ################################################################################
@@ -429,7 +473,7 @@ SUB_WD_CO = SubStage(
 ################################################################################
 
 
-ALL_SUBSTAGES_LIST = [ 
+ALL_SUBSTAGES_LIST = CustomList([ 
     SUB_HAYASHI, 
     SUB_HENYEY, 
     SUB_MS_LOWMASS, 
@@ -444,7 +488,7 @@ ALL_SUBSTAGES_LIST = [
     SUB_AGB, 
     SUB_WD_HE, 
     SUB_WD_CO
-]
+]) 
 
 
 ################################################################################
@@ -472,13 +516,17 @@ ALL_SUBSTAGES_LIST = [
 
 
 @dataclass 
-class Model: 
+class Model(BaseEntity): 
     mass: float 
     substage: SubStage 
     model_start: int 
     model_example: int 
     model_end: int 
     MESA_folder_path: str 
+
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"Model(mass={self.mass}, model_example={self.model_example}, substage={self.substage})"
 
 
 ################################################################################
@@ -707,7 +755,7 @@ MODEL_3_0_COWD = Model(
 
 ################################################################################
 
-ALL_MODELS_LIST = [ 
+ALL_MODELS_LIST = CustomList([ 
     MODEL_0_2_HAYASHI,
     MODEL_0_2_MS, 
     MODEL_0_2_HEWD, 
@@ -737,7 +785,7 @@ ALL_MODELS_LIST = [
     MODEL_3_0_HEMS,
     MODEL_3_0_AGB, 
     MODEL_3_0_COWD 
-]
+]) 
 
 
 ################################################################################
