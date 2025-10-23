@@ -33,6 +33,7 @@ def load_history(MESA_folder_path):
     n_sig = np.clip(np.ceil(-np.log10(min_diffs / np.abs(ages))), 2, 8).astype(int) + 1 
     age_strings = [mticker.EngFormatter()(float(f'{ages[i]:.{n_sig[i]}g}')) for i in range(len(ages))] 
     history.age_strings = age_strings 
+    history.initial_mass_string = round(history.star_mass[0], 10)
 
     return history 
 
@@ -57,6 +58,7 @@ def load_profile(MESA_folder_path, modelnum, history=None):
         profile.age = history.star_age[profile.index] 
         profile.age_string = history.age_strings[profile.index] 
         profile.initial_mass = history.star_mass[0] 
+        profile.initial_mass_string = history.initial_mass_string 
     return profile 
 
 

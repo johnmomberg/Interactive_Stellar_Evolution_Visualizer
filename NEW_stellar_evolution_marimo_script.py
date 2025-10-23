@@ -935,7 +935,7 @@ def _(
             #     hr.add_path(history_selected, label=f"{history_selected.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
 
 
-            hr.add_path(history_selected, label=f"{history_selected.star_mass[0]:.2f} $M_{{sun}}$")
+            hr.add_path(history_selected, label=f"{history_selected.initial_mass_string} $M_{{sun}}$")
 
             hr.add_modelnum_labels(history_selected, modelnum_selected)         
             HR_diagram_plotting.label_spectraltypes(hr.ax) 
