@@ -4,9 +4,24 @@ __generated_with = "0.13.15"
 app = marimo.App(width="full")
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
     # To do: 
+
+
+
+    # Main to do: 
+
+    # HR diagram path colors for background/nonselected paths 
+    # HR diagram we are here point color 
+
+    # History plot background axvspans 
+    # Zoom into the currently selected stage? 
+    # History plot we are here vertical line color/linestyle (match HR diagram?)
+
+    # Is background colors for profile plot + text color both a good idea, or just do one? 
+
+
 
 
 
@@ -105,7 +120,6 @@ def _():
     # Check colors of all plots 
     # Check linestyles and linewidths 
     # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1)) 
-    # Collect all string representations of the mass as the same function. In subtitle of profile plot, label in HR diagram... somewhere else? 
 
 
     return
@@ -682,7 +696,6 @@ def _(
     np,
     plt,
     selected_massrange,
-    stellar_evolution_data,
     stellar_evolution_data_new,
     substage_selected,
     ui_options,
@@ -795,7 +808,7 @@ def _(
 
 
         if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
-            for substage in stellar_evolution_data.SUBSTAGES_LIST: 
+            for substage in stellar_evolution_data_new.ALL_SUBSTAGES_LIST: 
                 draw_substage_box(
                     ax, 
                     substage, 
@@ -877,12 +890,17 @@ def _(
 @app.cell
 def _(
     HR_diagram_plotting,
+    available_models,
     comparison_mode_radio,
     history_plot_dropdown,
+    history_plotting,
     history_selected,
+    load_data,
     lru_cache,
     mo,
+    model_selected,
     modelnum_selected,
+    np,
     plot_mode_radio,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
@@ -912,32 +930,15 @@ def _(
 
             hr = HR_diagram_plotting.HRDiagram() 
 
-            # for model in unique_models_list: 
-            #     history_new = load_data.load_history(model.MESA_folder_path) 
-
-            #     if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
-            #         color=model.parent_substage.flowchart_color 
-            #     elif comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
-            #         color=None
-
-            #     if history_new.star_mass[0] == history.star_mass[0]: 
-            #         hr.add_path(history, label=f"{history.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
-            #         continue
-
-            #     hr.add_path(history_new, label=f"{history_new.star_mass[0]:.1f} $M_{{sun}}$", alpha=0.3, color=color) 
-
-            # if model_selected is not None: 
-            #     color = model_selected.parent_substage.flowchart_color
-            # else: 
-            #     color = None 
-
-            # if len(unique_models_list)==0: 
-            #     hr.add_path(history_selected, label=f"{history_selected.star_mass[0]:.1f} $M_{{sun}}$", color=color) 
-
-
-            hr.add_path(history_selected, label=f"{history_selected.initial_mass_string} $M_{{sun}}$")
-
+            # Add transparent paths for non-selected masses 
+            for model in available_models: 
+                if model.mass != model_selected.mass: 
+                    history = load_data.load_history(model.MESA_folder_path)
+                    hr.add_path(history, label=f"{history.initial_mass_string} $M_{{sun}}$", color="gray") 
+        
+            hr.add_path(history_selected, label=f"{history_selected.initial_mass_string} $M_{{sun}}$", color="black")
             hr.add_modelnum_labels(history_selected, modelnum_selected)         
+
             HR_diagram_plotting.label_spectraltypes(hr.ax) 
             hr.legend() 
             fig2 = hr.fig 
@@ -954,7 +955,16 @@ def _(
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history_selected, modelnum_now=modelnum_selected) 
 
-            # history_plotting.add_substage_highlight(fig2, model_selected, history_selected) 
+            history_plotting.add_substage_highlight(fig2, model_selected, history_selected) 
+
+            # Set view window to center on currently selected stage 
+            x_stage_min = history_selected.star_age[model_selected.model_start-1] 
+            x_stage_max = history_selected.star_age[model_selected.model_end-1] 
+            x_stage_size = x_stage_max-x_stage_min 
+            x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
+            x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
+            fig2.axes[0].set_xlim(x_view_min, x_view_max)
+        
             return mo.mpl.interactive(fig2) 
 
 
@@ -1047,7 +1057,7 @@ def _(mo):
         import utils.plotting.history_plotting as history_plotting 
         import utils.plotting.profile_plotting as profile_plotting 
         import utils.plotting.HR_diagram_plotting as HR_diagram_plotting
-    return HR_diagram_plotting, profile_plotting
+    return HR_diagram_plotting, history_plotting, profile_plotting
 
 
 @app.cell(hide_code=True)
