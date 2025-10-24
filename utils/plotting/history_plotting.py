@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 import matplotlib.pyplot as plt 
 import matplotlib.ticker as mticker 
+from matplotlib.patches import Rectangle
+from matplotlib.transforms import blended_transform_factory
 
 import utils.helpers as helpers 
 import utils.config.plot_options as plot_options 
@@ -60,7 +62,7 @@ class HistoryPlot:
         # Grid, ticks 
         ax.grid(alpha=0.5) 
         ax.tick_params(labelsize=14) 
-        add_model_labels_time(ax, history, modelnum_now) 
+        # add_model_labels_time(ax, history, modelnum_now) 
 
         return fig, ax 
     
@@ -113,17 +115,21 @@ class HistoryPlot:
         
         # 3 fusion rates: Hydrogen, helium, and everything else (aka metals) 
         ax.plot(
+            history.star_age, 10**history.log_L, 
+            lw=3, color="black", 
+            label="Total luminosity \nof star")
+        ax.plot(
             history.star_age, 10**history.log_LH, 
-            lw=2, color="tab:blue", 
+            lw=1, color="tab:blue", 
             label=f"Hydrogen \u2192 Helium")
         ax.plot(
             history.star_age, 10**history.log_LHe, 
-            lw=2, color="tab:green", 
+            lw=1, color="tab:green", 
             label=f"Helium \u2192 Carbon")
         ax.plot(
             history.star_age, 10**history.log_LZ, 
-            lw=2, color="tab:red", 
-            label=f"Heavier elements")
+            lw=1, color="tab:red", 
+            label=f"Heavier elements") 
 
         # Use mass-luminosity relation on the MS to predict the range of fusion rates to use for y limits 
         L_guess = helpers.mass_luminosity_relation(history.star_mass[0]) 
@@ -263,13 +269,76 @@ def add_model_labels_time(ax, history, modelnum_now):
 
 
 
-def add_substage_highlight(fig, model_selected, history):
+def add_substage_highlight(
+        fig, model_selected, history, 
+        lower_alpha=0.1, lower_border_linewidth=0, lower_border_color="none", 
+        upper_alpha=0.6, upper_border_linewidth=0, upper_border_color="none", 
+        include_label=False): 
+
+    if model_selected.model_start is None: 
+        return 
+
     ax = fig.axes[0] 
-    if model_selected.model_start is not None: 
-        ax.axvspan(
-            history.star_age[model_selected.model_start-1], 
-            history.star_age[model_selected.model_end-1], 
-            color=model_selected.substage.flowchart_color, alpha=0.1, 
-            label=model_selected.substage.flowchart_text) 
+    trans = blended_transform_factory(ax.transData, ax.transAxes)
 
+    xmin = history.star_age[model_selected.model_start-1] 
+    xmax = history.star_age[model_selected.model_end-1] 
+    color = model_selected.substage.flowchart_color 
+    label = model_selected.substage.mode1_abbrev 
 
+    # Highlight inside plot 
+    ax.axvspan(
+        xmin, xmax, 
+        facecolor = color, 
+        alpha = lower_alpha, 
+        linewidth = lower_border_linewidth, 
+        edgecolor = lower_border_color, 
+        label=label) 
+
+    # Add colored rectangle above plot
+    rect = Rectangle(
+        xy = (xmin, 1.00), 
+        width = xmax-xmin, 
+        height = 0.1, 
+        transform = trans, 
+        facecolor = color, 
+        alpha = upper_alpha, 
+        linewidth=upper_border_linewidth, 
+        edgecolor=upper_border_color, 
+        clip_on = False )
+    ax.add_patch(rect) 
+
+    # Add text in the middle of the rectangle 
+    if include_label == True: 
+        xmid = (xmin + xmax) / 2
+        ymid = rect.get_xy()[1] + rect.get_height()/2 - 0.005
+        ax.text(
+            xmid,
+            ymid,
+            label,
+            ha="center",
+            va="center",
+            color="white", 
+            # weight="bold", 
+            fontsize=12, 
+            transform=trans )
+    
+    # Block out rectangles overhanging to the right... 
+    blocker_right = Rectangle(
+            xy = (1, 1), 
+            width = 1, 
+            height = rect.get_height(), 
+            transform=ax.transAxes,  
+            facecolor='white', 
+            clip_on = False)
+    ax.add_patch(blocker_right)  
+
+    # ...and left  
+    blocker_left = Rectangle(
+            xy = (0, 1), 
+            width = -1, 
+            height = rect.get_height(), 
+            transform=ax.transAxes,  
+            facecolor='white', 
+            clip_on = False)
+    ax.add_patch(blocker_left)  

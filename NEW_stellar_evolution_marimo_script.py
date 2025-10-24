@@ -390,7 +390,7 @@ def _(
     return available_substages, selected_massrange, selected_parentstage
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_substages,
     comparison_mode_radio,
@@ -410,7 +410,9 @@ def _(
         elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
             available_models = stellar_evolution_data_new.CustomList(
                 [model for model in stellar_evolution_data_new.ALL_MODELS_LIST 
-                 if (model.mass<=selected_massrange[1]) & (model.mass>=selected_massrange[0])]) 
+                 # if (model.mass<=selected_massrange[1]) & (model.mass>=selected_massrange[0])]) 
+                 if model.mass<=selected_massrange[1] and model.mass>=selected_massrange[0]]) 
+
 
         elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
 
@@ -954,16 +956,31 @@ def _(
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history_selected, modelnum_now=modelnum_selected) 
+        
+            # Highlight all regions 
+            for model in available_models: 
 
-            history_plotting.add_substage_highlight(fig2, model_selected, history_selected) 
+                if model.mass != model_selected.mass: 
+                    continue 
 
+                if model.id == model_selected.id: 
+                    history_plotting.add_substage_highlight(
+                        fig2, model, history_selected, include_label=model.id==model_selected.id, 
+                        lower_alpha=0.1, lower_border_linewidth=0, lower_border_color="black", 
+                        upper_alpha=1.0, upper_border_linewidth=2, upper_border_color="black", ) 
+                else: 
+                    history_plotting.add_substage_highlight(
+                        fig2, model, history_selected, include_label=model.id==model_selected.id) 
+            
+            
             # Set view window to center on currently selected stage 
-            x_stage_min = history_selected.star_age[model_selected.model_start-1] 
-            x_stage_max = history_selected.star_age[model_selected.model_end-1] 
-            x_stage_size = x_stage_max-x_stage_min 
-            x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
-            x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
-            fig2.axes[0].set_xlim(x_view_min, x_view_max)
+            if model_selected.model_start is not None and model_selected.model_end is not None: 
+                x_stage_min = history_selected.star_age[model_selected.model_start-1] 
+                x_stage_max = history_selected.star_age[model_selected.model_end-1] 
+                x_stage_size = x_stage_max-x_stage_min 
+                x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
+                x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
+                fig2.axes[0].set_xlim(x_view_min, x_view_max)
         
             return mo.mpl.interactive(fig2) 
 
