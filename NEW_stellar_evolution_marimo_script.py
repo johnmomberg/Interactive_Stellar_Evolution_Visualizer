@@ -4,127 +4,6 @@ __generated_with = "0.13.15"
 app = marimo.App(width="full")
 
 
-@app.cell
-def _():
-    # To do: 
-
-
-
-    # Main to do: 
-
-    # HR diagram path colors for background/nonselected paths 
-    # HR diagram we are here point color 
-
-    # History plot background axvspans 
-    # Zoom into the currently selected stage? 
-    # History plot we are here vertical line color/linestyle (match HR diagram?)
-
-    # Is background colors for profile plot + text color both a good idea, or just do one? 
-
-
-
-
-
-
-
-
-
-    # Research questions 
-
-    # Look in a 6 and 10 solar mass star, the carbon and nitrogen abundances after helium fusion has ignited. 
-    # At some point, nitrogen should plummet while carbon stays at the same level. 
-    # C+N should go down. Normally is constant because you're just turning C into N, but now we're depleting the N as well. 
-    # High temp: C+N rises because you're creating C and there is no N 
-    # There should be a thin layer that used to be in the core but isn't anymore. C+N will drop. 
-
-
-
-    # Additional data 
-
-    # 7-9 solar masses: Fuses carbon but not neon, forms an oxygen–neon–magnesium (ONeMg or ONe) white dwarf (https://en.wikipedia.org/wiki/White_dwarf)
-    # Find ages to stop simulation in order to get each flowchart point (goal: middle of the stage)
-    # Add support for high mass stars (separate flowchart entirely?) 
-
-
-
-    # Flowchart 
-
-    # Add "we are are" showing currently selected mass and model number 
-    # Add transparent/gray boxes where the star doesn't achieve those stages with explanation why it skips those stages. I.e.: "never gets hot enough to fuse helium" 
-    # Re-think colors used in flowchart boxes/colors used to represent the substages 
-    # Add spectral types to mass selection ("0.1-0.3" become "0.1-0.3 (M1-K3)", etc)
-
-
-
-
-
-    # HR diagram 
-
-    # Run build_combo_cache() command once, save data to a CSV, and then load the CSV 
-    # Add transparent tracks of available but un-selected substages for comparison 
-    # Finish incorporting Mode1 and Mode2 colored tracks of HR diagram paths based on the Paint pictures I made earlier 
-
-
-
-
-
-
-    # History plots 
-
-    # Add an option for history plot to be either scaled linearly with time or to evenly space the substages, 
-    # to make it easier to see the interesting properties that happen all near the end of the star's life
-    # How to deal with helium ignition: give an option called is_instantaneous=True which overrides the need for a model_start and model_end. 
-    # Instead, it uses the model_example and plots a LINE at that point rather than an axhspan, and the even spacing ignores it. 
-    # Colored regions on history plot that correspond to each stage and get highlighted if its selected 
-
-
-
-    # HR Diagram and history plot 
-
-    # "We are here" vertical line on history plot + "we are here" yellow label on HR diagram should align and both be labeled 
-
-
-
-    # Fusion history plot 
-
-    # Add separate lines for CNO cycle fusion and PP fusion 
-    # Coordinate colors with the colors used by profile plots 
-
-
-
-
-
-
-
-    # Temp grad profile plot 
-
-    # Radiative vs adiabatic temp gradients: theoretical = dashed? 
-
-
-
-
-
-    # How to make  marimo notebook available on github 
-
-    # Take URL to this notebook on github, which is: 
-    # https://github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
-    # Replace the https://github.com/ part with https://marimo.app/github.com/ , which gives: 
-    # https://marimo.app/github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/stellar_evolution_marimo_script.py 
-
-
-
-
-
-    # Misc 
-
-    # Check colors of all plots 
-    # Check linestyles and linewidths 
-    # Maybe go for densly dashed rather than just "dashed"? ls=(0,(5,1)) 
-
-
-    return
-
-
 @app.cell(hide_code=True)
 def _(mo):
     # Create title string "full_title"
@@ -189,50 +68,6 @@ def _(mo, ui_options):
         comparison_mode_radio = ui_options.create_radio(ui_options.COMPAREMODE_OPTIONS) 
 
     return comparison_mode_radio, comparison_mode_title
-
-
-@app.cell
-def _():
-    '''
-
-    What I have: 
-
-    ALL_PARENTSTAGES_LIST 
-    ALL_SUBSTAGES_LIST 
-    ALL_MODELS_LIST 
-
-
-
-    What I need:
-
-    unique_masses: [0.1, 0.3, 0.5, 1.5, 2.0, 6.0]
-    mode1_massrange_dropdown: Dropdown with ['0.1-0.3', '0.3-0.5', '0.5-1.5', '1.5-2.0', '2.0-6.0'] 
-    mode2_parentstage_dropdown: Dropdown with {'Hayashi track': <ParentStage.HAYASHI: ('Hayashi', 'Hayashi track', 0)>, 'Henyey track': <ParentStage.HENYEY: ('Henyey', 'Henyey track', 1)>, ... }
-
-    selected_massrange: [0.1, 0.3] (currently selected value of mode1_massrange_dropdown) 
-
-    selected_parentstage: ParentStage.HAYASHI (same for mode2_parentstage_dropdown) 
-
-    available_substages: list of substages shown in tabs. If mode1: all substages that match currently selected parentstage. If mode2: All substages that match currently selected massrange. 
-    available_substages_options
-    available_substages_tabs 
-
-    substage_selected: tab (from available_substages_tabs) that is currently selected 
-    model_selected: model used to represent that selected substage 
-    history: load_data using the model selected 
-    profile: same 
-    modelnum: model_example of model_selected 
-
-    unique_models_list: idek what this does? I think just collects one history file for each mass in order to plot on HR diagram 
-
-    ''' 
-
-
-
-
-
-
-    return
 
 
 @app.cell(hide_code=True)
@@ -390,7 +225,7 @@ def _(
     return available_substages, selected_massrange, selected_parentstage
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -634,55 +469,6 @@ def _(
             profile_selected = None 
 
     return modelnum_selected, profile_selected
-
-
-@app.cell
-def _():
-    # # Create list of all unique models 
-
-
-    # with mo.status.spinner(title="Choosing models to display on HR diagram...") as _: 
-
-
-    #     if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
-
-    #         # Create an empty dictionary to store the unique models. 
-    #         # The keys will be the unique folder paths, and the values will be the model objects. 
-    #         unique_models_dict = {} 
-
-    #         # Loop through all substages and all their associated models
-    #         for substage in stellar_evolution_data.SUBSTAGES_LIST:
-    #             for model in substage.models:
-    #                 # If we haven't seen this folder path before...
-    #                 if model.MESA_folder_path not in unique_models_dict:
-    #                     # ...add the model object to our dictionary.
-    #                     unique_models_dict[model.MESA_folder_path] = model
-
-    #         # You now have a dictionary where each value is a unique SubStageModel object.
-    #         # You can get a list of just the objects by using .values()
-    #         unique_models_list = list(unique_models_dict.values())
-
-
-
-    #     elif comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
-
-    #         unique_models_list = [] 
-    #         for _substage in available_substages: 
-    #             if len(_substage.models) == 0: 
-    #                 continue 
-    #             _model = next((m for m in _substage.models if m.is_default), _substage.models[0])
-    #             unique_models_list.append(_model) 
-
-
-    #     else: 
-    #         unique_models_list = [] 
-
-
-    unique_models_list = [] 
-
-
-
-    return
 
 
 @app.cell
