@@ -1,7 +1,7 @@
-from dataclasses import dataclass
-from enum import Enum
-from typing import Optional
+from dataclasses import dataclass 
 from pathlib import Path 
+
+
 
 data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
 
@@ -9,58 +9,143 @@ data_folder = Path("C:/Users/johnm/Local Desktop/Gayley/MESA output files/")
 
 
 
-class ParentStage(Enum):
-    """Defines the primary, high-level stages of stellar evolution."""
-    HAYASHI = ("Hayashi", "Hayashi track", 0) 
-    HENYEY = ("Henyey", "Henyey track", 1)
-    MAIN_SEQUENCE = ("MS", "Main Sequence", 2)
-    POST_MAIN_SEQUENCE = ("Post-MS", "Post-Main Sequence", 3)
-    RED_GIANT_BRANCH = ("RG", "Red Giant", 4)
-    HELIUM_IGNITION = ("He ign.", "Helium ignition", 5)
-    HELIUM_MAIN_SEQUENCE = ("He MS", "Helium Main Sequence", 6)
-    ASYMPTOTIC_GIANT_BRANCH = ("AGB", "Asymptotic Giant Branch", 7)
-    WHITE_DWARF = ("WD", "White Dwarf", 8)
+# Custom version of List that acts exactly the same, except when you print it, each item is displayed on its own line 
+class CustomList(list):
+    def __str__(self):
+        # Add header, body (each item on its own line), and footer
+        inner = "\n".join("  " + str(item) for item in self)
+        return f"CustomList([\n{inner}\n])"
 
-    @property
-    def short_name(self):
-        return self.value[0]
-
-    @property
-    def full_name(self):
-        return self.value[1]
-    
-    @property 
-    def flowchart_x(self): 
-        return self.value[2]  
+    def __repr__(self):
+        return self.__str__()
 
 
 
+
+
+# Base class that gives ParentStage, SubStage, and Model classes a __str__ and __repr__ function (so they print their ID's)
+@dataclass
+class BaseEntity:
+    def __str__(self):
+        return getattr(self, 'id', f"{self.__class__.__name__}()")
+
+    def __repr__(self):
+        return self.__str__()
+
+
+
+
+
+
+
+
+################################################################################
+
+
+@dataclass 
+class ParentStage(BaseEntity):
+    flowchart_x: int 
+    short_name: str 
+    full_name: str 
+
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"ParentStage({self.short_name}, x={self.flowchart_x})"
+
+
+################################################################################
+
+
+PARENT_HAYASHI = ParentStage( 
+    flowchart_x=0, 
+    short_name="Hayashi", 
+    full_name="Hayashi track")
+
+PARENT_HENYEY = ParentStage( 
+    flowchart_x=1, 
+    short_name="Henyey", 
+    full_name="Henyey track")
+
+PARENT_MS = ParentStage( 
+    flowchart_x=2, 
+    short_name="MS", 
+    full_name="Main Sequence")
+
+PARENT_POSTMS = ParentStage( 
+    flowchart_x=3, 
+    short_name="Post-MS", 
+    full_name="Post-Main Sequence")
+
+PARENT_RG = ParentStage( 
+    flowchart_x=4, 
+    short_name="RG", 
+    full_name="Red giant")
+
+PARENT_HEIGN = ParentStage( 
+    flowchart_x=5, 
+    short_name="He ign.", 
+    full_name="Helium ignition")
+
+PARENT_HEMS = ParentStage( 
+    flowchart_x=6, 
+    short_name="He MS", 
+    full_name="Helium Main Sequence")
+
+PARENT_AGB = ParentStage( 
+    flowchart_x=7, 
+    short_name="AGB", 
+    full_name="Asymptotic Giant Branch")
+
+PARENT_WD = ParentStage(
+    flowchart_x=8, 
+    short_name="WD", 
+    full_name="White Dwarf")
+
+
+################################################################################
+
+
+ALL_PARENTSTAGES_LIST = CustomList([ 
+    PARENT_HAYASHI, 
+    PARENT_HENYEY, 
+    PARENT_MS, 
+    PARENT_POSTMS, 
+    PARENT_RG, 
+    PARENT_HEIGN, 
+    PARENT_HEMS, 
+    PARENT_AGB, 
+    PARENT_WD 
+]) 
+
+
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
 
 
 @dataclass
-class SubStageModel:
-    """The model number used to represent a particular substage at a particular mass"""
-    mass: float 
-    model_example: int 
-    MESA_folder_path: Path 
-    is_default: bool = False # Choose one datapoint (i.e., a particular mass) for each substage to take precedence as the "default" mass used to represent that stage 
-    model_start: int | None = None # Allow None, default to None 
-    model_end: int | None = None # Allow None, default to None 
-    parent_substage: Optional["SubStage"] = None  # allow it to be set later 
+class SubStage(BaseEntity):
 
-
-
-
-
-@dataclass
-class SubStage:
-    """
-    Represents a specific substage of stellar evolution,
-    containing all UI text and the data needed to locate examples.
-    """
-
-    id: str  # A unique string identifier, e.g., "ms_convective_core"
-    parent_stage: ParentStage # A direct link to the Enum 
+    parent_stage: ParentStage 
 
     flowchart_text: str      # Text for the flowchart box (e.g., "Conv. core\n+ rad. env.") 
     flowchart_color: str 
@@ -76,9 +161,9 @@ class SubStage:
     mass_min: float # Minimum mass that exhibits this substage 
     mass_max: float # Maximum mass that exhibits this substage 
 
-    models: list[SubStageModel] # A list of blueprints for finding this phase at different masses
-
-
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"SubStage({self.mode2_abbrev}, massrange={self.mass_min}-{self.mass_max})"
 
     @property
     def mode2_abbrev_with_massrange(self) -> str:
@@ -88,21 +173,13 @@ class SubStage:
     def mode2_desc_with_massrange(self) -> str:
         return f"{self.mass_min:.1f}-{self.mass_max:.1f}: {self.mode2_desc}"
 
-    def __str__(self): 
-        return f"SubStage: {self.id}" 
-    
-    def __post_init__(self):
-        for model in self.models:
-            model.parent_substage = self 
+
+################################################################################
 
 
+SUB_HAYASHI = SubStage( 
 
-
-
-hayashi_substage = SubStage( 
-
-    id="hayashi",
-    parent_stage=ParentStage.HAYASHI, 
+    parent_stage=PARENT_HAYASHI, 
     
     flowchart_text = "Hayashi", 
     flowchart_color="tab:blue", 
@@ -116,45 +193,15 @@ hayashi_substage = SubStage(
     mode2_interior_plot_title = "Hayashi track", 
 
     mass_min=0.1, 
-    mass_max=6.0, 
-    models=[ 
-        SubStageModel(
-            mass=0.2,
-            model_start=None,
-            model_end=None,
-            model_example=150, 
-            MESA_folder_path=data_folder/"M=0.2"
-        ), 
-        SubStageModel(
-            mass=0.4,
-            model_start=None,
-            model_end=None,
-            model_example=200,
-            MESA_folder_path=data_folder/"M=0.4"
-        ), 
-        SubStageModel(
-            mass=1.0,
-            model_start=1,
-            model_end=202,
-            model_example=150, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ), 
-        SubStageModel(
-            mass=3.0,
-            model_start=None,
-            model_end=None,
-            model_example=150, 
-            MESA_folder_path=data_folder/"M=3.0"
-        ), 
-    ]
-)
+    mass_max=6.0,)
 
 
-henyey_substage = SubStage(
+################################################################################
 
-    id="henyey",
-    parent_stage=ParentStage.HENYEY, 
+
+SUB_HENYEY = SubStage(
+
+    parent_stage=PARENT_HENYEY, 
 
     flowchart_text = "Henyey", 
     flowchart_color="tab:orange", 
@@ -163,36 +210,20 @@ henyey_substage = SubStage(
     mode1_desc="Henyey track", 
     mode1_interior_plot_title="Henyey track", 
 
-    mode2_abbrev="Heyney", 
+    mode2_abbrev="Henyey", 
     mode2_desc="Henyey track", 
     mode2_interior_plot_title="Henyey track", 
     
     mass_min=0.5, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel(
-            mass=1.0,
-            model_start=202,
-            model_end=240,
-            model_example=220, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ),  
-        SubStageModel(
-            mass=3.0,
-            model_start=None,
-            model_end=None,
-            model_example=225, 
-            MESA_folder_path=data_folder/"M=3.0"
-        ),  
-    ]
-)
+    mass_max=6.0, )
 
 
-low_ms_substage = SubStage(
+################################################################################
+
+
+SUB_MS_LOWMASS = SubStage(
     
-    id="low_ms",
-    parent_stage=ParentStage.MAIN_SEQUENCE, 
+    parent_stage=PARENT_MS, 
 
     flowchart_text = "Main sequence \n(fully convective)", 
     flowchart_color="tab:orange", 
@@ -206,23 +237,12 @@ low_ms_substage = SubStage(
     mode2_interior_plot_title="fully convective MS", 
     
     mass_min=0.1, 
-    mass_max=0.3, 
-    models=[
-        SubStageModel(
-            mass=0.2,
-            model_start=None,
-            model_end=None,
-            model_example=273,
-            MESA_folder_path=data_folder/"M=0.2"
-        ), 
-    ]
-)
+    mass_max=0.3, )
 
 
-med_ms_substage = SubStage( 
+SUB_MS_MEDMASS = SubStage( 
 
-    id="med_ms",
-    parent_stage=ParentStage.MAIN_SEQUENCE, 
+    parent_stage=PARENT_MS, 
     
     flowchart_text = "Main sequence \n(rad. core \n+ conv. env.)",     
     flowchart_color="tab:red", 
@@ -236,31 +256,12 @@ med_ms_substage = SubStage(
     mode2_interior_plot_title="rad. core + conv. env MS", 
     
     mass_min=0.3, 
-    mass_max=1.5, 
-    models=[
-        SubStageModel(
-            mass=0.4,
-            model_start=None,
-            model_end=None,
-            model_example=309,
-            MESA_folder_path=data_folder/"M=0.4"
-        ), 
-        SubStageModel(
-            mass=1.0,
-            model_start=240, 
-            model_end=330,
-            model_example=296, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ), 
-    ]
-)
+    mass_max=1.5, )
 
 
-hi_ms_substage = SubStage( 
+SUB_MS_HIMASS = SubStage( 
 
-    id="hi_ms",
-    parent_stage=ParentStage.MAIN_SEQUENCE, 
+    parent_stage=PARENT_MS, 
     
     flowchart_text = "Main sequence \n(conv. core \n+ rad. env.)", 
     flowchart_color="tab:purple", 
@@ -274,23 +275,15 @@ hi_ms_substage = SubStage(
     mode2_interior_plot_title="conv. core + rad. env. MS", 
     
     mass_min=1.5, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel(
-            mass=3.0,
-            model_start=None,
-            model_end=None,
-            model_example=300,
-            MESA_folder_path=data_folder/"M=3.0"
-        ), 
-    ]
-)
+    mass_max=6.0, )
 
 
-subgiant_substage = SubStage( 
+################################################################################
 
-    id="subgiant", 
-    parent_stage=ParentStage.POST_MAIN_SEQUENCE, 
+
+SUB_POSTMS_SUBGIANT = SubStage( 
+
+    parent_stage=PARENT_POSTMS, 
     
     flowchart_text="Subgiant", 
     flowchart_color="tab:purple", 
@@ -304,31 +297,12 @@ subgiant_substage = SubStage(
     mode2_interior_plot_title="Subgiant", 
     
     mass_min=0.3, 
-    mass_max=1.5, 
-    models=[
-        SubStageModel(
-            mass=0.4, 
-            model_start=None, 
-            model_end=None, 
-            model_example=450, 
-            MESA_folder_path=data_folder/"M=0.4"
-        ), 
-        SubStageModel( 
-            mass=1.0, 
-            model_start=330, 
-            model_end=415, 
-            model_example=389, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0", 
-        )
-    ]
-)
+    mass_max=1.5, )
 
 
-hertzsprung_gap_substage = SubStage( 
+SUB_POSTMS_HGAP = SubStage( 
 
-    id="hertzsprung_gap", 
-    parent_stage=ParentStage.POST_MAIN_SEQUENCE, 
+    parent_stage=PARENT_POSTMS, 
     
     flowchart_text="Hertzsprung gap", 	
     flowchart_color="tab:red", 
@@ -342,23 +316,15 @@ hertzsprung_gap_substage = SubStage(
     mode2_interior_plot_title="Hertzsprung gap", 
     
     mass_min=1.5, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel(
-            mass=3.0, 
-            model_start=None, 
-            model_end=None, 
-            model_example=363, 
-            MESA_folder_path=data_folder/"M=3.0"
-        )
-    ]
-) 
+    mass_max=6.0, ) 
 
 
-red_giant_substage = SubStage( 
+################################################################################
 
-    id="red_giant", 
-    parent_stage=ParentStage.RED_GIANT_BRANCH, 
+
+SUB_RG = SubStage( 
+
+    parent_stage=PARENT_RG, 
     
     flowchart_text="Red giant", 	
     flowchart_color="tab:gray", 
@@ -372,38 +338,15 @@ red_giant_substage = SubStage(
     mode2_interior_plot_title="Red giant", 
     
     mass_min=0.3, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel(
-            mass=0.4, 
-            model_start=None, 
-            model_end=None, 
-            model_example=3000, 
-            MESA_folder_path=data_folder/"M=0.4"
-        ),
-        SubStageModel(
-            mass=1.0, 
-            model_start=415, 
-            model_end=9500, 
-            model_example=5000, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ), 
-        SubStageModel(
-            mass=3.0, 
-            model_start=None, 
-            model_end=None, 
-            model_example=400, 
-            MESA_folder_path=data_folder/"M=3.0"
-        )
-    ]
-)
+    mass_max=6.0, )
 
 
-he_flash_substage=SubStage( 
+################################################################################
 
-    id="he_flash", 
-    parent_stage=ParentStage.HELIUM_IGNITION, 
+
+SUB_HEIGN_HEFLASH = SubStage( 
+
+    parent_stage=PARENT_HEIGN, 
     
     flowchart_text="Helium flash", 	
     flowchart_color="tab:cyan", 
@@ -417,24 +360,15 @@ he_flash_substage=SubStage(
     mode2_interior_plot_title="He flash", 
     
     mass_min=0.5, 
-    mass_max=2.0, 
-    models=[
-        SubStageModel(
-            mass=1.0, 
-            model_start=9500, 
-            model_end=10500, 
-            model_example=9700, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ), 
-    ]
-)
+    mass_max=2.0, )
 
 
-he_stable_substage=SubStage(
+################################################################################
+
+
+SUB_HEIGN_STABLE = SubStage(
     
-    id="he_stable", 
-    parent_stage=ParentStage.HELIUM_IGNITION, 
+    parent_stage=PARENT_HEIGN, 
     
     flowchart_text="Helium ignites \nstably", 	
     flowchart_color="tab:olive", 
@@ -448,16 +382,15 @@ he_stable_substage=SubStage(
     mode2_interior_plot_title="He ign. (stable)", 
     
     mass_min=2.0, 
-    mass_max=6.0, 
-    models=[
-    ]
-)
+    mass_max=6.0, )
 
 
-he_ms_substage=SubStage( 
+################################################################################
 
-    id="he_ms", 
-    parent_stage=ParentStage.HELIUM_MAIN_SEQUENCE, 
+
+SUB_HEMS = SubStage( 
+
+    parent_stage=PARENT_HEMS, 
     
     flowchart_text="Helium main \nsequence", 	
     flowchart_color="tab:pink", 
@@ -471,31 +404,15 @@ he_ms_substage=SubStage(
     mode2_interior_plot_title="He MS", 
     
     mass_min=0.5, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel( 
-            mass=1.0, 
-            model_start=10500, 
-            model_end=10950, 
-            model_example=10650, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ), 
-        SubStageModel( 
-            mass=3.0, 
-            model_start=None, 
-            model_end=None, 
-            model_example=650, 
-            MESA_folder_path=data_folder/"M=3.0"
-        )
-    ]
-)
+    mass_max=6.0, )
 
 
-agb_substage=SubStage( 
+################################################################################
 
-    id="agb", 
-    parent_stage=ParentStage.ASYMPTOTIC_GIANT_BRANCH, 
+
+SUB_AGB = SubStage( 
+
+    parent_stage=PARENT_AGB, 
     
     flowchart_text="Asymptotic \ngiant", 	
     flowchart_color="tab:brown", 
@@ -509,31 +426,15 @@ agb_substage=SubStage(
     mode2_interior_plot_title="AGB", 
     
     mass_min=0.5, 
-    mass_max=6.0, 
-    models=[
-        SubStageModel( 
-            mass=1.0, 
-            model_start=10950, 
-            model_end=13600, 
-            model_example=12300, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=1.0" 
-        ), 
-        SubStageModel( 
-            mass=3.0, 
-            model_start=None, 
-            model_end=None, 
-            model_example=1700, 
-            MESA_folder_path=data_folder/"M=3.0"
-        )    
-    ]
-)
+    mass_max=6.0, )
 
 
-he_wd_substage=SubStage( 
+################################################################################
 
-    id="he_wd", 
-    parent_stage=ParentStage.WHITE_DWARF, 
+
+SUB_WD_HE = SubStage( 
+
+    parent_stage=PARENT_WD, 
     
     flowchart_text="Helium \nwhite dwarf", 	
     flowchart_color="tab:olive", 
@@ -546,33 +447,13 @@ he_wd_substage=SubStage(
     mode2_desc="Helium white dwarf", 
     mode2_interior_plot_title="He WD", 
     
-
     mass_min = 0.1, 
-    mass_max = 0.5,
-    models=[
-        SubStageModel( 
-            mass=0.2, 
-            model_start=None, 
-            model_end=None, 
-            model_example=1200, 
-            MESA_folder_path=data_folder/"M=0.2"
-        ), 
-        SubStageModel( 
-            mass=0.4, 
-            model_start=None, 
-            model_end=None, 
-            model_example=5159, 
-            is_default=True, 
-            MESA_folder_path=data_folder/"M=0.4"
-        )    
-    ]
-)
+    mass_max = 0.5, )
 
 
-co_wd_substage=SubStage( 
+SUB_WD_CO = SubStage( 
     
-    id="co_wd", 
-    parent_stage=ParentStage.WHITE_DWARF, 
+    parent_stage=PARENT_WD, 
     
     flowchart_text="Carbon + \noxygen \nwhite dwarf", 	
     flowchart_color="tab:green", 
@@ -586,37 +467,327 @@ co_wd_substage=SubStage(
     mode2_interior_plot_title="C+O WD", 
     
     mass_min = 0.5, 
-    mass_max = 6.0,
-    models=[
-        SubStageModel( 
-            mass=1.0, 
-            model_start=13600, 
-            model_end=14300, 
-            model_example=14300, 
-            MESA_folder_path=data_folder/"M=1.0"
-        ),   
-    ]
-)
+    mass_max = 6.0, )
+
+
+################################################################################
+
+
+ALL_SUBSTAGES_LIST = CustomList([ 
+    SUB_HAYASHI, 
+    SUB_HENYEY, 
+    SUB_MS_LOWMASS, 
+    SUB_MS_MEDMASS, 
+    SUB_MS_HIMASS, 
+    SUB_POSTMS_SUBGIANT, 
+    SUB_POSTMS_HGAP, 
+    SUB_RG, 
+    SUB_HEIGN_HEFLASH, 
+    SUB_HEIGN_STABLE, 
+    SUB_HEMS, 
+    SUB_AGB, 
+    SUB_WD_HE, 
+    SUB_WD_CO
+]) 
+
+
+################################################################################
 
 
 
-SUBSTAGES_LIST = [
-    hayashi_substage, 
-    henyey_substage, 
-    low_ms_substage, 
-    med_ms_substage, 
-    hi_ms_substage, 
-    subgiant_substage, 
-    hertzsprung_gap_substage, 
-    red_giant_substage, 
-    he_flash_substage, 
-    he_stable_substage, 
-    he_ms_substage, 
-    agb_substage, 
-    he_wd_substage, 
-    co_wd_substage
-    ]
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+
+
+@dataclass 
+class Model(BaseEntity): 
+    mass: float 
+    substage: SubStage 
+    model_start: int 
+    model_example: int 
+    model_end: int 
+    MESA_folder_path: str 
+
+    # Automatically generate ID when object is created
+    def __post_init__(self):
+        self.id = f"Model(mass={self.mass}, model_example={self.model_example}, substage={self.substage})"
+
+
+################################################################################
+
+
+MODEL_0_2_HAYASHI = Model( 
+    mass=0.2, 
+    substage=SUB_HAYASHI, 
+    model_start=None, 
+    model_example=150, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.2") 
+
+MODEL_0_2_MS = Model( 
+    mass=0.2, 
+    substage=SUB_MS_LOWMASS, 
+    model_start=None, 
+    model_example=273, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.2") 
+
+MODEL_0_2_HEWD = Model( 
+    mass=0.2, 
+    substage=SUB_WD_HE, 
+    model_start=None, 
+    model_example=1200, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.2") 
+
+
+################################################################################
+
+
+MODEL_0_4_HAYASHI = Model( 
+    mass=0.4, 
+    substage=SUB_HAYASHI, 
+    model_start=None, 
+    model_example=200, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4") 
+
+MODEL_0_4_MS = Model( 
+    mass=0.4, 
+    substage=SUB_MS_MEDMASS, 
+    model_start=None, 
+    model_example=309, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4") 
+
+MODEL_0_4_SUBGIANT = Model( 
+    mass=0.4, 
+    substage=SUB_POSTMS_SUBGIANT, 
+    model_start=None, 
+    model_example=450, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4") 
+
+MODEL_0_4_RG = Model( 
+    mass=0.4, 
+    substage=SUB_RG, 
+    model_start=None, 
+    model_example=3000, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4") 
+
+MODEL_0_4_HEWD = Model( 
+    mass=0.4, 
+    substage=SUB_WD_HE, 
+    model_start=None, 
+    model_example=5159, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4") 
+
+
+################################################################################
+
+
+MODEL_1_0_HAYASHI = Model( 
+    mass=1.0, 
+    substage=SUB_HAYASHI, 
+    model_start=1,
+    model_example=150, 
+    model_end=202,
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_HENYEY = Model( 
+    mass=1.0, 
+    substage=SUB_HENYEY, 
+    model_start=202,
+    model_example=220, 
+    model_end=240,
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_MS = Model( 
+    mass=1.0, 
+    substage=SUB_MS_MEDMASS, 
+    model_start=240, 
+    model_example=296, 
+    model_end=330,
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_SUBGIANT = Model( 
+    mass=1.0, 
+    substage=SUB_POSTMS_SUBGIANT, 
+    model_start=330, 
+    model_example=389, 
+    model_end=415, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_RG = Model( 
+    mass=1.0, 
+    substage=SUB_RG, 
+    model_start=415, 
+    model_example=5000, 
+    model_end=9500, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_HEFLASH = Model( 
+    mass=1.0, 
+    substage=SUB_HEIGN_HEFLASH, 
+    model_start=9500, 
+    model_example=9700, 
+    model_end=10500, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_HEMS = Model( 
+    mass=1.0, 
+    substage=SUB_HEMS, 
+    model_start=10500, 
+    model_example=10650, 
+    model_end=10950, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_AGB = Model(
+    mass=1.0, 
+    substage=SUB_AGB, 
+    model_start=10950, 
+    model_example=12300, 
+    model_end=13600, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+MODEL_1_0_COWD = Model( 
+    mass=1.0, 
+    substage=SUB_WD_CO, 
+    model_start=13600, 
+    model_example=14300, 
+    model_end=14300, 
+    MESA_folder_path=data_folder/"M=1.0") 
+
+
+################################################################################
+
+
+MODEL_3_0_HAYASHI = Model( 
+    mass=3.0, 
+    substage=SUB_HAYASHI, 
+    model_start=None, 
+    model_example=150, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_HENYEY = Model( 
+    mass=3.0, 
+    substage=SUB_HENYEY, 
+    model_start=None, 
+    model_example=225, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_MS = Model( 
+    mass=3.0, 
+    substage=SUB_MS_HIMASS, 
+    model_start=None, 
+    model_example=300, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_HGAP = Model( 
+    mass=3.0, 
+    substage=SUB_POSTMS_HGAP, 
+    model_start=None, 
+    model_example=363, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_RG = Model( 
+    mass=3.0, 
+    substage=SUB_RG, 
+    model_start=None, 
+    model_example=400, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_HESTABLE = Model( 
+    mass=3.0, 
+    substage=SUB_HEIGN_STABLE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_HEMS = Model( 
+    mass=3.0, 
+    substage=SUB_HEMS, 
+    model_start=None, 
+    model_example=650, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_AGB = Model( 
+    mass=3.0, 
+    substage=SUB_AGB, 
+    model_start=None, 
+    model_example=1700, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+MODEL_3_0_COWD = Model( 
+    mass=3.0, 
+    substage=SUB_WD_CO, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0") 
+
+
+################################################################################
+
+ALL_MODELS_LIST = CustomList([ 
+    MODEL_0_2_HAYASHI,
+    MODEL_0_2_MS, 
+    MODEL_0_2_HEWD, 
+
+    MODEL_0_4_HAYASHI, 
+    MODEL_0_4_MS, 
+    MODEL_0_4_SUBGIANT, 
+    MODEL_0_4_RG,
+    MODEL_0_4_HEWD, 
+
+    MODEL_1_0_HAYASHI,
+    MODEL_1_0_HENYEY, 
+    MODEL_1_0_MS, 
+    MODEL_1_0_SUBGIANT, 
+    MODEL_1_0_RG, 
+    MODEL_1_0_HEFLASH,
+    MODEL_1_0_HEMS,
+    MODEL_1_0_AGB, 
+    MODEL_1_0_COWD, 
+
+    MODEL_3_0_HAYASHI,
+    MODEL_3_0_HENYEY, 
+    MODEL_3_0_MS, 
+    MODEL_3_0_HGAP, 
+    MODEL_3_0_RG, 
+    MODEL_3_0_HESTABLE,
+    MODEL_3_0_HEMS,
+    MODEL_3_0_AGB, 
+    MODEL_3_0_COWD 
+]) 
+
+
+################################################################################
 
 

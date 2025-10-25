@@ -24,39 +24,48 @@ def _():
 
 
 
-    return mo, time
+    return mo, plt
 
 
 @app.cell
-def _(mo):
-    # Hello 
-    print("Hey")
-    mo.refs()
+def _():
+    # # Hello 
+    # print("Hey")
+    # mo.refs()
     return
 
 
 @app.cell
-def _(mo):
-    test_dropdown = mo.ui.dropdown(options=["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]) 
+def _():
+    # test_dropdown = mo.ui.dropdown(options=["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]) 
+    # # test_dropdown 
+    return
+
+
+@app.cell
+def _():
+    # # mo.vstack([test_dropdown, mo.status.spinner(remove_on_exit=False) if loading==True else mo.md("Done!")]) 
     # test_dropdown 
-    return (test_dropdown,)
-
-
-@app.cell
-def _(test_dropdown):
-    # mo.vstack([test_dropdown, mo.status.spinner(remove_on_exit=False) if loading==True else mo.md("Done!")]) 
-    test_dropdown 
     return
 
 
 @app.cell
-def _(mo, test_dropdown, time):
+def _():
 
-    with mo.status.spinner(title="Loading...") as spinner: 
-        time.sleep(1) 
-        x = test_dropdown.value 
-        time.sleep(1) 
+    # with mo.status.spinner(title="Loading...") as spinner: 
+    #     time.sleep(1) 
+    #     x = test_dropdown.value 
+    #     time.sleep(1) 
 
+    return
+
+
+@app.cell
+def _(mo, plt):
+
+    fig, ax = plt.subplots(figsize=(15, 5))  # Set width and height in inches
+    ax.plot([1, 2])
+    mo.mpl.interactive(fig)
     return
 
 
