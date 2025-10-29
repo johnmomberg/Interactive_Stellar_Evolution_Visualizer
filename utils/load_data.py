@@ -36,7 +36,7 @@ def load_history(MESA_folder_path):
 
         # current model 
         modelnum_current = history.model_numbers_available[ind]
-        age_current = history.star_age[modelnum_current]
+        age_current = history.star_age[modelnum_current-1]
 
         # previous model
         if ind == 0:
@@ -44,7 +44,7 @@ def load_history(MESA_folder_path):
             age_previous = 0.0
         else:
             modelnum_previous = history.model_numbers_available[ind - 1]
-            age_previous = history.star_age[modelnum_previous]
+            age_previous = history.star_age[modelnum_previous-1]
 
         # next model
         if ind == len(history.model_numbers_available) - 1:
@@ -52,7 +52,7 @@ def load_history(MESA_folder_path):
             age_next = age_current*2
         else:
             modelnum_next = history.model_numbers_available[ind + 1]
-            age_next = history.star_age[modelnum_next]
+            age_next = history.star_age[modelnum_next-1]
 
         # Convert ages to zero-padded strings 
         string_previous = helpers.format_number(age_previous) 

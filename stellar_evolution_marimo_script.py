@@ -803,7 +803,7 @@ def _(
 
                 # Add selected color to background of plot to show this is a profile plot of that substage 
                 fig2.patch.set_facecolor(substage_selected_color)
-                fig2.patch.set_alpha(0.1)
+                fig2.patch.set_alpha(0.2)
 
             return mo.mpl.interactive(fig2) 
 

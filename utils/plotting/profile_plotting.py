@@ -466,8 +466,13 @@ def add_colored_title(fig, strings, colors, fontsize, y=0.95, spacing_pts=10):
 
     x = 0.5 - total_width_pts * pts_to_fig_frac / 2
     for part, color, width in zip(strings, colors, tp_widths):
-        fig.text(x, y, part, fontproperties=fontprops,
-                 color=color, ha='left', va='center')
+        fig.text(
+            x, y, part, 
+            fontproperties=fontprops,
+            color=color, 
+            ha='left', 
+            va='center', 
+            bbox=dict(facecolor='white', edgecolor='none', pad=5) )
         x += width * pts_to_fig_frac + spacing_pts * pts_to_fig_frac
 
 
