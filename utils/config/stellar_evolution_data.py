@@ -680,6 +680,82 @@ MODEL_1_0_COWD = Model(
 ################################################################################
 
 
+MODEL_1_75_HAYASHI = Model(
+    mass=1.75, 
+    substage=SUB_HAYASHI, 
+    model_start=1, 
+    model_example=140, 
+    model_end=200, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_HENYEY = Model(
+    mass=1.75, 
+    substage=SUB_HENYEY, 
+    model_start=200, 
+    model_example=235, 
+    model_end=250, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_MS = Model(
+    mass=1.75, 
+    substage=SUB_MS_HIMASS, 
+    model_start=250, 
+    model_example=285, 
+    model_end=340, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_HGAP = Model(
+    mass=1.75, 
+    substage=SUB_POSTMS_HGAP, 
+    model_start=340, 
+    model_example=389, 
+    model_end=420, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_RG = Model(
+    mass=1.75, 
+    substage=SUB_RG, 
+    model_start=420, 
+    model_example=1000, 
+    model_end=8763, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_HEFLASH = Model(
+    mass=1.75, 
+    substage=SUB_HEIGN_HEFLASH, 
+    model_start=8763, 
+    model_example=8802, 
+    model_end=9000, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_HEMS = Model(
+    mass=1.75, 
+    substage=SUB_HEMS, 
+    model_start=9000, 
+    model_example=9800, 
+    model_end=10000, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_AGB = Model(
+    mass=1.75, 
+    substage=SUB_AGB, 
+    model_start=10000, 
+    model_example=11425, 
+    model_end=13635, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+MODEL_1_75_COWD = Model(
+    mass=1.75, 
+    substage=SUB_HENYEY, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
+
+################################################################################
+
+
 MODEL_3_0_HAYASHI = Model( 
     mass=3.0, 
     substage=SUB_HAYASHI, 
@@ -775,6 +851,16 @@ ALL_MODELS_LIST = CustomList([
     MODEL_1_0_HEMS,
     MODEL_1_0_AGB, 
     MODEL_1_0_COWD, 
+
+    MODEL_1_75_HAYASHI,
+    MODEL_1_75_HENYEY, 
+    MODEL_1_75_MS, 
+    MODEL_1_75_HGAP, 
+    MODEL_1_75_RG, 
+    MODEL_1_75_HEFLASH,
+    MODEL_1_75_HEMS,
+    MODEL_1_75_AGB, 
+    MODEL_1_75_COWD, 
 
     MODEL_3_0_HAYASHI,
     MODEL_3_0_HENYEY, 

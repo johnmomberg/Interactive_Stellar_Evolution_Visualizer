@@ -62,7 +62,7 @@ class HistoryPlot:
         # Grid, ticks 
         ax.grid(alpha=0.5) 
         ax.tick_params(labelsize=14) 
-        # add_model_labels_time(ax, history, modelnum_now) 
+        add_model_labels_time(ax, history, modelnum_now) 
 
         return fig, ax 
     
