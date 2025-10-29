@@ -14,7 +14,24 @@ def to_engineering(x):
         exponent = exponent = exponent-1
         coeff = x / 10**exponent  
 
-    return f"{coeff:.3g} x 10^{exponent}" 
+    return f"{coeff} x 10^{exponent}" 
+
+
+
+
+
+# Convert a float to a string and zero-pad it until it has 20 digits before the decimal and then another 20 digits afer the decimal. 
+def format_number(num): 
+    if num < 1e-4: 
+        s = f"{num:.20f}"
+    else: 
+        s = str(num)
+    if '.' not in s:
+        s += '.'
+    left, right = s.split('.')
+    left = left.rjust(20, '0')  # pad to 20 digits on the left
+    right = right.ljust(20, '0')  # pad to 20 digits on the right
+    return f"{left}.{right[:20]}"  # limit to 20 digits after decimal
 
 
 

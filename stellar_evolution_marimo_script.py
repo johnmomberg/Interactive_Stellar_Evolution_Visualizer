@@ -761,13 +761,19 @@ def _(
 
 
             # Set view window to center on currently selected stage 
-            if model_selected.model_start is not None and model_selected.model_end is not None: 
-                x_stage_min = history_selected.star_age[model_selected.model_start-1] 
-                x_stage_max = history_selected.star_age[model_selected.model_end-1] 
-                x_stage_size = x_stage_max-x_stage_min 
-                x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
-                x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
-                fig2.axes[0].set_xlim(x_view_min, x_view_max)
+            if model_selected is None: 
+                return 
+            if model_selected.model_start is None: 
+                return 
+            if model_selected.model_end is None: 
+                return 
+
+            x_stage_min = history_selected.star_age[model_selected.model_start-1] 
+            x_stage_max = history_selected.star_age[model_selected.model_end-1] 
+            x_stage_size = x_stage_max-x_stage_min 
+            x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
+            x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
+            fig2.axes[0].set_xlim(x_view_min, x_view_max)
 
             return mo.mpl.interactive(fig2) 
 

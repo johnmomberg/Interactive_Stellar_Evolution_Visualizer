@@ -2,6 +2,7 @@ import mesa_reader as mr
 import numpy as np 
 from functools import lru_cache 
 import matplotlib.ticker as mticker 
+import utils.helpers as helpers 
 
 
 
@@ -25,15 +26,77 @@ def load_history(MESA_folder_path):
     # Add list of available model numbers to History object 
     history.model_numbers_available = folder_mesa.model_numbers 
 
-    # Calculate the number of sig figs required to display each age so that it's distinct from its neighbors 
-    ages = history.star_age
-    deltas_left = np.diff(ages, prepend=ages[0])
-    deltas_right = np.diff(ages, append=ages[-1])
-    min_diffs = np.minimum(deltas_left, deltas_right)
-    n_sig = np.clip(np.ceil(-np.log10(min_diffs / np.abs(ages))), 2, 8).astype(int) + 1 
-    age_strings = [mticker.EngFormatter()(float(f'{ages[i]:.{n_sig[i]}g}')) for i in range(len(ages))] 
-    history.age_strings = age_strings 
+    # Add initial mass string (used for plot titles)
     history.initial_mass_string = round(history.star_mass[0], 10)
+
+    # Add list of age strings (used for titles) 
+    # Calculates just enough decimal places for each string to be distinct from its neighbors and puts it in engineering notation 
+    history.age_strings = [str(age) for age in history.star_age] # Initialize array 
+    for ind in range(len(history.model_numbers_available)):
+
+        # current model 
+        modelnum_current = history.model_numbers_available[ind]
+        age_current = history.star_age[modelnum_current]
+
+        # previous model
+        if ind == 0:
+            modelnum_previous = np.nan
+            age_previous = 0.0
+        else:
+            modelnum_previous = history.model_numbers_available[ind - 1]
+            age_previous = history.star_age[modelnum_previous]
+
+        # next model
+        if ind == len(history.model_numbers_available) - 1:
+            modelnum_next = np.nan
+            age_next = age_current*2
+        else:
+            modelnum_next = history.model_numbers_available[ind + 1]
+            age_next = history.star_age[modelnum_next]
+
+        # Convert ages to zero-padded strings 
+        string_previous = helpers.format_number(age_previous) 
+        string_current = helpers.format_number(age_current) 
+        string_next = helpers.format_number(age_next) 
+
+        # Crop the current age string so it has just enough precision to distinguish it from its neighbors 
+        count = 0
+        for a, b, c in zip(string_previous, string_current, string_next):
+            if b == a or b == c:
+                count += 1
+            else:
+                break
+
+        # Add trailing zeros back so the rounded versions all have the decimal place in the current location 
+        string_formatted = string_current[:count+2] 
+        while len(string_formatted) < 20: 
+            string_formatted += "0" 
+        while len(string_formatted) < 20 + 1: 
+            string_formatted += "." 
+        while len(string_formatted) < 20 + 20 + 1: 
+            string_formatted += "0" 
+        
+        # Write the answer in engineering notation 
+        age_formatted = float(string_formatted) 
+        power = np.floor(np.log10(age_formatted)) 
+        if power == 12 or power == 13 or power == 14: 
+            n = -12 
+            suffix = " T years"
+        if power == 9 or power == 10 or power == 11: 
+            n = -9 
+            suffix = " G years" 
+        elif power == 6 or power == 7 or power == 8: 
+            n = -6 
+            suffix = " M years" 
+        elif power == 3 or power == 4 or power == 5: 
+            n = -3 
+            suffix = " k years"
+        else: 
+            n = 0 
+            suffix = " years"
+        s_new = string_formatted.replace(".", ""); s_new = s_new[:string_formatted.find(".")+n] + "." + s_new[string_formatted.find(".")+n:]
+        age_string_final = str(float(s_new)) + suffix 
+        history.age_strings[modelnum_current-1] = age_string_final 
 
     return history 
 
