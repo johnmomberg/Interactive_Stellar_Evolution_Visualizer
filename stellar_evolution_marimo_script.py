@@ -689,6 +689,7 @@ def _(
     mo,
     model_selected,
     modelnum_selected,
+    mpatches,
     np,
     plot_mode_radio,
     profile_plot_dropdown,
@@ -801,9 +802,16 @@ def _(
             if comparison_mode_radio.value != ui_options.COMPAREMODE_FREE: 
                 profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
-                # Add selected color to background of plot to show this is a profile plot of that substage 
+                # Face color of figure with low alpha 
                 fig2.patch.set_facecolor(substage_selected_color)
-                fig2.patch.set_alpha(0.2)
+                fig2.patch.set_alpha(0.12)
+            
+                # Draw a separate edge rectangle on top with full alpha
+                rect = mpatches.Rectangle(
+                    (0, 0), 1, 1, transform=fig2.transFigure, 
+                    facecolor='none', edgecolor=substage_selected_color, linewidth=15, zorder=2
+                )
+                fig2.patches.append(rect)
 
             return mo.mpl.interactive(fig2) 
 
