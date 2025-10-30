@@ -20,6 +20,15 @@ def to_engineering(x):
 
 
 
+def round_sigfigs(x, num_sigfigs): 
+    if x == 0:
+        return 0.0
+    return round(x, num_sigfigs - int(math.floor(math.log10(abs(x)))) - 1)
+
+
+
+
+
 # Convert a float to a string and zero-pad it until it has 20 digits before the decimal and then another 20 digits afer the decimal. 
 def format_number(num): 
     if num < 1e-4: 

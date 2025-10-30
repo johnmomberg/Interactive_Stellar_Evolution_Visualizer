@@ -54,48 +54,53 @@ def load_history(MESA_folder_path):
             modelnum_next = history.model_numbers_available[ind + 1]
             age_next = history.star_age[modelnum_next-1]
 
-        # Convert ages to zero-padded strings 
-        string_previous = helpers.format_number(age_previous) 
-        string_current = helpers.format_number(age_current) 
-        string_next = helpers.format_number(age_next) 
 
-        # Crop the current age string so it has just enough precision to distinguish it from its neighbors 
-        count = 0
-        for a, b, c in zip(string_previous, string_current, string_next):
-            if b == a or b == c:
-                count += 1
-            else:
-                break
-
-        # Add trailing zeros back so the rounded versions all have the decimal place in the current location 
-        string_formatted = string_current[:count+2] 
-        while len(string_formatted) < 20: 
-            string_formatted += "0" 
-        while len(string_formatted) < 20 + 1: 
-            string_formatted += "." 
-        while len(string_formatted) < 20 + 20 + 1: 
-            string_formatted += "0" 
+        num_sigfigs = np.max([len(str(age).replace(".", "")) for age in [age_previous, age_current, age_next]]) 
         
-        # Write the answer in engineering notation 
-        age_formatted = float(string_formatted) 
-        power = np.floor(np.log10(age_formatted)) 
+
+        # Initialize 
+        rounded_previous = helpers.round_sigfigs(age_previous, num_sigfigs) 
+        rounded_current = helpers.round_sigfigs(age_current, num_sigfigs) 
+        rounded_next = helpers.round_sigfigs(age_next, num_sigfigs) 
+
+        # Keep looping until rounding has gone too far, then take the previous iteratin 
+        while str(rounded_current) != str(rounded_previous) and str(rounded_current) != str(rounded_next): 
+
+            age_previous = rounded_previous 
+            age_current = rounded_current 
+            age_next = rounded_next 
+
+            rounded_previous = helpers.round_sigfigs(age_previous, num_sigfigs) 
+            rounded_current = helpers.round_sigfigs(age_current, num_sigfigs) 
+            rounded_next = helpers.round_sigfigs(age_next, num_sigfigs) 
+
+            num_sigfigs-=1 
+
+            # Minimum of 4 sig figs 
+            if num_sigfigs <= 2: 
+                break         
+
+
+        power = np.floor(np.log10(age_current)) 
         if power == 12 or power == 13 or power == 14: 
-            n = -12 
+            n = 12 
             suffix = " T years"
-        if power == 9 or power == 10 or power == 11: 
-            n = -9 
+        elif power == 9 or power == 10 or power == 11: 
+            n = 9 
             suffix = " G years" 
         elif power == 6 or power == 7 or power == 8: 
-            n = -6 
+            n = 6 
             suffix = " M years" 
         elif power == 3 or power == 4 or power == 5: 
-            n = -3 
+            n = 3 
             suffix = " k years"
         else: 
             n = 0 
-            suffix = " years"
-        s_new = string_formatted.replace(".", ""); s_new = s_new[:string_formatted.find(".")+n] + "." + s_new[string_formatted.find(".")+n:]
-        age_string_final = str(float(s_new)) + suffix 
+            suffix = " years" 
+        
+        
+        mantissa = helpers.round_sigfigs(age_current / 10**n, num_sigfigs+2) 
+        age_string_final = str(mantissa) + suffix
         history.age_strings[modelnum_current-1] = age_string_final 
 
     return history 
