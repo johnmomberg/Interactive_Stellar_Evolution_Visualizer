@@ -1,5 +1,6 @@
 from dataclasses import dataclass 
 from pathlib import Path 
+from matplotlib import cm 
 
 
 
@@ -174,6 +175,10 @@ class SubStage(BaseEntity):
         return f"{self.mass_min:.1f}-{self.mass_max:.1f}: {self.mode2_desc}"
 
 
+
+# Choose the colormap 
+cmap = cm.get_cmap("Spectral", 14)
+
 ################################################################################
 
 
@@ -182,7 +187,7 @@ SUB_HAYASHI = SubStage(
     parent_stage=PARENT_HAYASHI, 
     
     flowchart_text = "Hayashi", 
-    flowchart_color="tab:blue", 
+    flowchart_color=cmap(11), 
     
     mode1_abbrev="Hayashi", 
     mode1_desc="Hayashi track", 
@@ -204,7 +209,7 @@ SUB_HENYEY = SubStage(
     parent_stage=PARENT_HENYEY, 
 
     flowchart_text = "Henyey", 
-    flowchart_color="tab:orange", 
+    flowchart_color=cmap(5), 
 
     mode1_abbrev="Henyey", 
     mode1_desc="Henyey track", 
@@ -226,7 +231,7 @@ SUB_MS_LOWMASS = SubStage(
     parent_stage=PARENT_MS, 
 
     flowchart_text = "Main sequence \n(fully convective)", 
-    flowchart_color="tab:orange", 
+    flowchart_color=cmap(1), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (fully convective)", 
@@ -245,7 +250,7 @@ SUB_MS_MEDMASS = SubStage(
     parent_stage=PARENT_MS, 
     
     flowchart_text = "Main sequence \n(rad. core \n+ conv. env.)",     
-    flowchart_color="tab:red", 
+    flowchart_color=cmap(10), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (radiative core + convective envelope)", 
@@ -264,7 +269,7 @@ SUB_MS_HIMASS = SubStage(
     parent_stage=PARENT_MS, 
     
     flowchart_text = "Main sequence \n(conv. core \n+ rad. env.)", 
-    flowchart_color="tab:purple", 
+    flowchart_color=cmap(13), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (convective core + radiative envelope)", 
@@ -286,7 +291,7 @@ SUB_POSTMS_SUBGIANT = SubStage(
     parent_stage=PARENT_POSTMS, 
     
     flowchart_text="Subgiant", 
-    flowchart_color="tab:purple", 
+    flowchart_color=cmap(4), 
     
     mode1_abbrev="Subgiant", 
     mode1_desc="Subgiant", 
@@ -305,7 +310,7 @@ SUB_POSTMS_HGAP = SubStage(
     parent_stage=PARENT_POSTMS, 
     
     flowchart_text="Hertzsprung gap", 	
-    flowchart_color="tab:red", 
+    flowchart_color=cmap(8), 
     
     mode1_abbrev="Hertzsprung gap", 
     mode1_desc="Hertzsprung gap", 
@@ -327,7 +332,7 @@ SUB_RG = SubStage(
     parent_stage=PARENT_RG, 
     
     flowchart_text="Red giant", 	
-    flowchart_color="tab:gray", 
+    flowchart_color=cmap(0), 
     
     mode1_abbrev="RG", 
     mode1_desc="Red giant", 
@@ -349,7 +354,7 @@ SUB_HEIGN_HEFLASH = SubStage(
     parent_stage=PARENT_HEIGN, 
     
     flowchart_text="Helium flash", 	
-    flowchart_color="tab:cyan", 
+    flowchart_color=cmap(12), 
     
     mode1_abbrev="He flash", 
     mode1_desc="Helium ignition (unstable; helium flash)", 
@@ -371,7 +376,7 @@ SUB_HEIGN_STABLE = SubStage(
     parent_stage=PARENT_HEIGN, 
     
     flowchart_text="Helium ignites \nstably", 	
-    flowchart_color="tab:olive", 
+    flowchart_color=cmap(3), 
     
     mode1_abbrev="He ign.", 
     mode1_desc="Helium ignition (stable)", 
@@ -393,7 +398,7 @@ SUB_HEMS = SubStage(
     parent_stage=PARENT_HEMS, 
     
     flowchart_text="Helium main \nsequence", 	
-    flowchart_color="tab:pink", 
+    flowchart_color=cmap(6), 
     
     mode1_abbrev="He MS", 
     mode1_desc="Helium main sequence", 
@@ -415,7 +420,7 @@ SUB_AGB = SubStage(
     parent_stage=PARENT_AGB, 
     
     flowchart_text="Asymptotic \ngiant", 	
-    flowchart_color="tab:brown", 
+    flowchart_color=cmap(9), 
     
     mode1_abbrev="AGB", 
     mode1_desc="Asymptotic giant", 
@@ -437,7 +442,7 @@ SUB_WD_HE = SubStage(
     parent_stage=PARENT_WD, 
     
     flowchart_text="Helium \nwhite dwarf", 	
-    flowchart_color="tab:olive", 
+    flowchart_color=cmap(2), 
     
     mode1_abbrev="He WD", 
     mode1_desc="Helium white dwarf", 
@@ -456,7 +461,7 @@ SUB_WD_CO = SubStage(
     parent_stage=PARENT_WD, 
     
     flowchart_text="Carbon + \noxygen \nwhite dwarf", 	
-    flowchart_color="tab:green", 
+    flowchart_color=cmap(7), 
     
     mode1_abbrev="C+O WD", 
     mode1_desc="Carbon + oxygen white dwarf", 
