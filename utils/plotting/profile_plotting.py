@@ -109,7 +109,7 @@ class ProfilePlot:
         fig, ax = cls._setup(profile, xaxis, config)
         x_arr = xaxis.get_values(profile)
         
-        # Sort elements by maximum value so it plots the most important ones first 
+        # Sort elements by maximum value so it plots the most important ones first (puts them on the top of the legend)
         isotope_values = [
             (isotope, np.nanmax(getattr(profile, isotope.profile_key)))
             for isotope in plot_options.ISOTOPES
@@ -117,18 +117,17 @@ class ProfilePlot:
         isotope_values.sort(key=lambda x: x[1], reverse=True)
 
         # Loop through list of Isotope objects 
-        for isotope, max_val in isotope_values: 
-
-            # Only plot elements the star actually has             
-            if max_val > 0: 
+        for z_index, (isotope, max_val) in enumerate(isotope_values):
+            if max_val > 0:
                 composition_profile = getattr(profile, isotope.profile_key)
                 ax.plot(
                     x_arr,
                     composition_profile,
                     label=isotope.label,
                     color=isotope.color,
-                    lw=3
-                ) 
+                    lw=3,
+                    zorder=len(isotope_values) - z_index  # highest value = plotted last (on top)
+                )
 
             # Add horizontal dashed lines showing the initial composition
             if isotope.show_initial_abundance: 
