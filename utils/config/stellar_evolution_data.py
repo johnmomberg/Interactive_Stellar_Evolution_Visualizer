@@ -185,6 +185,28 @@ random_order_iter = iter(random_order)
 ################################################################################
 
 
+SUB_NONE = SubStage( 
+
+    parent_stage=None, 
+    
+    flowchart_text = None, 
+    flowchart_color="gray", 
+    
+    mode1_abbrev="____", 
+    mode1_desc="(no selection)", 
+    mode1_interior_plot_title = "____", 
+    
+    mode2_abbrev="____", 
+    mode2_desc="(no selection)", 
+    mode2_interior_plot_title = "____", 
+
+    mass_min=0.1, 
+    mass_max=6.0,)
+
+
+################################################################################
+
+
 SUB_HAYASHI = SubStage( 
 
     parent_stage=PARENT_HAYASHI, 
@@ -482,6 +504,7 @@ SUB_WD_CO = SubStage(
 
 
 ALL_SUBSTAGES_LIST = CustomList([ 
+    SUB_NONE, 
     SUB_HAYASHI, 
     SUB_HENYEY, 
     SUB_MS_LOWMASS, 
@@ -539,6 +562,14 @@ class Model(BaseEntity):
 ################################################################################
 
 
+MODEL_0_2_NONE = Model( 
+    mass=0.2, 
+    substage=SUB_NONE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.2")
+
 MODEL_0_2_HAYASHI = Model( 
     mass=0.2, 
     substage=SUB_HAYASHI, 
@@ -566,6 +597,14 @@ MODEL_0_2_HEWD = Model(
 
 ################################################################################
 
+
+MODEL_0_4_NONE = Model( 
+    mass=0.4, 
+    substage=SUB_NONE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=0.4")
 
 MODEL_0_4_HAYASHI = Model( 
     mass=0.4, 
@@ -610,6 +649,14 @@ MODEL_0_4_HEWD = Model(
 
 ################################################################################
 
+
+MODEL_1_0_NONE = Model( 
+    mass=1.0, 
+    substage=SUB_NONE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=1.0")
 
 MODEL_1_0_HAYASHI = Model( 
     mass=1.0, 
@@ -687,6 +734,14 @@ MODEL_1_0_COWD = Model(
 ################################################################################
 
 
+MODEL_1_75_NONE = Model( 
+    mass=1.75, 
+    substage=SUB_NONE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"Mass=1.75_models=every5")
+
 MODEL_1_75_HAYASHI = Model(
     mass=1.75, 
     substage=SUB_HAYASHI, 
@@ -762,6 +817,14 @@ MODEL_1_75_COWD = Model(
 
 ################################################################################
 
+
+MODEL_3_0_NONE = Model( 
+    mass=3.0, 
+    substage=SUB_NONE, 
+    model_start=None, 
+    model_example=None, 
+    model_end=None, 
+    MESA_folder_path=data_folder/"M=3.0")
 
 MODEL_3_0_HAYASHI = Model( 
     mass=3.0, 
@@ -839,16 +902,19 @@ MODEL_3_0_COWD = Model(
 ################################################################################
 
 ALL_MODELS_LIST = CustomList([ 
+    MODEL_0_2_NONE, 
     MODEL_0_2_HAYASHI,
     MODEL_0_2_MS, 
     MODEL_0_2_HEWD, 
 
+    MODEL_0_4_NONE, 
     MODEL_0_4_HAYASHI, 
     MODEL_0_4_MS, 
     MODEL_0_4_SUBGIANT, 
     MODEL_0_4_RG,
     MODEL_0_4_HEWD, 
 
+    MODEL_1_0_NONE, 
     MODEL_1_0_HAYASHI,
     MODEL_1_0_HENYEY, 
     MODEL_1_0_MS, 
@@ -859,6 +925,7 @@ ALL_MODELS_LIST = CustomList([
     MODEL_1_0_AGB, 
     MODEL_1_0_COWD, 
 
+    MODEL_1_75_NONE, 
     MODEL_1_75_HAYASHI,
     MODEL_1_75_HENYEY, 
     MODEL_1_75_MS, 
@@ -869,6 +936,7 @@ ALL_MODELS_LIST = CustomList([
     MODEL_1_75_AGB, 
     MODEL_1_75_COWD, 
 
+    MODEL_3_0_NONE, 
     MODEL_3_0_HAYASHI,
     MODEL_3_0_HENYEY, 
     MODEL_3_0_MS, 
