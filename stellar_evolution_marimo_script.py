@@ -225,7 +225,7 @@ def _(
     return available_substages, selected_massrange, selected_parentstage
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -259,12 +259,12 @@ def _(
 
             available_models = []
             for substage in available_substages:
-            
+
                 # Pick the model closest to the geometric center of this mass range 
                 models_in_stage = stellar_evolution_data.CustomList([m for m in potential_models if m.substage.id == substage.id])
                 substage_geometric_center = np.sqrt(substage.mass_min*substage.mass_max)
                 if models_in_stage:
-                
+
                     closest_model = min(
                         models_in_stage,
                         key=lambda m: abs(m.mass - substage_geometric_center)
@@ -295,7 +295,7 @@ def _(available_substages, comparison_mode_radio, helpers, mo, ui_options):
                 helpers.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
                 sub.mode1_desc 
                 for sub in available_substages}
-        
+
             available_substages_tabs = mo.ui.tabs(
                 available_substages_options, 
                 value=list(available_substages_options.keys())[0]) 
@@ -699,7 +699,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     HR_diagram_plotting,
     available_models,
@@ -748,7 +748,7 @@ def _(
                 hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=15) 
 
                 for model in available_models: 
-    
+
                     if model.substage.parent_stage is None: 
                         continue 
 
@@ -756,7 +756,7 @@ def _(
 
                     # Selected substage: thicker linewidth with black border 
                     if model.id == model_selected.id: 
-                    
+
                         # Black border 
                         hr.add_path(
                             history, 
@@ -766,7 +766,7 @@ def _(
                             alpha = 1, 
                             lw = 3 
                         )
-                        
+
                         hr.add_path(
                             history, 
                             modelnum_start = model.model_start, 
@@ -779,7 +779,7 @@ def _(
 
                     # "No selection" selected: apply thicker lines to all, but not black border 
                     elif model_selected.substage.parent_stage is None: 
-                    
+
                         hr.add_path(
                             history, 
                             modelnum_start = model.model_start, 
@@ -789,10 +789,10 @@ def _(
                             alpha = 1, 
                             lw = 2 
                         )
-                
+
                     # Available for comparison but unselected substages: thinner linewidths 
                     else: 
-                    
+
                         hr.add_path(
                             history, 
                             modelnum_start = model.model_start, 
@@ -803,7 +803,7 @@ def _(
                             lw = 1 
                         )
 
-        
+
             if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
 
                 hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=15) 
@@ -860,7 +860,7 @@ def _(
                             lw = 2 
                         )
 
-        
+
             HR_diagram_plotting.label_spectraltypes(hr.ax) 
             hr.ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
@@ -939,7 +939,7 @@ def _(
                 # Face color of figure with low alpha 
                 fig2.patch.set_facecolor(substage_selected_color)
                 fig2.patch.set_alpha(0.12)
-            
+
                 # Draw a separate edge rectangle on top with full alpha
                 rect = mpatches.Rectangle(
                     (0, 0), 1, 1, transform=fig2.transFigure, 

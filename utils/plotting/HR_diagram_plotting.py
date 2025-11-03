@@ -410,7 +410,6 @@ class HRDiagram:
 
 
 
-
 # ---------------------------
 # Data classes
 # ---------------------------
@@ -426,7 +425,7 @@ class SpectralType:
     temp_range: Tuple[float, float]       # (min, max) in Kelvin
     MS_mass_range: Tuple[float, float]
     subtypes: List[SpectralSubtype] = field(default_factory=list)
-    combo_cache: Dict[int, List[Dict]] = field(default_factory=dict, init=False)
+    # The 'combo_cache' field has been REMOVED
 
     @property
     def temp_midpoint(self) -> float:
@@ -437,30 +436,8 @@ class SpectralType:
     def mass_midpoint(self) -> float:
         a, b = self.MS_mass_range
         return np.sqrt(a * b)
+    
 
-    def build_combo_cache(self, min_k: int = 2):
-        """
-        Precompute combinations for the subtype list. For each k in [min_k..n],
-        produce a list of dicts {'indices': (i1,i2,..), 'min_log_spacing': float}
-        sorted descending by min_log_spacing (heuristic) so likely-good combos are tried first.
-        """
-        self.combo_cache = {}
-        n = len(self.subtypes)
-        if n < min_k:
-            return
-        # precompute logs
-        subtype_logs = np.array([np.log10(s.temp) for s in self.subtypes], dtype=float)
-        edge_left_log = np.log10(self.temp_range[0])
-        edge_right_log = np.log10(self.temp_range[1])
-        for k in range(min_k, n + 1):
-            combos = []
-            for comb in itertools.combinations(range(n), k):
-                seq_logs = np.concatenate(([edge_left_log], subtype_logs[list(comb)], [edge_right_log]))
-                spacings = np.diff(seq_logs)
-                min_log_spacing = float(np.min(spacings))
-                combos.append({'indices': comb, 'min_log_spacing': min_log_spacing})
-            combos.sort(key=lambda d: d['min_log_spacing'], reverse=True)
-            self.combo_cache[k] = combos
 
 
 
@@ -568,9 +545,9 @@ SPECTRAL_TYPES: List[SpectralType] = [
     SpectralType(letter="M", temp_range=(2_310, 3_890),            MS_mass_range=(0.1, 0.58),  subtypes=_M),
 ]
 
-# build combo caches once
-for st in SPECTRAL_TYPES:
-    st.build_combo_cache()
+# # build combo caches once
+# for st in SPECTRAL_TYPES:
+#     st.build_combo_cache()
 
 # ---------------------------
 # Helper
@@ -602,7 +579,7 @@ class SpectralTypeBorderLocator(mticker.Locator):
 
 class SmartSpectralLabelLocator(mticker.Locator):
     """
-    Locator that uses precomputed combo_cache on SpectralType objects to speed up selection.
+    Locator that uses a fast "center-out" greedy algorithm to place labels.
     """
     def __init__(
         self,
@@ -711,118 +688,72 @@ class SmartSpectralLabelLocator(mticker.Locator):
                     selected = [st.subtypes[candidate_indices[i]] for i in indices]
                     if self.verbose:
                         print(f"[locator] no px info -> pick {len(selected)} evenly spaced for {st.letter}")
+                
+                # --- START: NEW FAST "CENTER-OUT" ALGORITHM ---
                 else:
-                    # pixel positions for candidate temps
-                    cand_temps = np.array([getattr(st.subtypes[i], attr) for i in candidate_indices], dtype=float)
-                    cand_px = np.array([data_to_px(t) for t in cand_temps], dtype=float)
+                    # Get pixel positions for candidate subtypes
+                    cand_values = np.array([getattr(st.subtypes[i], attr) for i in candidate_indices], dtype=float)
+                    cand_px = np.array([data_to_px(t) for t in cand_values], dtype=float)
 
-                    # pixel coords for visible edges of the spectral-type region
+                    # Get pixel coords for visible edges of the spectral-type region
                     left_px = data_to_px(in_view_min)
                     right_px = data_to_px(in_view_max)
                     if right_px < left_px:
                         left_px, right_px = right_px, left_px
+                    
+                    view_center_px = (left_px + right_px) / 2.0
 
                     n_cand = len(candidate_indices)
-                    if n_cand == 1:
-                        selected = [st.subtypes[candidate_indices[0]]]
-                    else:
-                        # sort candidates by pixel coordinate left->right
-                        order = np.argsort(cand_px)
-                        cand_px_sorted = cand_px[order]
-                        cand_idx_sorted = [candidate_indices[i] for i in order]
-                        cand_list_sorted = [st.subtypes[i] for i in cand_idx_sorted]
+                    if n_cand == 0:
+                        continue
+                    
+                    # Sort candidates by pixel position
+                    order = np.argsort(cand_px)
+                    cand_px_sorted = cand_px[order]
+                    # Map from sorted local index back to the original *global* index in st.subtypes
+                    cand_global_indices_sorted = [candidate_indices[i] for i in order] 
+                    
+                    # Find index (in the *sorted* list) of the candidate closest to the center
+                    i_center = np.argmin(np.abs(cand_px_sorted - view_center_px))
+                    
+                    selected_global_indices = [] # This will hold the *global* indices from st.subtypes
+                    
+                    # Add the center-most label
+                    selected_global_indices.append(cand_global_indices_sorted[i_center])
+                    
+                    # Keep track of the last label placed on the left and right
+                    last_px_left = cand_px_sorted[i_center]
+                    last_px_right = cand_px_sorted[i_center]
+                    
+                    # "Walk" outwards
+                    i_left = i_center - 1
+                    i_right = i_center + 1
 
-                        # lazy build cache if missing
-                        if not hasattr(st, "combo_cache") or not st.combo_cache:
-                            st.build_combo_cache(min_k=2)
+                    while i_left >= 0 or i_right < n_cand:
+                        
+                        # Check the label to the left
+                        if i_left >= 0:
+                            px_left_current = cand_px_sorted[i_left]
+                            # If it's far enough from the last label we added on the left...
+                            if abs(px_left_current - last_px_left) >= self.min_subtype_label_px:
+                                selected_global_indices.append(cand_global_indices_sorted[i_left])
+                                last_px_left = px_left_current # Update the "last" position
+                            i_left -= 1 # Move one more to the left
+                            
+                        # Check the label to the right
+                        if i_right < n_cand:
+                            px_right_current = cand_px_sorted[i_right]
+                            # If it's far enough from the last label we added on the right...
+                            if abs(px_right_current - last_px_right) >= self.min_subtype_label_px:
+                                selected_global_indices.append(cand_global_indices_sorted[i_right])
+                                last_px_right = px_right_current # Update the "last" position
+                            i_right += 1 # Move one more to the right
 
-                        # helper: minimal adjacent pixel spacing for a combo of global indices
-                        def min_px_spacing_for_combo_global_indices(combo_indices):
-                            px_seq = [left_px]
-                            for gi in combo_indices:
-                                try:
-                                    pos = cand_idx_sorted.index(gi)
-                                except ValueError:
-                                    # combo uses a subtype not currently visible -> invalid for this view
-                                    return -1.0
-                                px_seq.append(float(cand_px_sorted[pos]))
-                            px_seq.append(right_px)
-                            spacings = np.diff(np.array(px_seq))
-                            return float(np.min(spacings))
-
-                        # find best pair using cache first
-                        best2_min = -1.0
-                        best2_indices = None
-                        cache_k2 = st.combo_cache.get(2, [])
-                        for rec in cache_k2:
-                            comb = rec['indices']
-                            # skip combos not fully in candidate set
-                            if not all((gi in cand_idx_sorted) for gi in comb):
-                                continue
-                            min_px = min_px_spacing_for_combo_global_indices(comb)
-                            if min_px > best2_min:
-                                best2_min = min_px
-                                best2_indices = comb
-
-                        # fallback: explicit check of pairs among candidate set if cache offered none
-                        if best2_indices is None:
-                            for comb in itertools.combinations(cand_idx_sorted, 2):
-                                min_px = min_px_spacing_for_combo_global_indices(comb)
-                                if min_px > best2_min:
-                                    best2_min = min_px
-                                    best2_indices = comb
-
-                        # If best pair doesn't meet threshold, pick single-best
-                        if best2_min < self.min_subtype_label_px:
-                            best_single_score = -1.0
-                            best_single_idx = cand_idx_sorted[0]
-                            for gi in cand_idx_sorted:
-                                pos = cand_idx_sorted.index(gi)
-                                d_left = abs(cand_px_sorted[pos] - left_px)
-                                d_right = abs(right_px - cand_px_sorted[pos])
-                                score = min(d_left, d_right)
-                                if score > best_single_score:
-                                    best_single_score = score
-                                    best_single_idx = gi
-                            selected = [st.subtypes[best_single_idx]]
-                            if self.verbose:
-                                print(f"[locator] {st.letter}: best pair min_px={best2_min:.1f}px < threshold {self.min_subtype_label_px:.1f}px -> single selected")
-                        else:
-                            accepted_indices = best2_indices
-                            accepted_k = 2
-                            # try larger k using cache then explicit combos among candidate set
-                            n_total = len(st.subtypes)
-                            for k in range(3, n_total + 1):
-                                best_min_for_k = -1.0
-                                best_inds_for_k = None
-                                cachek = st.combo_cache.get(k, [])
-                                for rec in cachek:
-                                    comb = rec['indices']
-                                    if not all((gi in cand_idx_sorted) for gi in comb):
-                                        continue
-                                    min_px = min_px_spacing_for_combo_global_indices(comb)
-                                    if min_px > best_min_for_k:
-                                        best_min_for_k = min_px
-                                        best_inds_for_k = comb
-                                    # small early break heuristic: if min_px already >> threshold we might accept quickly
-                                # if none from cache matched, explicitly try combos formed from candidate set
-                                if best_inds_for_k is None:
-                                    if len(cand_idx_sorted) >= k:
-                                        for comb_local in itertools.combinations(cand_idx_sorted, k):
-                                            min_px = min_px_spacing_for_combo_global_indices(comb_local)
-                                            if min_px > best_min_for_k:
-                                                best_min_for_k = min_px
-                                                best_inds_for_k = comb_local
-                                if best_inds_for_k is not None and best_min_for_k >= self.min_subtype_label_px:
-                                    accepted_indices = best_inds_for_k
-                                    accepted_k = k
-                                    continue
-                                else:
-                                    # stop and keep previous accepted_k
-                                    break
-                            selected = [st.subtypes[i] for i in accepted_indices]
-                            if self.verbose:
-                                print(f"[locator] {st.letter}: accepted_k={accepted_k}")
+                    selected = [st.subtypes[i] for i in selected_global_indices]
+                    
+                    if self.verbose:
+                        print(f"[locator] {st.letter}: center-out selected k={len(selected)}")
+                # --- END: NEW FAST "CENTER-OUT" ALGORITHM ---
 
                 # append selected ticks/labels/optional lines
                 for sub in selected:
@@ -834,8 +765,8 @@ class SmartSpectralLabelLocator(mticker.Locator):
             tick_positions = sorted(tick_positions, reverse=True)
         else:
             tick_positions = sorted(tick_positions)
-        return tick_positions 
-    
+        return tick_positions
+
 
 
 
