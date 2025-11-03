@@ -808,10 +808,10 @@ MODEL_1_75_AGB = Model(
 
 MODEL_1_75_COWD = Model(
     mass=1.75, 
-    substage=SUB_HENYEY, 
-    model_start=None, 
+    substage=SUB_WD_CO, 
+    model_start=13635, 
     model_example=None, 
-    model_end=None, 
+    model_end=13635, 
     MESA_folder_path=data_folder/"Mass=1.75_models=every5")
 
 

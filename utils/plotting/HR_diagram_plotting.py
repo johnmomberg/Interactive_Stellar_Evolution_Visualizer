@@ -167,8 +167,10 @@ class HRDiagram:
     def __init__(self): 
 
         # Setup 
-        self.fig, self.ax = plt.subplots(figsize=(10.7, 7))
-        self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.12, right=0.96)
+        # self.fig, self.ax = plt.subplots(figsize=(10.7, 7))
+        self.fig, self.ax = plt.subplots(figsize=(12.8, 7))
+        # self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.12, right=0.96)
+        self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.10, right=0.81)
 
 
         # X axis: Temperature 
@@ -197,10 +199,18 @@ class HRDiagram:
 
 
 
-    def add_path(self, history, color=None, label=None, lw=2, alpha=1): 
+    def add_path(self, history, color=None, label=None, lw=2, alpha=1, modelnum_start=None, modelnum_end=None): 
+        if modelnum_start == None:  
+            ind_start = 0 
+        else: 
+            ind_start = modelnum_start-1 
+        if modelnum_end == None: 
+            ind_end = -1 
+        else: 
+            ind_end = modelnum_end-1 
         self.ax.plot(
-            10**history.log_Teff, 
-            10**history.log_L, 
+            10**history.log_Teff[ind_start:ind_end], 
+            10**history.log_L[ind_start:ind_end], 
             color=color, 
             label=label, 
             lw=lw, 
@@ -208,8 +218,8 @@ class HRDiagram:
 
 
 
-    def legend(self): 
-        self.ax.legend(fontsize=14) 
+    # def legend(self): 
+    #     self.ax.legend(fontsize=14) 
 
 
 

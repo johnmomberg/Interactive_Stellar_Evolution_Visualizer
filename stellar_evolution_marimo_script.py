@@ -225,11 +225,12 @@ def _(
     return available_substages, selected_massrange, selected_parentstage
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_substages,
     comparison_mode_radio,
     mo,
+    np,
     selected_massrange,
     selected_parentstage,
     stellar_evolution_data,
@@ -258,11 +259,19 @@ def _(
 
             available_models = []
             for substage in available_substages:
-                models_in_stage = [m for m in potential_models if m.substage.id == substage.id]
+            
+                # Pick the model closest to the geometric center of this mass range 
+                models_in_stage = stellar_evolution_data.CustomList([m for m in potential_models if m.substage.id == substage.id])
+                substage_geometric_center = np.sqrt(substage.mass_min*substage.mass_max)
                 if models_in_stage:
-                    # Pick the one closest to the middle mass
-                    representative = sorted(models_in_stage, key=lambda m: m.mass)[len(models_in_stage)//2]
-                    available_models.append(representative)
+                
+                    closest_model = min(
+                        models_in_stage,
+                        key=lambda m: abs(m.mass - substage_geometric_center)
+                    )                
+
+                    available_models.append(closest_model)
+
             available_models = stellar_evolution_data.CustomList(available_models)
 
 
@@ -415,7 +424,7 @@ def _(available_models, mo, substage_selected):
     return (model_selected,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     Path,
     available_models,
@@ -480,7 +489,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     available_substages,
@@ -690,7 +699,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_plotting,
     available_models,
@@ -698,6 +707,7 @@ def _(
     history_plot_dropdown,
     history_plotting,
     history_selected,
+    load_data,
     lru_cache,
     mo,
     model_selected,
@@ -727,23 +737,133 @@ def _(
 
         # HR Diagram 
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
+            hr = HR_diagram_plotting.HRDiagram() 
 
             if history_selected is None: 
                 return "Select a History file to view HR diagram" 
 
-            hr = HR_diagram_plotting.HRDiagram() 
 
-            # # Add transparent paths for non-selected masses 
-            # for model in available_models: 
-            #     if model.mass != model_selected.mass: 
-            #         history = load_data.load_history(model.MESA_folder_path)
-            #         hr.add_path(history, label=f"{history.initial_mass_string} $M_{{sun}}$", color="gray") 
+            if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
 
-            hr.add_path(history_selected, label=f"{history_selected.initial_mass_string} $M_{{sun}}$", color="black")
-            hr.add_modelnum_labels(history_selected, modelnum_selected)         
+                hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=15) 
 
+                for model in available_models: 
+    
+                    if model.substage.parent_stage is None: 
+                        continue 
+
+                    history = load_data.load_history(model.MESA_folder_path) 
+
+                    # Selected substage: thicker linewidth with black border 
+                    if model.id == model_selected.id: 
+                    
+                        # Black border 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = "black",  
+                            alpha = 1, 
+                            lw = 3 
+                        )
+                        
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+                    # "No selection" selected: apply thicker lines to all, but not black border 
+                    elif model_selected.substage.parent_stage is None: 
+                    
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+                
+                    # Available for comparison but unselected substages: thinner linewidths 
+                    else: 
+                    
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 1 
+                        )
+
+        
+            if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+
+                hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=15) 
+
+                for model in available_models: 
+
+                    if model.substage.parent_stage is None: 
+                        continue 
+
+                    # Add thin-linewidth tracks showing entire evolution 
+                    history = load_data.load_history(model.MESA_folder_path) 
+                    hr.add_path(
+                        history, 
+                        color = model.substage.flowchart_color, 
+                        lw = 0.5, 
+                        alpha = 0.8, 
+                        label = f"{model.mass} $M_{{sun}}$"
+                    )
+
+                    # Selected substage: thicker linewidth with black border 
+                    if model.id == model_selected.id or model_selected.substage.parent_stage is None: 
+
+                        # Black border 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = "black",  
+                            alpha = 1, 
+                            lw = 3 
+                        )
+
+                        # Thick linewidth 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = f"{model.substage.mode2_abbrev}", 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+                    # Available for comparison but unselected substages: thicker linewidths but no black border 
+                    else: 
+
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = f"{model.substage.mode2_abbrev}", 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+        
             HR_diagram_plotting.label_spectraltypes(hr.ax) 
-            hr.legend() 
+            hr.ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
+
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
 
@@ -902,7 +1022,7 @@ def _(mo):
     return profile_xaxis_options, stellar_evolution_data, ui_options
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     HR_diagram_str,
     comparison_mode_radio,
