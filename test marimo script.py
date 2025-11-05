@@ -61,10 +61,38 @@ def _():
 
 
 @app.cell
-def _(mo, plt):
+def _():
 
-    fig, ax = plt.subplots(figsize=(15, 5))  # Set width and height in inches
-    ax.plot([1, 2])
+    # fig, ax = plt.subplots(figsize=(15, 5))  
+    # ax.plot([1, 2])
+    # mo.mpl.interactive(fig)
+    return
+
+
+@app.cell
+def _(mo, plt):
+    # Setup 
+    fig, ax = plt.subplots(figsize=(12.8, 7))
+    fig.subplots_adjust(top=0.82, bottom=0.13, left=0.10, right=0.81)
+
+
+    # X axis: Temperature 
+    ax.set_xlabel("Surface temperature (K)", fontsize=18, labelpad=14)
+    ax.set_xscale("log")
+    ax.set_xlim((80000, 1000)) 
+
+
+    # Y axis: Luminosity 
+    ax.set_ylabel("Luminosity ($L_{{sun}}$)", fontsize=18, labelpad=14)
+    ax.set_yscale("log")
+    ax.set_ylim((1e2, 1e4))
+
+
+    # Grid, ticks, title 
+    ax.tick_params(labelsize=14, length=10, which="major") 
+    # ax.grid(alpha=0.5, which="both")
+    ax.set_title("Evolutionary Path Across HR Diagram", fontsize=20, pad=15) 
+
     mo.mpl.interactive(fig)
     return
 

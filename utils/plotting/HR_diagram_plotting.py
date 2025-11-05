@@ -167,9 +167,7 @@ class HRDiagram:
     def __init__(self): 
 
         # Setup 
-        # self.fig, self.ax = plt.subplots(figsize=(10.7, 7))
         self.fig, self.ax = plt.subplots(figsize=(12.8, 7))
-        # self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.12, right=0.96)
         self.fig.subplots_adjust(top=0.82, bottom=0.13, left=0.10, right=0.81)
 
 
@@ -178,11 +176,11 @@ class HRDiagram:
         self.ax.set_xscale("log")
         self.ax.set_xlim((80000, 1000)) 
         
-        self.ax.xaxis.set_major_locator(MajorLogLocator()) 
-        self.ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}")) 
+        # self.ax.xaxis.set_major_locator(MajorLogLocator()) 
+        # self.ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}")) 
 
-        self.ax.xaxis.set_minor_locator(MinorLogLocator()) 
-        self.ax.xaxis.set_minor_formatter(mticker.NullFormatter())         
+        # self.ax.xaxis.set_minor_locator(MinorLogLocator()) 
+        # self.ax.xaxis.set_minor_formatter(mticker.NullFormatter())         
 
 
         # Y axis: Luminosity 
@@ -194,7 +192,7 @@ class HRDiagram:
 
         # Grid, ticks, title 
         self.ax.tick_params(labelsize=14, length=10, which="major") 
-        self.ax.grid(alpha=0.5, which="both")
+        # self.ax.grid(alpha=0.5, which="both")
         self.ax.set_title("Evolutionary Path Across HR Diagram", fontsize=20, pad=15) 
 
 

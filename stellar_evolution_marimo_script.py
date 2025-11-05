@@ -707,7 +707,6 @@ def _(
     history_plot_dropdown,
     history_plotting,
     history_selected,
-    load_data,
     lru_cache,
     mo,
     model_selected,
@@ -739,130 +738,130 @@ def _(
         if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
             hr = HR_diagram_plotting.HRDiagram() 
 
-            if history_selected is None: 
-                return "Select a History file to view HR diagram" 
+            # if history_selected is None: 
+            #     return "Select a History file to view HR diagram" 
 
 
-            if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+            # if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
 
-                hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=15) 
+            #     hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=15) 
 
-                for model in available_models: 
+            #     for model in available_models: 
 
-                    if model.substage.parent_stage is None: 
-                        continue 
+            #         if model.substage.parent_stage is None: 
+            #             continue 
 
-                    history = load_data.load_history(model.MESA_folder_path) 
+            #         history = load_data.load_history(model.MESA_folder_path) 
 
-                    # Selected substage: thicker linewidth with black border 
-                    if model.id == model_selected.id: 
+            #         # Selected substage: thicker linewidth with black border 
+            #         if model.id == model_selected.id: 
 
-                        # Black border 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = "black",  
-                            alpha = 1, 
-                            lw = 3 
-                        )
+            #             # Black border 
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = "black",  
+            #                 alpha = 1, 
+            #                 lw = 3 
+            #             )
 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
-                            alpha = 1, 
-                            lw = 2 
-                        )
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = model.substage.flowchart_color, 
+            #                 label = model.substage.mode1_abbrev, 
+            #                 alpha = 1, 
+            #                 lw = 2 
+            #             )
 
-                    # "No selection" selected: apply thicker lines to all, but not black border 
-                    elif model_selected.substage.parent_stage is None: 
+            #         # "No selection" selected: apply thicker lines to all, but not black border 
+            #         elif model_selected.substage.parent_stage is None: 
 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
-                            alpha = 1, 
-                            lw = 2 
-                        )
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = model.substage.flowchart_color, 
+            #                 label = model.substage.mode1_abbrev, 
+            #                 alpha = 1, 
+            #                 lw = 2 
+            #             )
 
-                    # Available for comparison but unselected substages: thinner linewidths 
-                    else: 
+            #         # Available for comparison but unselected substages: thinner linewidths 
+            #         else: 
 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
-                            alpha = 1, 
-                            lw = 1 
-                        )
-
-
-            if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
-
-                hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=15) 
-
-                for model in available_models: 
-
-                    if model.substage.parent_stage is None: 
-                        continue 
-
-                    # Add thin-linewidth tracks showing entire evolution 
-                    history = load_data.load_history(model.MESA_folder_path) 
-                    hr.add_path(
-                        history, 
-                        color = model.substage.flowchart_color, 
-                        lw = 0.5, 
-                        alpha = 0.8, 
-                        label = f"{model.mass} $M_{{sun}}$"
-                    )
-
-                    # Selected substage: thicker linewidth with black border 
-                    if model.id == model_selected.id or model_selected.substage.parent_stage is None: 
-
-                        # Black border 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = "black",  
-                            alpha = 1, 
-                            lw = 3 
-                        )
-
-                        # Thick linewidth 
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = model.substage.flowchart_color, 
-                            label = f"{model.substage.mode2_abbrev}", 
-                            alpha = 1, 
-                            lw = 2 
-                        )
-
-                    # Available for comparison but unselected substages: thicker linewidths but no black border 
-                    else: 
-
-                        hr.add_path(
-                            history, 
-                            modelnum_start = model.model_start, 
-                            modelnum_end = model.model_end, 
-                            color = model.substage.flowchart_color, 
-                            label = f"{model.substage.mode2_abbrev}", 
-                            alpha = 1, 
-                            lw = 2 
-                        )
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = model.substage.flowchart_color, 
+            #                 label = model.substage.mode1_abbrev, 
+            #                 alpha = 1, 
+            #                 lw = 1 
+            #             )
 
 
-            HR_diagram_plotting.label_spectraltypes(hr.ax) 
-            hr.ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
+            # if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+
+            #     hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=15) 
+
+            #     for model in available_models: 
+
+            #         if model.substage.parent_stage is None: 
+            #             continue 
+
+            #         # Add thin-linewidth tracks showing entire evolution 
+            #         history = load_data.load_history(model.MESA_folder_path) 
+            #         hr.add_path(
+            #             history, 
+            #             color = model.substage.flowchart_color, 
+            #             lw = 0.5, 
+            #             alpha = 0.8, 
+            #             label = f"{model.mass} $M_{{sun}}$"
+            #         )
+
+            #         # Selected substage: thicker linewidth with black border 
+            #         if model.id == model_selected.id or model_selected.substage.parent_stage is None: 
+
+            #             # Black border 
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = "black",  
+            #                 alpha = 1, 
+            #                 lw = 3 
+            #             )
+
+            #             # Thick linewidth 
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = model.substage.flowchart_color, 
+            #                 label = f"{model.substage.mode2_abbrev}", 
+            #                 alpha = 1, 
+            #                 lw = 2 
+            #             )
+
+            #         # Available for comparison but unselected substages: thicker linewidths but no black border 
+            #         else: 
+
+            #             hr.add_path(
+            #                 history, 
+            #                 modelnum_start = model.model_start, 
+            #                 modelnum_end = model.model_end, 
+            #                 color = model.substage.flowchart_color, 
+            #                 label = f"{model.substage.mode2_abbrev}", 
+            #                 alpha = 1, 
+            #                 lw = 2 
+            #             )
+
+
+            # HR_diagram_plotting.label_spectraltypes(hr.ax) 
+            # hr.ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
 
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
