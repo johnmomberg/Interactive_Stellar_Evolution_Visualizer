@@ -423,7 +423,6 @@ class SpectralType:
     temp_range: Tuple[float, float]       # (min, max) in Kelvin
     MS_mass_range: Tuple[float, float]
     subtypes: List[SpectralSubtype] = field(default_factory=list)
-    # The 'combo_cache' field has been REMOVED
 
     @property
     def temp_midpoint(self) -> float:
