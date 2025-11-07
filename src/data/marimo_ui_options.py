@@ -3,9 +3,9 @@
 import marimo as mo 
 from dataclasses import dataclass
 from typing import Callable
-
-import src.plot 
-import src.data.base_option
+from . import base_option 
+from ..plot.profile import profile as profile_plotting
+from ..plot import history as history_plotting
 
 
 
@@ -13,7 +13,7 @@ import src.data.base_option
 
 # Comparison mode: No select, select mass first and compare stages, or select stage first and compare masses 
 @dataclass 
-class CompareModeOption(src.data.base_option.OptionBase): 
+class CompareModeOption(base_option.BaseOption): 
     pass 
 
 COMPAREMODE_NOSELECTION = CompareModeOption(display="") 
@@ -29,7 +29,7 @@ COMPAREMODE_OPTIONS = [COMPAREMODE_NOSELECTION, COMPAREMODE_MASSFIRST, COMPAREMO
 
 # Plot mode: HR diagram, history vs time at fixed location in star, or profile vs interior at fixed point in time 
 @dataclass 
-class PlotModeOption(src.data.base_option.OptionBase): 
+class PlotModeOption(base_option.BaseOption): 
     pass 
 
 # Empty because the strings include dropdowns and are displayed separately  
@@ -45,24 +45,24 @@ PLOTMODE_OPTIONS = [PLOTMODE_HRDIAGRAM, PLOTMODE_HISTORY, PLOTMODE_PROFILE]
 
 # History plots: Composition, radius, or fusion vs time 
 @dataclass 
-class HistoryPlotOption(src.data.base_option.OptionBase): 
+class HistoryPlotOption(base_option.BaseOption): 
     plot_func: Callable  
 
 HISTORYPLOT_COMPOSITION = HistoryPlotOption(
     display="Center composition", 
-    plot_func=src.plot.history.HistoryPlot.composition) 
+    plot_func=history_plotting.HistoryPlot.composition) 
 
 HISTORYPLOT_RADIUS = HistoryPlotOption(
     display="Radius", 
-    plot_func=src.plot.history.HistoryPlot.radius) 
+    plot_func=history_plotting.HistoryPlot.radius) 
 
 HISTORYPLOT_MASS = HistoryPlotOption( 
     display="Mass", 
-    plot_func=src.plot.history.HistoryPlot.mass)
+    plot_func=history_plotting.HistoryPlot.mass)
 
 HISTORYPLOT_FUSION = HistoryPlotOption(
     display="Fusion rate", 
-    plot_func=src.plot.history.HistoryPlot.fusion)
+    plot_func=history_plotting.HistoryPlot.fusion)
 
 HISTORYPLOT_OPTIONS = [HISTORYPLOT_COMPOSITION, HISTORYPLOT_RADIUS, HISTORYPLOT_MASS, HISTORYPLOT_FUSION]
 
@@ -72,48 +72,48 @@ HISTORYPLOT_OPTIONS = [HISTORYPLOT_COMPOSITION, HISTORYPLOT_RADIUS, HISTORYPLOT_
 
 # Profile plots: composition, convection, etc vs interior coordinate at a fixed point in time 
 @dataclass
-class ProfilePlotOption(src.data.base_option.OptionBase):
+class ProfilePlotOption(base_option.BaseOption):
     plot_func: Callable
     title_str: str
 
 PROFILEPLOT_COMPOSITION = ProfilePlotOption(
     display="Composition (linear)", 
-    plot_func=src.plot.profile.profile.ProfilePlot.composition, 
+    plot_func=profile_plotting.ProfilePlot.composition, 
     title_str="Compostion in interior of a") 
 
 PROFILEPLOT_COMPOSITION_LOG = ProfilePlotOption( 
     display="Composition (log)", 
-    plot_func=src.plot.profile.profile.ProfilePlot.composition_log, 
+    plot_func=profile_plotting.ProfilePlot.composition_log, 
     title_str="Composition in interior of a") 
 
 PROFILEPLOT_MU = ProfilePlotOption( 
     display="Mass/particle", 
-    plot_func=src.plot.profile.profile.ProfilePlot.mu, 
+    plot_func=profile_plotting.ProfilePlot.mu, 
     title_str=f"Mass/particle ($\mu$) in interior of a")
 
 PROFILEPLOT_CONVECTION = ProfilePlotOption(
     display="Convection", 
-    plot_func=src.plot.profile.profile.ProfilePlot.convection, 
+    plot_func=profile_plotting.ProfilePlot.convection, 
     title_str="Convective regions in interior of a")
 
 PROFILEPLOT_TEMP = ProfilePlotOption(
     display="Temperature", 
-    plot_func=src.plot.profile.profile.ProfilePlot.temp, 
+    plot_func=profile_plotting.ProfilePlot.temp, 
     title_str="Temperature in interior of a")
 
 PROFILEPLOT_TEMPGRAD = ProfilePlotOption(
     display="Temp grad", 
-    plot_func=src.plot.profile.profile.ProfilePlot.tempgrad, 
+    plot_func=profile_plotting.ProfilePlot.tempgrad, 
     title_str="Temperature gradient in interior of a")
 
 PROFILEPLOT_FUSION = ProfilePlotOption(
     display="Fusion rate", 
-    plot_func=src.plot.profile.profile.ProfilePlot.fusion, 
+    plot_func=profile_plotting.ProfilePlot.fusion, 
     title_str="Fusion in interior of a") 
 
 PROFILEPLOT_DEGENERACY = ProfilePlotOption( 
     display="Degeneracy", 
-    plot_func=src.plot.profile.profile.ProfilePlot.degeneracy, 
+    plot_func=profile_plotting.ProfilePlot.degeneracy, 
     title_str="Degeneracy of electrons and baryons inside a") 
 
 PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_MU, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION, PROFILEPLOT_DEGENERACY]
@@ -124,7 +124,7 @@ PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PRO
 
 # Available model numbers dropdown, used when loading your own MESA file 
 @dataclass 
-class AvailableModelnumsOption(src.data.base_option.OptionBase): 
+class AvailableModelnumsOption(base_option.BaseOption): 
     modelnum: int 
     age: float 
 

@@ -6,9 +6,9 @@ import matplotlib.ticker as mticker
 from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
 
-import src.plot.profile.xaxis_options
-import src.data.isotopes
-import src.data.phys_consts 
+from . import xaxis_options 
+from ...data import isotopes 
+from ...data import phys_consts 
 
 
 
@@ -91,7 +91,7 @@ class ProfilePlot:
 
     # Profile plot: composition vs mass/radius
     @classmethod
-    def composition(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def composition(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Most plots don't require a history, but this one does. If the user forgets to provide it, raise an error. 
         if history is None: 
@@ -109,7 +109,7 @@ class ProfilePlot:
         # Sort elements by maximum value so it plots the most important ones first (puts them on the top of the legend)
         isotope_values = [
             (isotope, np.nanmax(getattr(profile, isotope.profile_key)))
-            for isotope in src.data.isotopes.ISOTOPES
+            for isotope in isotopes.ISOTOPES
         ]
         isotope_values.sort(key=lambda x: x[1], reverse=True)
 
@@ -140,7 +140,7 @@ class ProfilePlot:
 
     # Profile plot: composition vs mass/radius
     @classmethod
-    def composition_log(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def composition_log(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Most plots don't require a history, but this one does. If the user forgets to provide it, raise an error. 
         if history is None: 
@@ -159,7 +159,7 @@ class ProfilePlot:
         # Sort elements by maximum value so it plots the most important ones first 
         isotope_values = [
             (isotope, np.nanmax(getattr(profile, isotope.profile_key)))
-            for isotope in src.data.isotopes.ISOTOPES
+            for isotope in isotopes.ISOTOPES
         ]
         isotope_values.sort(key=lambda x: x[1], reverse=True)
 
@@ -190,7 +190,7 @@ class ProfilePlot:
 
     # Profile plot: Convection vs mass/radius 
     @classmethod 
-    def convection(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def convection(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -216,7 +216,7 @@ class ProfilePlot:
 
     # Profile plot: fusion rate vs mass/radius 
     @classmethod 
-    def fusion(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def fusion(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -237,7 +237,7 @@ class ProfilePlot:
         
         # Set ylim 
         # Calculate the average ergs/sec/gram of the entire star's mass and luminosity 
-        specific_L = np.max(profile.luminosity)*src.data.phys_consts.L_sun / (profile.initial_mass*src.data.phys_consts.M_sun) 
+        specific_L = np.max(profile.luminosity)*phys_consts.L_sun / (profile.initial_mass*phys_consts.M_sun) 
         max_fusion = np.max(profile.eps_nuc) 
         if max_fusion>specific_L: 
             ax.set_ylim((specific_L/10, max_fusion)) 
@@ -253,7 +253,7 @@ class ProfilePlot:
 
     # Profile plot: mu (mass/particule) vs mass/radius 
     @classmethod 
-    def mu(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def mu(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -290,7 +290,7 @@ class ProfilePlot:
 
     # Profile plot: temperature vs mass/radius 
     @classmethod 
-    def temp(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def temp(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -318,7 +318,7 @@ class ProfilePlot:
 
         # Calculate kinetic energy per particle from the temperature (assuming ideal gas) + what it actually is 
         KE_per_N_temp = 10**profile.logT 
-        KE_per_N_actual = profile.pressure * profile.mu*src.data.phys_consts.m_p / (10**profile.logRho) / src.data.phys_consts.k
+        KE_per_N_actual = profile.pressure * profile.mu*phys_consts.m_p / (10**profile.logRho) / phys_consts.k
         ax.plot(x_arr, KE_per_N_temp, lw=3, label="Temperature (K)") 
         ax.plot(x_arr, KE_per_N_actual, lw=3, label="KE/particle") 
       
@@ -344,7 +344,7 @@ class ProfilePlot:
 
     # Profile plot: temperature gradient (radiative vs convective) vs mass/radius 
     @classmethod 
-    def tempgrad(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def tempgrad(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams(
@@ -380,7 +380,7 @@ class ProfilePlot:
 
     # Profile plot: How close to degeneracy are the electrons and the baryons 
     @classmethod 
-    def degeneracy(cls, profile, xaxis=src.plot.profile.xaxis_options.PROFILEXAXIS_MASS, history=None): 
+    def degeneracy(cls, profile, xaxis=xaxis_options.PROFILEXAXIS_MASS, history=None): 
 
         # Setup 
         config = ProfilePlotConfigParams( 
@@ -397,7 +397,7 @@ class ProfilePlot:
         ax.axhspan(ymin=1e-8, ymax=1, color="red", alpha=0.07, label="Particles \noverlapping \n(Degen)")
 
         # Number densities 
-        n_baryon = 10**profile.logRho / src.data.phys_consts.m_p 
+        n_baryon = 10**profile.logRho / phys_consts.m_p 
         n_free_e = n_baryon * profile.free_e 
         n_total = n_baryon / profile.mu 
         n_ion = n_total - n_free_e
@@ -411,12 +411,12 @@ class ProfilePlot:
         KE_baryon = 3/2 * profile.pressure / n_baryon 
 
         # Momentum per particle 
-        p_electron = np.sqrt( (KE_electron / src.data.phys_consts.c)**2 + 2*KE_electron*src.data.phys_consts.m_e )
-        p_baryon = np.sqrt( (KE_baryon / src.data.phys_consts.c)**2 + 2*KE_baryon*src.data.phys_consts.m_p )
+        p_electron = np.sqrt( (KE_electron / phys_consts.c)**2 + 2*KE_electron*phys_consts.m_e )
+        p_baryon = np.sqrt( (KE_baryon / phys_consts.c)**2 + 2*KE_baryon*phys_consts.m_p )
 
         # De broglie wavelength 
-        deBroglie_wavelength_electron = src.data.phys_consts.h / p_electron 
-        deBroglie_wavelength_baryon = src.data.phys_consts.h / p_baryon
+        deBroglie_wavelength_electron = phys_consts.h / p_electron 
+        deBroglie_wavelength_baryon = phys_consts.h / p_baryon
 
         # Plot degeneracy 
         electron_color = "tab:blue" 

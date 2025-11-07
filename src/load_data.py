@@ -2,7 +2,7 @@ import mesa_reader as mr
 import numpy as np 
 from functools import lru_cache 
 import matplotlib.ticker as mticker 
-import src.misc
+from . import misc
 
 
 
@@ -58,9 +58,9 @@ def load_history(MESA_folder_path):
         
 
         # Initialize 
-        rounded_previous = src.misc.round_sigfigs(age_previous, num_sigfigs) 
-        rounded_current = src.misc.round_sigfigs(age_current, num_sigfigs) 
-        rounded_next = src.misc.round_sigfigs(age_next, num_sigfigs) 
+        rounded_previous = misc.round_sigfigs(age_previous, num_sigfigs) 
+        rounded_current = misc.round_sigfigs(age_current, num_sigfigs) 
+        rounded_next = misc.round_sigfigs(age_next, num_sigfigs) 
 
         # Keep looping until rounding has gone too far, then take the previous iteration 
         while str(rounded_current) != str(rounded_previous) and str(rounded_current) != str(rounded_next): 
@@ -69,9 +69,9 @@ def load_history(MESA_folder_path):
             age_current = rounded_current 
             age_next = rounded_next 
 
-            rounded_previous = src.misc.round_sigfigs(age_previous, num_sigfigs) 
-            rounded_current = src.misc.round_sigfigs(age_current, num_sigfigs) 
-            rounded_next = src.misc.round_sigfigs(age_next, num_sigfigs) 
+            rounded_previous = misc.round_sigfigs(age_previous, num_sigfigs) 
+            rounded_current = misc.round_sigfigs(age_current, num_sigfigs) 
+            rounded_next = misc.round_sigfigs(age_next, num_sigfigs) 
 
             num_sigfigs-=1 
 
@@ -98,7 +98,7 @@ def load_history(MESA_folder_path):
             suffix = " years" 
         
         
-        mantissa = src.misc.round_sigfigs(age_current / 10**n, num_sigfigs+2) 
+        mantissa = misc.round_sigfigs(age_current / 10**n, num_sigfigs+2) 
         age_string_final = str(mantissa) + suffix
         history.age_strings[modelnum_current-1] = age_string_final 
 

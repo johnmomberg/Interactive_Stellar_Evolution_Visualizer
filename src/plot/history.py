@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker 
 from matplotlib.patches import Rectangle
 from matplotlib.transforms import blended_transform_factory
-
-import src.data.isotopes 
-import src.misc 
+from ..data import isotopes 
+from .. import misc 
 
 
 
@@ -80,7 +79,7 @@ class HistoryPlot:
         fig, ax = cls._setup(history, config, modelnum_now)
         
         # Loop through list of Isotope objects
-        for isotope in src.data.isotopes.ISOTOPES:
+        for isotope in isotopes.ISOTOPES:
             composition_history = getattr(history, isotope.history_key)
 
             # Only plot profiles that are significant
@@ -131,7 +130,7 @@ class HistoryPlot:
             label=f"Heavier elements") 
 
         # Use mass-luminosity relation on the MS to predict the range of fusion rates to use for y limits 
-        L_guess = src.misc.mass_luminosity_relation(history.star_mass[0]) 
+        L_guess = misc.mass_luminosity_relation(history.star_mass[0]) 
         ax.set_ylim(
             10**( np.log10(L_guess)-1 ), 
             10**( np.log10(L_guess)+4 ) ) 

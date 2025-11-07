@@ -1,8 +1,6 @@
 from dataclasses import dataclass 
-import src.data.stars.base_class
-import src.misc 
-
-
+from . import base_class 
+from ... import misc 
 
 
 
@@ -10,7 +8,7 @@ import src.misc
 
 
 @dataclass 
-class ParentStage(src.data.stars.base_class):
+class ParentStage(base_class.BaseEntity):
     flowchart_x: int 
     short_name: str 
     full_name: str 
@@ -72,7 +70,7 @@ PARENT_WD = ParentStage(
 ################################################################################
 
 
-ALL_PARENTSTAGES_LIST = src.misc.CustomList([ 
+ALL_PARENTSTAGES_LIST = misc.CustomList([ 
     PARENT_HAYASHI, 
     PARENT_HENYEY, 
     PARENT_MS, 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
-import src.data.base_option
+from ...data import base_option
 
 
 
@@ -9,7 +9,7 @@ import src.data.base_option
 
 # Profile plot x-axis: either use mass coordinate or radius coordinate to represent the location within the interior 
 @dataclass
-class ProfileXAxisOption(src.data.base_option.BaseOption):
+class ProfileXAxisOption(base_option.BaseOption):
     get_values: Callable  # function that takes profile and returns the array 
     xlabel_units: str 
 

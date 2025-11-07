@@ -1,8 +1,8 @@
 import matplotlib.ticker as mticker 
 import matplotlib.pyplot as plt 
 import itertools 
-import src.plot.hr.locators
-import src.plot.hr.spectral_types
+from . import locators 
+from . import spectral_types 
 
 
 
@@ -91,9 +91,9 @@ class HRDiagram:
     def setup_ticks(self): 
 
         # X axis 
-        self.ax.xaxis.set_major_locator(src.plot.hr.locators.MajorLogLocator()) 
+        self.ax.xaxis.set_major_locator(locators.MajorLogLocator()) 
         self.ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}")) 
-        self.ax.xaxis.set_minor_locator(src.plot.hr.locators.MinorLogLocator()) 
+        self.ax.xaxis.set_minor_locator(locators.MinorLogLocator()) 
         self.ax.xaxis.set_minor_formatter(mticker.NullFormatter())  
         
         # Y axis 
@@ -229,7 +229,7 @@ class HRDiagram:
             selected = []
             spectral_letters = "OBAFGKM"
 
-            for stype in src.plot.hr.spectral_types.SPECTRAL_TYPES:
+            for stype in spectral_types.SPECTRAL_TYPES:
                 if stype.letter not in spectral_letters:
                     continue
                 for subtype in stype.subtypes:
@@ -278,7 +278,7 @@ class HRDiagram:
 
         # --- Static shaded background spans ---
         if not hasattr(self, "_spectral_spans") or not self._spectral_spans:
-            for st in src.plot.hr.spectral_types.SPECTRAL_TYPES:
+            for st in spectral_types.SPECTRAL_TYPES:
                 span = self.ax.axvspan(
                     st.temp_range[1], st.temp_range[0],
                     color=next(self._spectral_color_cycle), alpha=0.05
