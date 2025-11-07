@@ -46,8 +46,8 @@ class HRDiagram:
         # Setup events
         self.lines = []
         self._legend = None
-        self._connect_pan_events()
-        self._connect_home_events() 
+        self._connect_pan_events() 
+        # self._connect_home_events() 
 
 
 

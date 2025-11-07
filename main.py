@@ -151,10 +151,9 @@ def _(mo, src):
     return (profile_plot_x_dropdown,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
-    misc,
     mo,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
@@ -182,7 +181,7 @@ def _(
 
         profile_str = mo.md(
             f"Interior profile: {profile_plot_dropdown} vs {profile_plot_x_dropdown} of a "
-            f"{misc.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
+            f"{src.misc.set_textcolor_css(substage_selected_str, substage_selected_color)} star" )
 
 
 
@@ -191,14 +190,13 @@ def _(
     return profile_str, substage_selected_color, substage_selected_str
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     comparison_mode_radio,
     mo,
     mode1_massrange_dropdown,
     mode2_parentstage_dropdown,
     src,
-    stellar_evolution_data,
 ):
     # Identify available substages 
 
@@ -211,21 +209,21 @@ def _(
             available_substages = []
 
         elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
-            available_substages = stellar_evolution_data.CustomList([
-                substage for substage in stellar_evolution_data.ALL_SUBSTAGES_LIST 
+            available_substages = src.misc.CustomList([
+                substage for substage in src.data.stars.sub_stages.ALL_SUBSTAGES_LIST 
                 if not (substage.mass_max <= selected_massrange[0] 
                         or substage.mass_min >= selected_massrange[1])])
 
         elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
-            available_substages = stellar_evolution_data.CustomList([
-                substage for substage in stellar_evolution_data.ALL_SUBSTAGES_LIST
+            available_substages = src.misc.CustomList([
+                substage for substage in src.data.stars.sub_stages.ALL_SUBSTAGES_LIST
                 if hasattr(substage.parent_stage, "id") and substage.parent_stage.id == selected_parentstage.id
             ])
 
     return available_substages, selected_massrange, selected_parentstage
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -233,26 +231,25 @@ def _(
     np,
     selected_massrange,
     selected_parentstage,
-    stellar_evolution_data,
-    ui_options,
+    src,
 ):
     # Create available models 
 
     with mo.status.spinner(title="Finding models to go with available substages...") as _: 
 
-        if comparison_mode_radio.value == ui_options.COMPAREMODE_NOSELECTION or comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+        if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_NOSELECTION or comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
             available_models = []
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-            available_models = stellar_evolution_data.CustomList(
-                [model for model in stellar_evolution_data.ALL_MODELS_LIST 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
+            available_models = src.misc.CustomList(
+                [model for model in src.data.stars.MESA_models.ALL_MODELS_LIST 
                  if model.mass<=selected_massrange[1] and model.mass>=selected_massrange[0]]) 
 
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
 
-            potential_models = stellar_evolution_data.CustomList([
-                model for model in stellar_evolution_data.ALL_MODELS_LIST
+            potential_models = src.misc.CustomList([
+                model for model in src.data.stars.MESA_models.ALL_MODELS_LIST
                 if hasattr(model.substage, "parent_stage")
                 and hasattr(model.substage.parent_stage, "id")
                 and model.substage.parent_stage.id == selected_parentstage.id ]) 
@@ -261,7 +258,7 @@ def _(
             for substage in available_substages:
 
                 # Pick the model closest to the geometric center of this mass range 
-                models_in_stage = stellar_evolution_data.CustomList([m for m in potential_models if m.substage.id == substage.id])
+                models_in_stage = src.misc.CustomList([m for m in potential_models if m.substage.id == substage.id])
                 substage_geometric_center = np.sqrt(substage.mass_min*substage.mass_max)
                 if models_in_stage:
 
@@ -272,15 +269,15 @@ def _(
 
                     available_models.append(closest_model)
 
-            available_models = stellar_evolution_data.CustomList(available_models)
+            available_models = src.misc.CustomList(available_models)
 
 
 
     return (available_models,)
 
 
-@app.cell
-def _(available_substages, comparison_mode_radio, misc, mo, ui_options):
+@app.cell(hide_code=True)
+def _(available_substages, comparison_mode_radio, mo, src):
     # Create available substage tab selector (if there are any available substages)
 
 
@@ -289,10 +286,10 @@ def _(available_substages, comparison_mode_radio, misc, mo, ui_options):
         if len(available_substages) == 0: 
             available_substages_tabs = "" 
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
 
             available_substages_options = {
-                misc.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
+                src.misc.set_textcolor_css(sub.mode1_abbrev, sub.flowchart_color): 
                 sub.mode1_desc 
                 for sub in available_substages}
 
@@ -300,10 +297,10 @@ def _(available_substages, comparison_mode_radio, misc, mo, ui_options):
                 available_substages_options, 
                 value=list(available_substages_options.keys())[0]) 
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
 
             available_substages_options = {
-                misc.set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
+                src.misc.set_textcolor_css(sub.mode2_abbrev_with_massrange, sub.flowchart_color): 
                 sub.mode2_desc_with_massrange 
                 for sub in available_substages} 
 
@@ -315,8 +312,8 @@ def _(available_substages, comparison_mode_radio, misc, mo, ui_options):
     return (available_substages_tabs,)
 
 
-@app.cell
-def _(mo, stellar_evolution_data):
+@app.cell(hide_code=True)
+def _(mo, src):
     # Create history browser free selection mode 
 
     with mo.status.spinner(title="Creating History data file browser...") as _: 
@@ -326,24 +323,24 @@ def _(mo, stellar_evolution_data):
             selection_mode="directory", 
             restrict_navigation=True, 
             label="Choose MESA data folder", 
-            initial_path=stellar_evolution_data.data_folder)
+            initial_path=src.data.file_paths.MESA_data_folder)
 
 
     return (history_browser,)
 
 
-@app.cell
-def _(history_selected, mo, ui_options):
+@app.cell(hide_code=True)
+def _(history_selected, mo, src):
     # Create profile dropdown for free selection mode 
 
     with mo.status.spinner(title="Creating Profile data dropdown selector...") as _: 
 
         if history_selected is not None: 
 
-            profile_dropdown = ui_options.create_dropdown(
+            profile_dropdown = src.data.marimo_ui_options.create_dropdown(
                 label="Select Profile from the selected MESA data folder", 
                 options_list = [
-                    ui_options.AvailableModelnumsOption(
+                    src.data.marimo_ui_options.AvailableModelnumsOption(
                         modelnum=modelnum_, 
                         age=history_selected.star_age[modelnum_-1], 
                         display=f"Modelnum={modelnum_}, Age={history_selected.age_strings[modelnum_-1]} yrs") 
@@ -361,35 +358,34 @@ def _(history_selected, mo, ui_options):
     return (profile_dropdown,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages_tabs,
     comparison_mode_radio,
     history_browser,
     mo,
     profile_dropdown,
-    ui_options,
+    src,
 ):
     # "model_selector": either use "available_substages_tabs" or an hstack of "history_browser" and "profile_dropdown", depending on value of "comparison_mode_radio" 
 
     with mo.status.spinner(title="Choosing model selector...") as _: 
 
-        if comparison_mode_radio.value in [ui_options.COMPAREMODE_NOSELECTION, ui_options.COMPAREMODE_MASSFIRST, ui_options.COMPAREMODE_STAGEFIRST]: 
+        if comparison_mode_radio.value in [src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST]: 
             model_selector = available_substages_tabs 
-        if comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+        if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
             model_selector = mo.hstack([history_browser.style(width="800px"), profile_dropdown], justify='space-around') 
 
     return (model_selector,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     available_substages_tabs,
     comparison_mode_radio,
-    misc,
     mo,
-    ui_options,
+    src,
 ):
     # Identify available substage tab that is currently selected (if there are any available substages)
 
@@ -398,22 +394,22 @@ def _(
         if len(available_substages) == 0: 
             substage_selected = None 
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
             substage_selected = [
                 s for s in available_substages 
-                if misc.set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
+                if src.misc.set_textcolor_css(s.mode1_abbrev, s.flowchart_color) == available_substages_tabs.value
             ][0] 
 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
             substage_selected = [
                 s for s in available_substages 
-                if misc.set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
+                if src.misc.set_textcolor_css(s.mode2_abbrev_with_massrange, s.flowchart_color) == available_substages_tabs.value
             ][0]
 
     return (substage_selected,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(available_models, mo, substage_selected):
     # Identify model used to represent selected substage 
 
@@ -424,32 +420,31 @@ def _(available_models, mo, substage_selected):
     return (model_selected,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     Path,
     available_models,
     comparison_mode_radio,
     history_browser,
-    load_data,
     mo,
     model_selected,
-    ui_options,
+    src,
 ):
     # Load selected history 
 
     with mo.status.spinner(title="Loading MESA history file...") as _: 
 
         if model_selected is not None: 
-            history_selected = load_data.load_history(model_selected.MESA_folder_path)
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_FREE: 
+            history_selected = src.load_data.load_history(model_selected.MESA_folder_path)
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
             if len(history_browser.value) > 0: 
-                history_selected = load_data.load_history(Path(history_browser.value[0].id))
+                history_selected = src.load_data.load_history(Path(history_browser.value[0].id))
             else: 
                 history_selected = None 
 
         # If we're in mode 1 and we're currently selecting the "no selection" tab, load the history from another tab and display it 
-        elif comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-            history_selected = load_data.load_history(available_models[0].MESA_folder_path)
+        elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
+            history_selected = src.load_data.load_history(available_models[0].MESA_folder_path)
         else: 
             history_selected = None
 
@@ -457,15 +452,15 @@ def _(
     return (history_selected,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     Path,
     history_browser,
     history_selected,
-    load_data,
     mo,
     model_selected,
     profile_dropdown,
+    src,
 ):
     # Load selected profile and modelnum 
 
@@ -476,11 +471,11 @@ def _(
             if modelnum_selected is None: 
                 profile_selected = None 
             else: 
-                profile_selected = load_data.load_profile(model_selected.MESA_folder_path, modelnum_selected, history_selected) 
+                profile_selected = src.load_data.load_profile(model_selected.MESA_folder_path, modelnum_selected, history_selected) 
 
         elif profile_dropdown is not None and profile_dropdown.value is not None and len(history_browser.value)>0: 
             modelnum_selected = profile_dropdown.value.modelnum 
-            profile_selected = load_data.load_profile(Path(history_browser.value[0].id), modelnum_selected, history_selected)
+            profile_selected = src.load_data.load_profile(Path(history_browser.value[0].id), modelnum_selected, history_selected)
 
         else: 
             modelnum_selected = None 
@@ -491,7 +486,6 @@ def _(
 
 @app.cell
 def _(
-    HR_diagram_plotting,
     available_substages,
     comparison_mode_radio,
     flowchart_switch,
@@ -502,9 +496,8 @@ def _(
     np,
     plt,
     selected_massrange,
-    stellar_evolution_data,
+    src,
     substage_selected,
-    ui_options,
     unique_masses,
 ):
     # Draw the flowchart
@@ -559,32 +552,32 @@ def _(
             return "Flowchart minimized by user" 
 
         # If the user is freely selecting a MESA file, minimize the flowchart 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_FREE: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_FREE: 
             return "Flowchart unavailable"
 
         fig, ax = plt.subplots(figsize=(15, 5))
         fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=0.92)
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_NOSELECTION: 
             custom_yticks = unique_masses 
-            custom_xtick_labels = [parent_stage.short_name for parent_stage in stellar_evolution_data.ALL_PARENTSTAGES_LIST] 
+            custom_xtick_labels = [parent_stage.short_name for parent_stage in src.data.stars.parent_stages.ALL_PARENTSTAGES_LIST] 
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
             custom_yticks = [selected_massrange[0], selected_massrange[1]] 
             custom_xtick_labels = [
                 parent_stage.short_name 
                 if parent_stage in [stage.parent_stage for stage in available_substages] 
                 else "" 
-                for parent_stage in stellar_evolution_data.ALL_PARENTSTAGES_LIST
+                for parent_stage in src.data.stars.parent_stages.ALL_PARENTSTAGES_LIST
             ]
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
             custom_yticks = sorted({m for substage in available_substages for m in (substage.mass_min, substage.mass_max)})
             custom_xtick_labels = [
                 parent_stage.short_name 
                 if parent_stage in [stage.parent_stage for stage in available_substages] 
                 else "" 
-                for parent_stage in stellar_evolution_data.ALL_PARENTSTAGES_LIST
+                for parent_stage in src.data.stars.parent_stages.ALL_PARENTSTAGES_LIST
             ]
 
         # Y axis: Mass
@@ -592,12 +585,12 @@ def _(
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log") 
 
-        HR_diagram_plotting.label_spectraltypes(
-            ax, 
-            location="right", 
-            attribute="mass", 
-            subtype_fraction_threshold=0.5, min_subtype_label_px=55, 
-            axis_label="Spectral type (on MS)")   
+        # HR_diagram_plotting.label_spectraltypes(
+        #     ax, 
+        #     location="right", 
+        #     attribute="mass", 
+        #     subtype_fraction_threshold=0.5, min_subtype_label_px=55, 
+        #     axis_label="Spectral type (on MS)")   
 
         ax.yaxis.set_minor_formatter(mticker.NullFormatter())
         ax.set_yticks(custom_yticks)
@@ -608,13 +601,13 @@ def _(
         # X axis: Evolution
         ax.set_xlabel("Evolutionary phase", fontsize=18, labelpad=14)
         ax.set_xlim(0, 9)
-        custom_xticks = np.arange(0, len(stellar_evolution_data.ALL_PARENTSTAGES_LIST)) + 0.5
+        custom_xticks = np.arange(0, len(src.data.stars.parent_stages.ALL_PARENTSTAGES_LIST)) + 0.5
         ax.set_xticks(custom_xticks)
         ax.set_xticklabels(custom_xtick_labels, fontsize=14)
 
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_NOSELECTION: 
-            for substage in stellar_evolution_data.ALL_SUBSTAGES_LIST: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_NOSELECTION: 
+            for substage in src.data.stars.sub_stages.ALL_SUBSTAGES_LIST: 
                 if substage.parent_stage is None: 
                     continue 
                 draw_substage_box(
@@ -629,7 +622,7 @@ def _(
                 )
 
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_MASSFIRST: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
             for substage in available_substages: 
                 if substage.parent_stage is None: 
                     continue
@@ -661,7 +654,7 @@ def _(
                     )
 
 
-        if comparison_mode_radio.value==ui_options.COMPAREMODE_STAGEFIRST: 
+        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
             for substage in available_substages: 
                 if substage.id == substage_selected.id: 
                     draw_substage_box(
@@ -701,7 +694,6 @@ def _(
 
 @app.cell
 def _(
-    HR_diagram_plotting,
     available_models,
     comparison_mode_radio,
     history_plot_dropdown,
@@ -718,9 +710,9 @@ def _(
     profile_plot_x_dropdown,
     profile_plotting,
     profile_selected,
+    src,
     substage_selected_color,
     substage_selected_str,
-    ui_options,
 ):
     # Create figure showing interior plot 
 
@@ -735,133 +727,132 @@ def _(
 
 
         # HR Diagram 
-        if plot_mode_radio.value == ui_options.PLOTMODE_HRDIAGRAM: 
-            hr = HR_diagram_plotting.HRDiagram() 
+        if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_HRDIAGRAM: 
+            hr = src.plot.hr.hr.HRDiagram() 
 
-            # if history_selected is None: 
-            #     return "Select a History file to view HR diagram" 
-
-
-            # if comparison_mode_radio.value == ui_options.COMPAREMODE_MASSFIRST: 
-
-            #     hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=15) 
-
-            #     for model in available_models: 
-
-            #         if model.substage.parent_stage is None: 
-            #             continue 
-
-            #         history = load_data.load_history(model.MESA_folder_path) 
-
-            #         # Selected substage: thicker linewidth with black border 
-            #         if model.id == model_selected.id: 
-
-            #             # Black border 
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = "black",  
-            #                 alpha = 1, 
-            #                 lw = 3 
-            #             )
-
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = model.substage.flowchart_color, 
-            #                 label = model.substage.mode1_abbrev, 
-            #                 alpha = 1, 
-            #                 lw = 2 
-            #             )
-
-            #         # "No selection" selected: apply thicker lines to all, but not black border 
-            #         elif model_selected.substage.parent_stage is None: 
-
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = model.substage.flowchart_color, 
-            #                 label = model.substage.mode1_abbrev, 
-            #                 alpha = 1, 
-            #                 lw = 2 
-            #             )
-
-            #         # Available for comparison but unselected substages: thinner linewidths 
-            #         else: 
-
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = model.substage.flowchart_color, 
-            #                 label = model.substage.mode1_abbrev, 
-            #                 alpha = 1, 
-            #                 lw = 1 
-            #             )
+            if history_selected is None: 
+                return "Select a History file to view HR diagram" 
 
 
-            # if comparison_mode_radio.value == ui_options.COMPAREMODE_STAGEFIRST: 
+            if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
 
-            #     hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=15) 
+                hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=50) 
 
-            #     for model in available_models: 
+                for model in available_models: 
 
-            #         if model.substage.parent_stage is None: 
-            #             continue 
+                    if model.substage.parent_stage is None: 
+                        continue 
 
-            #         # Add thin-linewidth tracks showing entire evolution 
-            #         history = load_data.load_history(model.MESA_folder_path) 
-            #         hr.add_path(
-            #             history, 
-            #             color = model.substage.flowchart_color, 
-            #             lw = 0.5, 
-            #             alpha = 0.8, 
-            #             label = f"{model.mass} $M_{{sun}}$"
-            #         )
+                    history = src.load_data.load_history(model.MESA_folder_path) 
 
-            #         # Selected substage: thicker linewidth with black border 
-            #         if model.id == model_selected.id or model_selected.substage.parent_stage is None: 
+                    # Selected substage: thicker linewidth with black border 
+                    if model.id == model_selected.id: 
 
-            #             # Black border 
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = "black",  
-            #                 alpha = 1, 
-            #                 lw = 3 
-            #             )
+                        # Black border 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = "black",  
+                            alpha = 1, 
+                            lw = 3 
+                        )
 
-            #             # Thick linewidth 
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = model.substage.flowchart_color, 
-            #                 label = f"{model.substage.mode2_abbrev}", 
-            #                 alpha = 1, 
-            #                 lw = 2 
-            #             )
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 2 
+                        )
 
-            #         # Available for comparison but unselected substages: thicker linewidths but no black border 
-            #         else: 
+                    # "No selection" selected: apply thicker lines to all, but not black border 
+                    elif model_selected.substage.parent_stage is None: 
 
-            #             hr.add_path(
-            #                 history, 
-            #                 modelnum_start = model.model_start, 
-            #                 modelnum_end = model.model_end, 
-            #                 color = model.substage.flowchart_color, 
-            #                 label = f"{model.substage.mode2_abbrev}", 
-            #                 alpha = 1, 
-            #                 lw = 2 
-            #             )
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+                    # Available for comparison but unselected substages: thinner linewidths 
+                    else: 
+
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = model.substage.mode1_abbrev, 
+                            alpha = 1, 
+                            lw = 1 
+                        )
 
 
-            # HR_diagram_plotting.label_spectraltypes(hr.ax) 
-            # hr.ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
+            if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
+
+                hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=50) 
+
+                for model in available_models: 
+
+                    if model.substage.parent_stage is None: 
+                        continue 
+
+                    # Add thin-linewidth tracks showing entire evolution 
+                    history = src.load_data.load_history(model.MESA_folder_path) 
+                    hr.add_path(
+                        history, 
+                        color = model.substage.flowchart_color, 
+                        lw = 0.5, 
+                        alpha = 0.8, 
+                        label = f"{model.mass} $M_{{sun}}$"
+                    )
+
+                    # Selected substage: thicker linewidth with black border 
+                    if model.id == model_selected.id or model_selected.substage.parent_stage is None: 
+
+                        # Black border 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = "black",  
+                            alpha = 1, 
+                            lw = 3 
+                        )
+
+                        # Thick linewidth 
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = f"{model.substage.mode2_abbrev}", 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+                    # Available for comparison but unselected substages: thicker linewidths but no black border 
+                    else: 
+
+                        hr.add_path(
+                            history, 
+                            modelnum_start = model.model_start, 
+                            modelnum_end = model.model_end, 
+                            color = model.substage.flowchart_color, 
+                            label = f"{model.substage.mode2_abbrev}", 
+                            alpha = 1, 
+                            lw = 2 
+                        )
+
+            hr.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
+            hr.add_spectral_type_labels()  
 
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
@@ -869,7 +860,7 @@ def _(
 
 
         # History plots 
-        if plot_mode_radio.value == ui_options.PLOTMODE_HISTORY: 
+        if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_HISTORY: 
 
             if history_selected is None: 
                 return "Select a History file to view history plot" 
@@ -914,7 +905,7 @@ def _(
 
 
         # Interior profile plots 
-        if plot_mode_radio.value == ui_options.PLOTMODE_PROFILE:
+        if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
             if history_selected is None or profile_selected is None: 
                 return "Select a Profile file to view profile plot" 
@@ -932,7 +923,7 @@ def _(
             title_colors_list = ['black', substage_selected_color, 'black'] 
 
             # Add colored region to title 
-            if comparison_mode_radio.value != ui_options.COMPAREMODE_FREE: 
+            if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
                 profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
                 # Face color of figure with low alpha 
@@ -988,26 +979,8 @@ def _():
 
         import mesa_reader as mr 
 
-        # import src.data.stars.base_class
-        # import src.data.stars.MESA_models 
-        # import src.data.stars.parent_stages
-        # import src.data.stars.sub_stages
-        # import src.data.base_option
-        # import src.data.file_paths
-        # import src.data.isotopes
-        # import src.data.marimo_ui_options 
-        # import src.data.phys_consts
-        # import src.plot.hr.hr
-        # import src.plot.hr.locators
-        # import src.plot.hr.spectral_types 
-        # import src.plot.profile.profile
-        # import src.plot.profile.xaxis_options
-        # import src.plot.history 
-        # import src.load_data 
-        # import src.misc 
-
         import src
-    
+
         plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
 
