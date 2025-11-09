@@ -743,6 +743,9 @@ def _(
                     if model.substage.parent_stage is None: 
                         continue 
 
+                    if model.model_start is None: 
+                        continue 
+
                     history = src.load_data.load_history(model.MESA_folder_path) 
 
                     # Selected substage: thicker linewidth with black border 

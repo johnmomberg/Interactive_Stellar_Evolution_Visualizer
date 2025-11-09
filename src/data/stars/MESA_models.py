@@ -39,15 +39,15 @@ MODEL_0_2_NONE = MESA_model(
 MODEL_0_2_HAYASHI = MESA_model( 
     mass=0.2, 
     substage=sub_stages.SUB_HAYASHI, 
-    model_start=None, 
+    model_start=1, 
     model_example=150, 
-    model_end=None, 
+    model_end=225, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.2") 
 
 MODEL_0_2_MS = MESA_model( 
     mass=0.2, 
     substage=sub_stages.SUB_MS_LOWMASS, 
-    model_start=None, 
+    model_start=225, 
     model_example=273, 
     model_end=None, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.2") 
@@ -55,9 +55,9 @@ MODEL_0_2_MS = MESA_model(
 MODEL_0_2_HEWD = MESA_model( 
     mass=0.2, 
     substage=sub_stages.SUB_WD_HE, 
-    model_start=None, 
+    model_start=1000, 
     model_example=1200, 
-    model_end=None, 
+    model_end=1224, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.2") 
 
 
@@ -75,41 +75,41 @@ MODEL_0_4_NONE = MESA_model(
 MODEL_0_4_HAYASHI = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_HAYASHI, 
-    model_start=None, 
+    model_start=1, 
     model_example=200, 
-    model_end=None, 
+    model_end=254, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 MODEL_0_4_MS = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_MS_MEDMASS, 
-    model_start=None, 
+    model_start=254, 
     model_example=309, 
-    model_end=None, 
+    model_end=350, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 MODEL_0_4_SUBGIANT = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_POSTMS_SUBGIANT, 
-    model_start=None, 
+    model_start=350, 
     model_example=450, 
-    model_end=None, 
+    model_end=1200, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 MODEL_0_4_RG = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_RG, 
-    model_start=None, 
+    model_start=1200, 
     model_example=3000, 
-    model_end=None, 
+    model_end=4850, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 MODEL_0_4_HEWD = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_WD_HE, 
-    model_start=None, 
+    model_start=4850, 
     model_example=5159, 
-    model_end=None, 
+    model_end=5159, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 
@@ -295,65 +295,65 @@ MODEL_3_0_NONE = MESA_model(
 MODEL_3_0_HAYASHI = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_HAYASHI, 
-    model_start=None, 
+    model_start=1, 
     model_example=150, 
-    model_end=None, 
+    model_end=195, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_HENYEY = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_HENYEY, 
-    model_start=None, 
+    model_start=195, 
     model_example=225, 
-    model_end=None, 
+    model_end=250, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_MS = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_MS_HIMASS, 
-    model_start=None, 
+    model_start=250, 
     model_example=300, 
-    model_end=None, 
+    model_end=348, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_HGAP = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_POSTMS_HGAP, 
-    model_start=None, 
+    model_start=348, 
     model_example=363, 
-    model_end=None, 
+    model_end=380, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_RG = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_RG, 
-    model_start=None, 
+    model_start=380, 
     model_example=400, 
-    model_end=None, 
+    model_end=430, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_HESTABLE = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_HEIGN_STABLE, 
-    model_start=None, 
-    model_example=None, 
-    model_end=None, 
+    model_start=430, 
+    model_example=433, 
+    model_end=435, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_HEMS = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_HEMS, 
-    model_start=None, 
+    model_start=435, 
     model_example=650, 
-    model_end=None, 
+    model_end=950, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_AGB = MESA_model( 
     mass=3.0, 
     substage=sub_stages.SUB_AGB, 
-    model_start=None, 
+    model_start=950, 
     model_example=1700, 
-    model_end=None, 
+    model_end=11000, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=3.0") 
 
 MODEL_3_0_COWD = MESA_model( 
