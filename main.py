@@ -708,7 +708,6 @@ def _(
     plot_mode_radio,
     profile_plot_dropdown,
     profile_plot_x_dropdown,
-    profile_plotting,
     profile_selected,
     src,
     substage_selected_color,
@@ -927,7 +926,7 @@ def _(
 
             # Add colored region to title 
             if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
-                profile_plotting.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
+                src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
                 # Face color of figure with low alpha 
                 fig2.patch.set_facecolor(substage_selected_color)
