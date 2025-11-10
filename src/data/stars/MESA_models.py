@@ -206,7 +206,7 @@ MODEL_1_75_NONE = MESA_model(
     model_start=None, 
     model_example=None, 
     model_end=None, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_HAYASHI = MESA_model(
     mass=1.75, 
@@ -214,7 +214,7 @@ MODEL_1_75_HAYASHI = MESA_model(
     model_start=1, 
     model_example=140, 
     model_end=200, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_HENYEY = MESA_model(
     mass=1.75, 
@@ -222,7 +222,7 @@ MODEL_1_75_HENYEY = MESA_model(
     model_start=200, 
     model_example=235, 
     model_end=250, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_MS = MESA_model(
     mass=1.75, 
@@ -230,7 +230,7 @@ MODEL_1_75_MS = MESA_model(
     model_start=250, 
     model_example=285, 
     model_end=340, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_HGAP = MESA_model(
     mass=1.75, 
@@ -238,7 +238,7 @@ MODEL_1_75_HGAP = MESA_model(
     model_start=340, 
     model_example=389, 
     model_end=420, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_RG = MESA_model(
     mass=1.75, 
@@ -246,7 +246,7 @@ MODEL_1_75_RG = MESA_model(
     model_start=420, 
     model_example=1000, 
     model_end=8763, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_HEFLASH = MESA_model(
     mass=1.75, 
@@ -254,7 +254,7 @@ MODEL_1_75_HEFLASH = MESA_model(
     model_start=8763, 
     model_example=8802, 
     model_end=9000, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_HEMS = MESA_model(
     mass=1.75, 
@@ -262,7 +262,7 @@ MODEL_1_75_HEMS = MESA_model(
     model_start=9000, 
     model_example=9800, 
     model_end=10000, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_AGB = MESA_model(
     mass=1.75, 
@@ -270,7 +270,7 @@ MODEL_1_75_AGB = MESA_model(
     model_start=10000, 
     model_example=11425, 
     model_end=13635, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 MODEL_1_75_COWD = MESA_model(
     mass=1.75, 
@@ -278,7 +278,7 @@ MODEL_1_75_COWD = MESA_model(
     model_start=13635, 
     model_example=None, 
     model_end=13635, 
-    MESA_folder_path=file_paths.MESA_data_folder/"Mass=1.75_models=every5")
+    MESA_folder_path=file_paths.MESA_data_folder/"M=1.75")
 
 
 ################################################################################
