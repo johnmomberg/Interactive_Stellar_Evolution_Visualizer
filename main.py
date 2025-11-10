@@ -901,6 +901,8 @@ def _(
             x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
             fig2.axes[0].set_xlim(x_view_min, x_view_max)
 
+            fig2.axes[0].set_autoscale_on(False)
+
             return mo.mpl.interactive(fig2) 
 
 
@@ -958,7 +960,7 @@ def _(
     return (secondary_plot,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     # Imports/setup 
 
