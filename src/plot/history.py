@@ -1,9 +1,11 @@
 import numpy as np 
 from dataclasses import dataclass 
+
 import matplotlib.pyplot as plt 
 import matplotlib.ticker as mticker 
-from matplotlib.patches import Rectangle
-from matplotlib.transforms import blended_transform_factory
+import matplotlib.patches as mpatches 
+import matplotlib.transforms as mtransforms 
+
 from ..data import isotopes 
 from .. import misc 
 
@@ -277,7 +279,7 @@ def add_substage_highlight(
         return 
 
     ax = fig.axes[0] 
-    trans = blended_transform_factory(ax.transData, ax.transAxes)
+    trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
 
     xmin = history.star_age[model_selected.model_start-1] 
     xmax = history.star_age[model_selected.model_end-1] 
@@ -294,7 +296,7 @@ def add_substage_highlight(
         label=label) 
 
     # Add colored rectangle above plot
-    rect = Rectangle(
+    rect = mpatches.Rectangle(
         xy = (xmin, 1.00), 
         width = xmax-xmin, 
         height = 0.1, 
@@ -303,13 +305,18 @@ def add_substage_highlight(
         alpha = upper_alpha, 
         linewidth=upper_border_linewidth, 
         edgecolor=upper_border_color, 
-        clip_on = False ) 
-
-    fig_clipbox = fig.bbox  
-    rect.set_clip_path(None)  
-    rect.set_clip_box(fig_clipbox)  
-
+        clip_on = True ) 
     ax.add_patch(rect) 
+
+    # Set clip boundary of rectangle 
+    clip_fig_rect = mpatches.Rectangle( 
+        xy = (fig.subplotpars.left, 0), 
+        width = fig.subplotpars.right - fig.subplotpars.right, 
+        height = 1.0, 
+        transform=fig.transFigure, 
+        facecolor="none", 
+        edgecolor="none")
+    rect.set_clip_path(clip_fig_rect) 
 
     # Add text in the middle of the rectangle 
     if include_label == True: 
@@ -326,33 +333,3 @@ def add_substage_highlight(
             fontsize=12, 
             transform=trans )
     
-    # # Block out rectangles overhanging to the right... 
-    # blocker_right = Rectangle(
-    #     xy = (1, 1), 
-    #     width = 1, 
-    #     height = rect.get_height(), 
-    #     transform=ax.transAxes,  
-    #     facecolor='white', 
-    #     clip_on = False)
-
-    # fig_clipbox = fig.bbox  
-    # blocker_right.set_clip_path(None)  
-    # blocker_right.set_clip_box(fig_clipbox)  
-
-    # ax.add_patch(blocker_right)  
-
-    # # ...and left  
-    # blocker_left = Rectangle(
-    #     xy = (0, 1), 
-    #     width = -1, 
-    #     height = rect.get_height(), 
-    #     transform=ax.transAxes,  
-    #     facecolor='white', 
-    #     clip_on = False)
-
-    # fig_clipbox = fig.bbox  
-    # blocker_left.set_clip_path(None)  
-    # blocker_left.set_clip_box(fig_clipbox)  
-
-    # ax.add_patch(blocker_left)  
-
