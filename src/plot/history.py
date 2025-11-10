@@ -311,7 +311,7 @@ def add_substage_highlight(
     # Set clip boundary of rectangle 
     clip_fig_rect = mpatches.Rectangle( 
         xy = (fig.subplotpars.left, 0), 
-        width = fig.subplotpars.right - fig.subplotpars.right, 
+        width = fig.subplotpars.right - fig.subplotpars.left, 
         height = 1.0, 
         transform=fig.transFigure, 
         facecolor="none", 
