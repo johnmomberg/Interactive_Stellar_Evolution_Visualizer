@@ -44,7 +44,7 @@ class ProfilePlot:
         x_units_str = xaxis.xlabel_units
 
         # Set xlabel (mass or radius) and xlim  
-        ax.set_xlabel(f"Location inside star {x_units_str}", fontsize=18)
+        ax.set_xlabel(f"Location inside star {x_units_str}", fontsize=18, labelpad=10)
         ax.set_xlim(0, 1.001*np.max(x_arr))
 
 

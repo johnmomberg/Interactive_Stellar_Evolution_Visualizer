@@ -936,7 +936,7 @@ def _(
                 # Draw a separate edge rectangle on top with full alpha
                 rect = mpatches.Rectangle(
                     (0, 0), 1, 1, transform=fig2.transFigure, 
-                    facecolor='none', edgecolor=substage_selected_color, linewidth=15, zorder=2
+                    facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
                 )
                 fig2.patches.append(rect)
 
