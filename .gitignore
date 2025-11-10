@@ -1,5 +1,11 @@
 /Old
 /__marimo__
 /__pycache__
-/utils/__pycache__
+__pycache__/
 /Plots
+/src/__pycache__/
+/src/data/__pycache__/
+/src/data/stars/__pycache__/
+/src/plot/__pycache__/
+/src/plot/hr/__pycache__/
+/src/plot/profile/__pycache__/
