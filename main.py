@@ -697,7 +697,6 @@ def _(
     available_models,
     comparison_mode_radio,
     history_plot_dropdown,
-    history_plotting,
     history_selected,
     lru_cache,
     mo,
@@ -877,12 +876,12 @@ def _(
                     continue 
 
                 if model.id == model_selected.id: 
-                    history_plotting.add_substage_highlight(
+                    src.plot.history.add_substage_highlight(
                         fig2, model, history_selected, include_label=model.id==model_selected.id, 
                         lower_alpha=0.1, lower_border_linewidth=0, lower_border_color="black", 
                         upper_alpha=1.0, upper_border_linewidth=2, upper_border_color="black", ) 
                 else: 
-                    history_plotting.add_substage_highlight(
+                    src.plot.history.add_substage_highlight(
                         fig2, model, history_selected, include_label=model.id==model_selected.id, 
                         lower_alpha=0) 
 
