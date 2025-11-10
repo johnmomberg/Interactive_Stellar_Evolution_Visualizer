@@ -303,7 +303,12 @@ def add_substage_highlight(
         alpha = upper_alpha, 
         linewidth=upper_border_linewidth, 
         edgecolor=upper_border_color, 
-        clip_on = False )
+        clip_on = False ) 
+
+    fig_clipbox = fig.bbox  
+    rect.set_clip_path(None)  
+    rect.set_clip_box(fig_clipbox)  
+
     ax.add_patch(rect) 
 
     # Add text in the middle of the rectangle 
@@ -321,22 +326,33 @@ def add_substage_highlight(
             fontsize=12, 
             transform=trans )
     
-    # Block out rectangles overhanging to the right... 
-    blocker_right = Rectangle(
-            xy = (1, 1), 
-            width = 1, 
-            height = rect.get_height(), 
-            transform=ax.transAxes,  
-            facecolor='white', 
-            clip_on = False)
-    ax.add_patch(blocker_right)  
+    # # Block out rectangles overhanging to the right... 
+    # blocker_right = Rectangle(
+    #     xy = (1, 1), 
+    #     width = 1, 
+    #     height = rect.get_height(), 
+    #     transform=ax.transAxes,  
+    #     facecolor='white', 
+    #     clip_on = False)
 
-    # ...and left  
-    blocker_left = Rectangle(
-            xy = (0, 1), 
-            width = -1, 
-            height = rect.get_height(), 
-            transform=ax.transAxes,  
-            facecolor='white', 
-            clip_on = False)
-    ax.add_patch(blocker_left)  
+    # fig_clipbox = fig.bbox  
+    # blocker_right.set_clip_path(None)  
+    # blocker_right.set_clip_box(fig_clipbox)  
+
+    # ax.add_patch(blocker_right)  
+
+    # # ...and left  
+    # blocker_left = Rectangle(
+    #     xy = (0, 1), 
+    #     width = -1, 
+    #     height = rect.get_height(), 
+    #     transform=ax.transAxes,  
+    #     facecolor='white', 
+    #     clip_on = False)
+
+    # fig_clipbox = fig.bbox  
+    # blocker_left.set_clip_path(None)  
+    # blocker_left.set_clip_box(fig_clipbox)  
+
+    # ax.add_patch(blocker_left)  
+
