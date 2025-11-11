@@ -795,7 +795,6 @@ def _(
                             lw = 1 
                         )
 
-
             if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
 
                 hr.ax.set_title(f"Location of {model_selected.substage.parent_stage.full_name} on HR Diagram", fontsize=20, pad=50) 
@@ -851,6 +850,14 @@ def _(
                             alpha = 1, 
                             lw = 2 
                         )
+
+            if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
+                hr.add_path(
+                    history = history_selected, 
+                    label = f"{history_selected.initial_mass_string} $M_{{sun}}$" )
+                hr.add_modelnum_labels(
+                    history = history_selected, 
+                    modelnum_now = modelnum_selected) 
 
             hr.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
             hr.add_spectral_type_labels()  

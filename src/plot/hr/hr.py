@@ -1,6 +1,9 @@
 import matplotlib.ticker as mticker 
 import matplotlib.pyplot as plt 
 import itertools 
+import functools 
+import numpy as np 
+
 from . import locators 
 from . import spectral_types 
 
@@ -337,3 +340,185 @@ class HRDiagram:
             if action.text().lower() in ["home", "back", "forward"]:
                 action.triggered.connect(_refresh_spectral_labels)
             
+
+
+
+
+    # Add model labels to points on an HR diagram, skipping some models to avoid overlapping labels 
+    def add_modelnum_labels(self, history, modelnum_now=None):
+        ax = self.ax
+
+
+        # Check if too points are too close (the labels will overlap)
+        def calc_is_too_close(point1, point2, current_bounds): 
+
+            min_x_fractional_sep = 0.08  
+            min_y_fractional_sep = 0.08  
+
+            xlim, ylim = current_bounds 
+
+            x_sep = np.abs(point1[0]-point2[0]) 
+            y_sep = np.abs(point1[1]-point2[1]) 
+            
+            log_xlim = np.log10(xlim) 
+            log_ylim = np.log(ylim)
+
+            log_xrange = max(log_xlim) - min(log_xlim) 
+            log_yrange = max(log_ylim) - min(log_ylim) 
+
+            # Check whether the two points are too close 
+            if x_sep < min_x_fractional_sep*log_xrange and y_sep < min_y_fractional_sep*log_yrange:
+                return True
+            else: 
+                return False  
+
+
+
+        # Function that runs every time axis limits are changed 
+        def update_secondary_axis(ax): 
+
+            # 1) Remove previous points, so only current ones are shown on plot 
+
+            if hasattr(ax, "_model_points"):
+                ax._model_points.remove() 
+            if hasattr(ax, "_model_label_points"):
+                ax._model_label_points.remove() 
+            if hasattr(ax, "_model_labels"):
+                for label in ax._model_labels: 
+                    label.remove()  
+            if hasattr(ax, "_modelnum_now_point"): 
+                ax._modelnum_now_point.remove() 
+            if hasattr(ax, "_modelnum_now_label"): 
+                ax._modelnum_now_label.remove() 
+            
+
+
+            # 2) Calculate positions where models are available 
+
+            # Get current axes bounds 
+            xlim = ax.get_xlim() 
+            ylim = ax.get_ylim() 
+
+            # Return x,y coords of points within axes bounds 
+            ind_models_available = history.model_numbers_available-1 
+            log_Teff = history.log_Teff[ind_models_available]
+            log_L = history.log_L[ind_models_available]
+            ind_in_view = functools.reduce(
+                np.intersect1d, 
+                [
+                    np.where(10**log_Teff>min(xlim)), 
+                    np.where(10**log_Teff<max(xlim)), 
+                    np.where(10**log_L>min(ylim)), 
+                    np.where(10**log_L<max(ylim)) ] )
+            log_Teff_in_view = log_Teff[ind_in_view]
+            log_L_in_view = log_L[ind_in_view]
+
+            if len(log_Teff_in_view) == 0:
+                ax._model_points = ax.scatter([], []) 
+                ax._model_label_points = ax.scatter([], []) 
+                ax._model_labels = [] 
+                ax._modelnum_now_point = ax.scatter([], []) 
+                ax._modelnum_now_label = ax.text([], [], "") 
+                ax.figure.canvas.draw_idle()
+                return
+
+
+            # 3) Calculate positions to place labels (subset of points with model numbers, so that labels don't overlap)
+
+            log_Teff_labeled = [log_Teff_in_view[0]]
+            log_L_labeled = [log_L_in_view[0]]
+
+            # try to use modelnum_now if it’s valid and in range
+            if modelnum_now is not None:
+                x = history.log_Teff[modelnum_now - 1]
+                y = history.log_L[modelnum_now - 1] 
+
+                in_x_range = np.log10(min(xlim)) < x < np.log10(max(xlim))
+                in_y_range = np.log10(min(ylim)) < y < np.log10(max(ylim))
+
+                if in_x_range and in_y_range:
+                    log_Teff_labeled = [x]
+                    log_L_labeled = [y] 
+
+            # Loop over all available points 
+            for i in np.arange(1, len(log_Teff_in_view)): 
+
+                x = log_Teff_in_view[i] 
+                y = log_L_in_view[i] 
+
+                # Check if the current point should be labeled or not 
+                # Only label if this point isn't too close to any of the other labels 
+                is_too_close = False 
+                for j in range(len(log_Teff_labeled)): 
+                    x0 = log_Teff_labeled[j]
+                    y0 = log_L_labeled[j] 
+                    if calc_is_too_close((x,y), ((x0,y0)), (xlim,ylim)): 
+                        is_too_close = True 
+                        break 
+                if is_too_close: 
+                    continue 
+            
+                # If we haven't skipped to the next point, the current point is not too close to any of the current labels, so add it to the list 
+                log_Teff_labeled.append(x)
+                log_L_labeled.append(y) 
+
+            # Convert lists back to numpy array 
+            log_Teff_labeled = np.array(log_Teff_labeled) 
+            log_L_labeled = np.array(log_L_labeled) 
+
+            # Remove current model number from labels list and apply a separate label to it 
+            if modelnum_now is not None: 
+                log_Teff_labeled = log_Teff_labeled[log_Teff_labeled != history.log_Teff[modelnum_now-1]] 
+                log_L_labeled = log_L_labeled[log_L_labeled != history.log_L[modelnum_now-1]] 
+            
+
+
+            # 4) Add labels and points calculated in previous sections to the plot 
+            
+            # Add points to all positions with models 
+            ax._model_points = ax.scatter(
+                10**log_Teff_in_view, 10**log_L_in_view, 
+                zorder=10, color="white", ec="black", s=5) 
+
+            # Add points to the subset of positions with labels 
+            ax._model_label_points = ax.scatter(
+                10**log_Teff_labeled, 10**log_L_labeled, 
+                zorder=30, color="white", edgecolor="black", s=20) 
+
+            # The labels themselves 
+            ax._model_labels = [] 
+            for i in range(len(log_Teff_labeled)): 
+                ax._model_labels.append( ax.text(
+                    10**log_Teff_labeled[i], 
+                    10**log_L_labeled[i], 
+                    np.where(history.log_Teff == log_Teff_labeled[i])[0][0]+1,  
+                    fontsize=10, ha='left', va='bottom', zorder=20, clip_on=True, 
+                    bbox=dict(facecolor='white', edgecolor='black', alpha=1.0, boxstyle='round,pad=0.2')) )
+
+            if modelnum_now is not None: 
+                
+                # Point for the currently selected model 
+                ax._modelnum_now_point = ax.scatter(
+                    10**history.log_Teff[modelnum_now-1], 10**history.log_L[modelnum_now-1], 
+                    zorder=30, color="gold", edgecolor="black", s=20) 
+            
+                # Label the currently selected model 
+                ax._modelnum_now_label = ax.text(
+                    10**history.log_Teff[modelnum_now-1], 10**history.log_L[modelnum_now-1], 
+                    modelnum_now,  
+                    fontsize=12, ha='left', va='bottom', zorder=20, clip_on=True, 
+                    bbox=dict(facecolor='gold', edgecolor='black', alpha=1.0, boxstyle='round,pad=0.2')) 
+
+
+
+        # 5) Connect function to axis so it automatically updates on limit changes 
+
+            # Idk what this does 
+            ax.figure.canvas.draw_idle()
+            
+        # Re-run this function every time the x or y axes limits change 
+        ax.callbacks.connect('xlim_changed', update_secondary_axis)
+        ax.callbacks.connect('ylim_changed', update_secondary_axis)
+        update_secondary_axis(ax)
+
+
