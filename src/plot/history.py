@@ -32,7 +32,7 @@ class HistoryPlot:
 
     # Code shared by all history plots 
     @staticmethod
-    def _setup(history, config, modelnum_now): 
+    def _setup(history, config): 
 
         # Initialize figure 
         fig, ax = plt.subplots(figsize=(12.8, 5))
@@ -62,15 +62,13 @@ class HistoryPlot:
         # Grid, ticks 
         ax.grid(alpha=0.5) 
         ax.tick_params(labelsize=14) 
-        add_model_labels_time(ax, history, modelnum_now) 
-
         return fig, ax 
     
 
 
     # History plot: center composition vs time 
     @classmethod
-    def composition(cls, history, modelnum_now=None): 
+    def composition(cls, history): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -78,7 +76,7 @@ class HistoryPlot:
             ylim=(0, 1),
             yscale="linear",
             title="Composition at center vs age")
-        fig, ax = cls._setup(history, config, modelnum_now)
+        fig, ax = cls._setup(history, config)
         
         # Loop through list of Isotope objects
         for isotope in isotopes.ISOTOPES:
@@ -103,7 +101,7 @@ class HistoryPlot:
 
     # History plot: fusion rate vs time 
     @classmethod
-    def fusion(cls, history, modelnum_now=None): 
+    def fusion(cls, history): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -111,7 +109,7 @@ class HistoryPlot:
             ylim=None,
             yscale="log",
             title="Fusion rate vs age")
-        fig, ax = cls._setup(history, config, modelnum_now)
+        fig, ax = cls._setup(history, config)
         
         # 3 fusion rates: Hydrogen, helium, and everything else (aka metals) 
         ax.plot(
@@ -146,7 +144,7 @@ class HistoryPlot:
 
     # History plot: radius vs time 
     @classmethod
-    def radius(cls, history, modelnum_now=None): 
+    def radius(cls, history): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -154,7 +152,7 @@ class HistoryPlot:
             ylim=None,
             yscale="log",
             title="Radius vs age")
-        fig, ax = cls._setup(history, config, modelnum_now)
+        fig, ax = cls._setup(history, config)
 
         # Plot radius vs age         
         ax.plot(history.star_age, 10**history.log_R, lw=2) 
@@ -165,7 +163,7 @@ class HistoryPlot:
 
     # History plot: mass vs time 
     @classmethod
-    def mass(cls, history, modelnum_now=None): 
+    def mass(cls, history): 
 
         # Setup 
         config = HistoryPlotConfigParams(
@@ -173,7 +171,7 @@ class HistoryPlot:
             ylim=None,
             yscale="linear",
             title="Mass vs age")
-        fig, ax = cls._setup(history, config, modelnum_now)
+        fig, ax = cls._setup(history, config)
 
         # Plot mass vs age         
         ax.plot(history.star_age, history.star_mass, lw=2) 
@@ -271,7 +269,7 @@ def add_model_labels_time(ax, history, modelnum_now):
 
 def add_substage_highlight(
         fig, model_selected, history, 
-        lower_alpha=0.1, lower_border_linewidth=0, lower_border_color="none", 
+        lower_alpha=0.05, lower_border_linewidth=0, lower_border_color="none", 
         upper_alpha=0.6, upper_border_linewidth=0, upper_border_color="none", 
         include_label=False): 
 

@@ -867,7 +867,7 @@ def _(
                 return "Select a History file to view history plot" 
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
-            fig2 = selected_plot_func(history_selected, modelnum_now=modelnum_selected) 
+            fig2 = selected_plot_func(history_selected) 
 
             # Highlight all regions 
             for model in available_models: 
@@ -877,14 +877,31 @@ def _(
 
                 if model.id == model_selected.id: 
                     src.plot.history.add_substage_highlight(
-                        fig2, model, history_selected, include_label=model.id==model_selected.id, 
-                        lower_alpha=0.1, lower_border_linewidth=0, lower_border_color="black", 
-                        upper_alpha=1.0, upper_border_linewidth=2, upper_border_color="black", ) 
+                        fig2, 
+                        model, 
+                        history_selected, 
+                        include_label=model.id==model_selected.id, 
+                    
+                        lower_alpha=0.1, 
+                        lower_border_linewidth=0, 
+                        lower_border_color="black", 
+                    
+                        upper_alpha=1.0, 
+                        upper_border_linewidth=2, 
+                        upper_border_color="black", ) 
                 else: 
                     src.plot.history.add_substage_highlight(
-                        fig2, model, history_selected, include_label=model.id==model_selected.id, 
-                        lower_alpha=0) 
+                        fig2, 
+                        model, 
+                        history_selected, 
+                        include_label=model.id==model_selected.id, ) 
 
+            # Add model number labels (if in mode 4)
+            if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
+                src.plot.history.add_model_labels_time(
+                    ax=fig2.axes[0], 
+                    history=history_selected, 
+                    modelnum_now=modelnum_selected) 
 
             # Set view window to center on currently selected stage 
             if model_selected is None: 
@@ -893,15 +910,12 @@ def _(
                 return mo.mpl.interactive(fig2) 
             if model_selected.model_end is None: 
                 return mo.mpl.interactive(fig2) 
-
             x_stage_min = history_selected.star_age[model_selected.model_start-1] 
             x_stage_max = history_selected.star_age[model_selected.model_end-1] 
             x_stage_size = x_stage_max-x_stage_min 
             x_view_min = np.max([x_stage_min - x_stage_size/3, 0])
             x_view_max = np.min([x_stage_max + x_stage_size/3, np.max(history_selected.star_age)])
             fig2.axes[0].set_xlim(x_view_min, x_view_max)
-
-            fig2.axes[0].set_autoscale_on(False)
 
             return mo.mpl.interactive(fig2) 
 
