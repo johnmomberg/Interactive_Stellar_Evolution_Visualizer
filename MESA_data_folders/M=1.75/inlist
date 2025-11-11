@@ -1,0 +1,385 @@
+! MESA Revision 11701  
+! Part of MESA-Web
+!   (c) Fields, C. E. & Timmes, F. X. 2015-2021 (http://mesa-web.asu.edu)
+!   (c) Townsend, R. H. D. 2015-2021 (http://www.astro.wisc.edu/~townsend/static.php?ref=mesa-web)
+! Cite/offer co-authorship when appropriate.
+! Questions/Comments: Rich Townsend (rhtownsend@wisc.edu)
+!-----------------------------------------------------------------------------------
+
+&star_job
+
+      create_pre_main_sequence_model = .true.
+      pre_ms_relax_num_steps = 50
+      set_initial_age = .true.
+      initial_age = 0 ! in years
+      set_initial_model_number = .true.
+      initial_model_number = 0
+      change_initial_net = .true.      
+      new_net_name = 'basic.net'
+      dump_missing_metals_into_heaviest = .false.
+      new_omega_div_omega_crit = 0.0
+      set_near_zams_omega_div_omega_crit_steps = 50
+      pgstar_flag = .true.
+      rates_cache_dir = './cache'
+      rate_tables_dir = '.'
+      rate_cache_suffix = 'user'
+      show_log_description_at_start = .false.
+
+/ !end of star_job namelist
+
+&controls
+
+  ! starting specifications
+
+      profile_interval = 5
+      history_interval = 1
+      terminal_interval = 100000000
+      write_header_frequency = 100000000
+      photo_interval = 50000000
+      max_num_profile_models = 500
+      warn_when_large_rel_run_E_err = 1.0d99 
+
+      initial_mass = 1.75 ! in Msun units
+      initial_z = 0.02
+
+      ! custom stopping condition
+      xa_central_lower_limit_species(1) = 'h1'
+      fe_core_infall_limit = 1e8
+      when_to_stop_rtol = 1d-3
+      when_to_stop_atol = 1d-3
+
+      use_gold_tolerances = .false.
+
+      min_timestep_limit = 1d-6
+
+      ! winds
+      cool_wind_RGB_scheme = 'Reimers'
+      cool_wind_AGB_scheme = 'Blocker'
+      Reimers_scaling_factor = 0.1
+      Blocker_scaling_factor = 0.1
+
+      ! resolution - spatial (mass) - global
+      mesh_delta_coeff = 2.0
+
+      ! resolution - temporal (time) - global
+      varcontrol_target = 1e-2
+      dX_nuc_drop_min_X_limit = 1e-2
+        
+      ! resolution - temporal (time) - hydrogen
+      delta_lg_XH_cntr_min = -6
+      delta_lg_XH_cntr_max = -3
+      delta_lg_XH_cntr_limit = 0.05
+      delta_lg_XH_cntr_hard_limit = -1
+
+      ! mixing options
+      mixing_length_alpha = 2.0
+      MLT_option = 'Cox'
+      use_Ledoux_criterion = .true.
+      
+      ! overshoot
+      overshoot_scheme(1) = 'exponential'
+      overshoot_zone_type(1) = 'any'
+      overshoot_zone_loc(1) = 'any'
+      overshoot_bdy_loc(1) = 'any'
+      overshoot_f(1) = 0.0001
+      overshoot_f0(1) = 0.0005
+      
+      ! semiconvection
+      alpha_semiconvection = 0.01
+      semiconvection_option = 'Langer_85 mixing; gradT = gradr'
+
+      ! thermohaline
+      thermohaline_coeff = 1.0
+      thermohaline_option = 'Kippenhahn'
+
+      ! mlt ++ 
+      okay_to_reduce_gradT_excess = .true.
+
+      ! predictive mixing
+      predictive_mix(1) = .true.
+      predictive_zone_type(1) = 'burn_H'
+      predictive_zone_loc(1) = 'core'
+      predictive_bdy_loc(1) = 'top'
+
+      predictive_mix(2) = .false.
+      predictive_zone_type(2) = 'any'
+      predictive_zone_loc(2) = 'any'
+      predictive_bdy_loc(2) = 'any'
+
+      ! convective pre-mixing
+      do_conv_premix = .false.
+      conv_premix_avoid_increase = .true.
+      conv_premix_fix_pgas = .true.
+
+      am_D_mix_factor = 0.033333333d0
+      D_DSI_factor = 1
+      D_SH_factor  = 1
+      D_SSI_factor = 1
+      D_ES_factor  = 1
+      D_GSF_factor = 1
+      D_ST_factor  = 1
+
+      ! nuclear burning
+      eps_nuc_factor = 1
+      dxdt_nuc_factor = 1
+
+      ! Misc stuff
+      warn_when_stop_checking_residuals = .false.
+
+/ ! end of controls namelist
+
+&pgstar
+
+      pgstar_report_writing_files = .false.
+
+      pgstar_show_age_in_years = .true.
+      pgstar_show_age_in_seconds = .false.
+
+      ! set up plots that will appear in grid
+
+      ! abundance profile plot
+
+      Abundance_xleft = 0.15
+      Abundance_xright = 0.85
+      Abundance_ybot = 0.15
+      Abundance_ytop = 0.85
+      Abundance_txt_scale = 1.0
+      Abundance_title = ''
+
+      Abundance_num_isos_to_show = 21
+
+      Abundance_which_isos_to_show(1) = 'h1'
+      Abundance_which_isos_to_show(2) = 'prot'
+      Abundance_which_isos_to_show(3) = 'he3'
+      Abundance_which_isos_to_show(4) = 'he4'
+      Abundance_which_isos_to_show(5) = 'c12'
+      Abundance_which_isos_to_show(6) = 'n14'
+      Abundance_which_isos_to_show(7) = 'o16'
+      Abundance_which_isos_to_show(8) = 'ne20'
+      Abundance_which_isos_to_show(9) = 'mg24'
+      Abundance_which_isos_to_show(10) = 'si28'
+      Abundance_which_isos_to_show(11) = 's32'
+      Abundance_which_isos_to_show(12) = 'ar36'
+      Abundance_which_isos_to_show(13) = 'ca40'
+      Abundance_which_isos_to_show(14) = 'ti44'
+      Abundance_which_isos_to_show(15) = 'cr48'
+      Abundance_which_isos_to_show(16) = 'cr56'
+      Abundance_which_isos_to_show(17) = 'fe52'
+      Abundance_which_isos_to_show(18) = 'fe54'
+      Abundance_which_isos_to_show(19) = 'fe56'
+      Abundance_which_isos_to_show(20) = 'ni56'
+      Abundance_which_isos_to_show(21) = 'neut'
+
+      num_abundance_line_labels = 3
+      Abundance_line_txt_scale_factor = 0.8
+
+      Abundance_legend_max_cnt = 0
+      Abundance_legend_txt_scale_factor = 0.8 
+
+      Abundance_xaxis_name = 'mass' 
+      Abundance_xaxis_reversed = .false.
+         
+      Abundance_xmin = -101d0 
+      Abundance_xmax = -101d0
+
+      ! Kippenhahn diagram
+
+      Kipp_win_width = 10
+      Kipp_win_aspect_ratio = 0.75
+      Kipp_title = 'Made with MESA-Web @ mesa-web.astro.wisc.edu'
+      Kipp_show_mixing = .true.
+      Kipp_show_mass_boundaries = .true.
+      Kipp_show_burn = .true.
+      Kipp_show_luminosities = .false.
+      Kipp_xaxis_name = 'model_number'
+
+      ! profile_panels1 plot
+
+      Profile_Panels1_num_panels = 3
+
+      Profile_Panels1_win_width = 10
+      Profile_Panels1_win_aspect_ratio = 1.0
+      Profile_Panels1_title = ''      
+
+      Profile_Panels1_xaxis_name = 'mass'
+      Profile_Panels1_xaxis_reversed = .false.
+
+      Profile_Panels1_yaxis_name(1) = 'logP'         
+      Profile_Panels1_ymin(1) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_ymax(1) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_other_yaxis_name(1) = ''
+
+      Profile_Panels1_yaxis_name(2) = 'logRho'         
+      Profile_Panels1_ymin(2) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_ymax(2) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_other_yaxis_name(2) = ''
+
+      Profile_Panels1_yaxis_name(3) = 'logT'         
+      Profile_Panels1_ymin(3) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_ymax(3) = -101d0 ! only used if /= -101d0
+      Profile_Panels1_other_yaxis_name(3) = ''
+
+      ! T-Rho plot
+
+      TRho_Profile_title = ''
+
+      TRho_Profile_legend_coord = 0.05
+      TRho_Profile_legend_fjust = 0.0
+      TRho_Profile_legend_disp1 = -2.0
+      TRho_Profile_legend_del_disp = -1.3
+
+      show_TRho_Profile_text_info = .false.
+      show_TRho_Profile_legend = .true.
+      TRho_Profile_text_info_xfac = 0.77 ! controls x location
+      TRho_Profile_text_info_dxfac = 0.02 ! controls x spacing to value from text
+      TRho_Profile_text_info_yfac = 0.6 ! controls y location of 1st line
+      TRho_Profile_text_info_dyfac = -0.04 ! controls line spacing
+
+      show_TRho_Profile_degeneracy_line = .true.
+      show_TRho_Profile_Pgas_Prad_line = .true.
+      show_TRho_Profile_burn_lines = .true.
+
+      ! HR diagram
+
+      HR_win_width = 6
+      HR_win_aspect_ratio = 0.75 ! aspect_ratio = height/width
+         
+      HR_xleft = 0.15
+      HR_xright = 0.85
+      HR_ybot = 0.15
+      HR_ytop = 0.85
+      HR_txt_scale = 1.0
+      HR_title = ''      
+      
+      HR_logT_min = -101d0 ! only used if /= -101d0
+      HR_logT_max = -101d0 ! only used if /= -101d0
+      HR_logL_min = -101d0 ! only used if /= -101d0
+      HR_logL_max = -101d0 ! only used if /= -101d0
+
+      HR_logL_margin = 0.1
+      HR_logT_margin = 0.1
+      HR_dlogT_min = -1
+      HR_dlogL_min = -1
+               
+      HR_step_min = -1 ! only plot models with model number >= this
+      HR_step_max = 999999 ! only plot models with model number <= this
+         
+      ! Grid1 output
+
+      Grid1_win_flag = .false.
+      Grid1_win_width = 15
+      Grid1_win_aspect_ratio = 0.75
+
+      ! reset grid defaults
+
+      Grid1_plot_name(:) = ''
+      Grid1_plot_row(:) = 1           ! number from 1 at top
+      Grid1_plot_rowspan(:) = 1       ! plot spans this number of rows
+      Grid1_plot_col(:) =  1          ! number from 1 at left
+      Grid1_plot_colspan(:) = 1       ! plot spans this number of columns
+      Grid1_plot_pad_left(:) = 0.0    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(:) = 0.0   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(:) = 0.0     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(:) = 0.0     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(:) = 0.5 ! multiply txt_scale for subplot by this
+
+      ! set up the grid
+
+      Grid1_num_cols = 3 ! divide plotting region into this many equal width cols
+      Grid1_num_rows = 2 ! divide plotting region into this many equal height rows
+      Grid1_num_plots = 6 ! <= 10
+
+      Grid1_plot_name(1) = 'Text_Summary1'
+      Grid1_plot_row(1) = 1           ! number from 1 at top
+      Grid1_plot_rowspan(1) = 1       ! plot spans this number of rows
+      Grid1_plot_col(1) =  1          ! number from 1 at left
+      Grid1_plot_colspan(1) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(1) = 0.0    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(1) = 0.2   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(1) = 0.00     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(1) = 0.4     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(1) = 0.00001 ! multiply txt_scale for subplot by this
+
+
+      Grid1_plot_name(2) = 'Abundance'
+      Grid1_plot_row(2) = 1           ! number from 1 at top
+      Grid1_plot_rowspan(2) = 1       ! plot spans this number of rows
+      Grid1_plot_col(2) =  1          ! number from 1 at left
+      Grid1_plot_colspan(2) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(2) = 0.0    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(2) = 0.05   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(2) = 0.0     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(2) = 0.05     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(2) = 0.7 ! multiply txt_scale for subplot by this
+
+
+      Grid1_plot_name(3) = 'Kipp'
+      Grid1_plot_row(3) = 1           ! number from 1 at top
+      Grid1_plot_rowspan(3) = 1       ! plot spans this number of rows
+      Grid1_plot_col(3) =  2          ! number from 1 at left
+      Grid1_plot_colspan(3) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(3) = 0.03    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(3) = 0.0   ! fraction of full window width for padding on right
+
+Grid1_plot_pad_top(3) = 0.0     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(3) = 0.05     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(3) = 0.7 ! multiply txt_scale for subplot by this
+
+
+      Grid1_plot_name(4) = 'HR'
+      Grid1_plot_row(4) = 2           ! number from 1 at top
+      Grid1_plot_rowspan(4) = 1       ! plot spans this number of rows
+      Grid1_plot_col(4) =  1          ! number from 1 at left
+      Grid1_plot_colspan(4) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(4) = 0.0    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(4) = 0.05   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(4) = 0.05     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(4) = 0.00     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(4) = 0.7 ! multiply txt_scale for subplot by this
+
+
+      Grid1_plot_name(5) = 'TRho_Profile'
+      Grid1_plot_row(5) = 2          ! number from 1 at top
+      Grid1_plot_rowspan(5) = 1       ! plot spans this number of rows
+      Grid1_plot_col(5) =  2          ! number from 1 at left
+      Grid1_plot_colspan(5) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(5) = 0.03    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(5) = 0.012   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(5) = 0.05     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(5) = 0.0     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(5) = 0.7 ! multiply txt_scale for subplot by this
+
+
+      Grid1_plot_name(6) = 'Profile_Panels1'
+      Grid1_plot_row(6) = 1          ! number from 1 at top
+      Grid1_plot_rowspan(6) = 2       ! plot spans this number of rows
+      Grid1_plot_col(6) =  3          ! number from 1 at left
+      Grid1_plot_colspan(6) = 1       ! plot spans this number of columns
+
+      Grid1_plot_pad_left(6) = 0.135    ! fraction of full window width for padding on left
+      Grid1_plot_pad_right(6) = 0.0   ! fraction of full window width for padding on right
+      Grid1_plot_pad_top(6) = 0.0     ! fraction of full window height for padding at top
+      Grid1_plot_pad_bot(6) = 0.0     ! fraction of full window height for padding at bottom
+      Grid1_txt_scale_factor(6) = 0.75 ! multiply txt_scale for subplot by this
+
+
+      ! file output
+      Grid1_file_flag = .true.
+      Grid1_file_dir = 'Grid1'
+      Grid1_file_prefix = 'grid1_'
+      Grid1_file_interval = 10           ! output when mod(model_number,Grid1_file_interval)==0
+      Grid1_file_width = -1        ! (inches) negative means use same value as for window
+      Grid1_file_aspect_ratio = -1 ! negative means use same value as for window
+
+      ! white_on_black flags -- true means white foreground color on black background
+      ! file_white_on_black_flag = .true.
+
+      file_device = 'vcps'             ! options 'png' and 'vcps' for png and postscript respectively
+      file_extension = 'eps'           ! common names are 'png' and 'ps'
+
+/ ! end of pgstar namelist
