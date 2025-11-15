@@ -12,16 +12,19 @@ from ...data import base_option
 class ProfileXAxisOption(base_option.BaseOption):
     get_values: Callable  # function that takes profile and returns the array 
     xlabel_units: str 
+    xlabel: str 
 
 PROFILEXAXIS_MASS = ProfileXAxisOption(
     display="mass coordinate", 
     get_values=lambda profile: profile.mass, 
-    xlabel_units="(mass coordinate ($M_{{sun}}$))" ) 
+    xlabel_units="(mass coordinate ($M_{{sun}}$))", 
+    xlabel = "$M_{{sun}}$" ) 
 
 PROFILEXAXIS_RADIUS = ProfileXAxisOption(
     display="radius coordinate", 
     get_values=lambda profile: profile.radius, 
-    xlabel_units="(radius coordinate ($R_{{sun}}$))" )
+    xlabel_units="(radius coordinate ($R_{{sun}}$))", 
+    xlabel = "$R_{{sun}}$" ) 
 
 PROFILEXAXIS_OPTIONS = [PROFILEXAXIS_MASS, PROFILEXAXIS_RADIUS]
 
