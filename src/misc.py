@@ -23,8 +23,11 @@ def to_engineering(x):
 
 def round_sigfigs(x, num_sigfigs): 
     if x == 0:
-        return 0.0
-    return round(x, num_sigfigs - int(math.floor(math.log10(abs(x)))) - 1)
+        return 0.0 
+    rounded_num = round(x, num_sigfigs - int(math.floor(math.log10(abs(x)))) - 1) 
+    if rounded_num - math.floor(rounded_num) == 0.0: 
+        rounded_num = int(rounded_num) 
+    return rounded_num 
 
 
 
