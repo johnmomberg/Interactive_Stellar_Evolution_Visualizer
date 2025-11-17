@@ -741,7 +741,7 @@ class FusionRate:
 
 
 FUSION_RATES = [ 
-    FusionRate(profile_key="eps_nuc", label="Total fusion", color="black"), 
+    FusionRate(profile_key="eps_nuc", label="Total fusion", color="gray"), 
     FusionRate(profile_key="pp", history_key="pp", label="PP chain", color="#00759C"), 
     FusionRate(profile_key="cno", history_key="cno", label="CNO cycle", color="#71D2FF"), 
     FusionRate(profile_key="tri_alfa", history_key="tri_alfa", label="Triple alpha", color="tab:green"), 
@@ -809,4 +809,33 @@ def circle_fusion(profile, history):
         history = history, 
         config = config, 
         r_core_view_relative=1.5
+    )  
+
+
+
+
+
+
+def circle_convection(profile, history): 
+
+    config = CirclePlotConfig( 
+        isotopes = [FusionRate(
+            profile_key = "log_D_conv", 
+            compute_profile = lambda p: 10**p.log_D_conv, 
+            history_key = None, 
+            label = "Convection", 
+            color = "red"
+        )], 
+        cutoff = 0, 
+        vmin = None, 
+        vmax = None, 
+        major_ticks = None, 
+        major_tick_labels = None, 
+        minor_ticks = None
+    )
+
+    full_circle_plot(  
+        profile = profile, 
+        history = history, 
+        config = config, 
     )  
