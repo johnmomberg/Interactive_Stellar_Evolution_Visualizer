@@ -17,6 +17,9 @@ class Isotope:
     color: str                              # The color for the plot line 
     show_initial_abundance: bool = False    # Include a horizontal dashed line in profile plots to indicate the initial abundance of this element? 
 
+    def evaluate_profile(self, profile): 
+        return getattr(profile, self.profile_key)
+    
 # Choose the colormap 
 cmap = cm.get_cmap("tab20", 20)
 

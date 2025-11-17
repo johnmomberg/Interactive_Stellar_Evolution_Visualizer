@@ -259,4 +259,4 @@ def circle_plot(ax, profile, f_r, xaxis=xaxis_options.PROFILEXAXIS_RADIUS, cmap=
     # cbar.ax.tick_params(labelsize=12, length=4)    # tick numbers and tick size
     # cbar.set_label(colorbar_label, fontsize=14, labelpad=14)  # label size and spacing
 
-    return ax, mesh
+    return mesh
