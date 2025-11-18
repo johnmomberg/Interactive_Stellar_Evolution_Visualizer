@@ -764,22 +764,3 @@ def circle_convection(profile, history, xaxis: xaxis_options.ProfileXAxisOption 
     )  
 
 
-
-
-# def circle_convection_log(profile, history): 
-
-#     new_list = [
-#         replace(obj, profile_compute=None)
-#         for obj in isotopes.CONVECTIONS
-#     ]
-#     config = CirclePlotConfig( 
-#         isotopes = new_list, 
-#         vmin = 0, 
-#         vmax = 20, 
-#     )
-
-#     full_circle_plot(  
-#         profile = profile, 
-#         history = history, 
-#         config = config, 
-#     )  
