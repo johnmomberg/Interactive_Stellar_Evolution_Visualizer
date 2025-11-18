@@ -1,6 +1,6 @@
 import numpy as np 
 import math
-from dataclasses import dataclass, field 
+from dataclasses import dataclass, field, replace 
 from typing import Tuple, List, Optional, Callable  
 
 import matplotlib.ticker as mticker 
@@ -412,10 +412,10 @@ def add_centered_axis(fig, center: Tuple[float,float], size_frac: float, project
 
 @dataclass 
 class CirclePlotConfig: 
-    isotopes: list 
-    cutoff: float 
-    vmin: float 
-    vmax: float 
+    isotopes: list[isotopes.PlotItem] 
+    vmin: Optional[float] = None 
+    vmax: Optional[float] = None
+    cutoff: Optional[float] = 0.0
     major_ticks: Optional[list] = None 
     major_tick_labels: Optional[list] = None 
     minor_ticks: Optional[list] = None  
@@ -429,6 +429,7 @@ def full_circle_plot(
         profile, 
         history, 
         config: CirclePlotConfig, 
+        xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS, 
         base_interior_height_in: float = 6.0, 
         r_core_view_relative: float = 1.25, 
         pad: Optional[Pad] = Pad(left=0.4, bottom = 0.8), 
@@ -436,15 +437,16 @@ def full_circle_plot(
 
     # How big is the core? Determines how big the zoomed in plot needs to be 
     r_core = 0.0 
-    for string in ['he_core_radius', 'c_core_radius', 'o_core_radius', 'si_core_radius', 'fe_core_radius']: 
-        radius = getattr(history, string)[profile.index]
+    for string in xaxis.core_strings: 
+        radius = getattr(history, string)[profile.index] 
         if radius > r_core: 
             r_core = radius 
     
     # If there is no core, show a zoom-in on the center region 
     r_view_relative_default = 0.15 # relative to maximum radius 
     if r_core == 0.0: 
-        r_core = 10**history.log_R[profile.index] * r_view_relative_default
+        r_core = np.max(xaxis.get_values(profile)) * r_view_relative_default 
+    
     r_core_view = r_core_view_relative * r_core 
 
     # If no layout_params are provided, use default values 
@@ -460,7 +462,7 @@ def full_circle_plot(
     # Only plot elements that reach a minimum threshold 
     relevant_isotopes = [] 
     for isotope in config.isotopes: 
-        if np.max(isotope.evaluate_profile(profile)) > config.cutoff: #####################################
+        if np.max(isotope.evaluate_profile(profile)) > config.cutoff: 
             relevant_isotopes.append(isotope)
     
     # extend for the rest of the isotopes
@@ -484,11 +486,12 @@ def full_circle_plot(
             center = big_center, 
             size_frac = big_size_frac, 
             projection = 'polar')
-        big_mesh = circle_plot(
+        big_mesh = ax_circle_plot(
             ax = ax_big, 
             profile = profile, 
+            xaxis = xaxis, 
             f_r = isotope.evaluate_profile(profile), 
-            color = isotope.color, 
+            cmap = isotope.evaluate_colormap(), 
             vmin = config.vmin, 
             vmax = config.vmax 
         ) 
@@ -503,11 +506,12 @@ def full_circle_plot(
             projection = 'polar', 
             zorder = 10 # Make sure small axis appears above connecting lines 
         )
-        circle_plot(
+        ax_circle_plot(
             ax = ax_small, 
             profile = profile, 
+            xaxis = xaxis, 
             f_r = isotope.evaluate_profile(profile), 
-            color = isotope.color, 
+            cmap = isotope.evaluate_colormap(), 
             vmin = config.vmin, 
             vmax = config.vmax, 
             r_max = r_core_view)
@@ -571,8 +575,9 @@ def full_circle_plot(
                 pos.small.y)
 
             # Calculate position of side of core shown in the big plot... converted to figure coordinates 
-            x_side_big_fig, y_side_big_fig = fig.transFigure.inverted().transform(
-                ax_big.transData.transform((np.pi*side, r_core_view/(10**history.log_R[profile.index])))) 
+            x_side_big_fig, y_side_big_fig = layout.layout_to_fig_coords(
+                pos.big.x + (-1)**side * layout.params.r_big * r_core_view/np.max(xaxis.get_values(profile)), 
+                pos.big.y)
 
             # Draw a line between them 
             line = plt.Line2D(
@@ -609,8 +614,8 @@ def full_circle_plot(
 
         ax_big_scale.set_yticklabels(
             [
-                f"{misc.round_sigfigs(max(profile.radius), 2)} "
-                f"{xaxis_options.PROFILEXAXIS_RADIUS.xlabel}"
+                f"{misc.round_sigfigs(np.max(xaxis.get_values(profile)), 2)} "
+                f"{xaxis.xlabel}"
                 if tick == 0.5 else ""
                 for tick in ax_big_scale.get_yticks()
             ],
@@ -632,7 +637,7 @@ def full_circle_plot(
         ax_small_scale.set_yticklabels(
             [
                 f"{misc.round_sigfigs(r_core_view, 2)} "
-                f"{xaxis_options.PROFILEXAXIS_RADIUS.xlabel}"
+                f"{xaxis.xlabel}"
                 if tick == 0.5 else ""
                 for tick in ax_small_scale.get_yticks()
             ],
@@ -645,39 +650,8 @@ def full_circle_plot(
 
 
 
-def make_smooth_cmap(base_color, name='smooth_colormap', N=256, dark_factor=0.4, mid_pos=0.6):
-    """
-    Create a smoother white->base->dark colormap with controllable spacing.
 
-    Parameters:
-        base_color : str or tuple
-            Matplotlib color (e.g., 'tab:blue', '#1f77b4')
-        name : str
-            Name for the colormap
-        N : int
-            Number of levels in the colormap
-        dark_factor : float
-            Factor (0-1) to darken the base color
-        mid_pos : float
-            Position of the base color in [0,1]; smaller = more light range
-    """
-    base_rgb = np.array(mcolors.to_rgb(base_color))
-    dark_rgb = base_rgb * dark_factor  # darker version of base color
-
-    # Define (position, color) pairs
-    colors = [
-        (0.0, (1, 1, 1)),     # start (white)
-        (mid_pos, base_rgb),  # where base color appears
-        (1.0, dark_rgb)       # end (dark)
-    ]
-    
-    return mcolors.LinearSegmentedColormap.from_list(name, colors, N=N)
-
-
-
-
-
-def circle_plot(ax, profile, f_r, xaxis=xaxis_options.PROFILEXAXIS_RADIUS, cmap=None, color=None, vmin=None, vmax=None, r_max=None):
+def ax_circle_plot(ax, profile, f_r, xaxis=xaxis_options.PROFILEXAXIS_RADIUS, cmap=None, vmin=None, vmax=None, r_max=None):
     """
     Plot a circular radial intensity pattern using a polar projection.
     
@@ -689,16 +663,6 @@ def circle_plot(ax, profile, f_r, xaxis=xaxis_options.PROFILEXAXIS_RADIUS, cmap=
     """
 
     r = xaxis.get_values(profile)
-
-    # Make sure only one of either COLOR or COLORMAP are provided (not both)
-    if cmap is None and color is None: 
-        raise ValueError 
-    if cmap is not None and color is not None: 
-        raise ValueError 
-    if cmap is None and color is not None:  
-        cmap = make_smooth_cmap(color) 
-    if cmap is not None and color is None: 
-        pass 
 
     # Add extra points near zero so it doesn't look like there's a hole at the center of the star 
     for _ in range(100): 
@@ -726,41 +690,9 @@ def circle_plot(ax, profile, f_r, xaxis=xaxis_options.PROFILEXAXIS_RADIUS, cmap=
 
 
 
-@dataclass
-class FusionRate:
-    profile_key: Optional[str] = None     # simple case
-    compute_profile: Optional[Callable] = None    # complex case
-    history_key: Optional[str] = None
-    label: str = ""
-    color: str = ""
-
-    def evaluate_profile(self, profile):
-        if self.compute_profile is not None:
-            return self.compute_profile(profile)
-        return getattr(profile, self.profile_key) 
 
 
-FUSION_RATES = [ 
-    FusionRate(profile_key="eps_nuc", label="Total fusion", color="gray"), 
-    FusionRate(profile_key="pp", history_key="pp", label="PP chain", color="#00759C"), 
-    FusionRate(profile_key="cno", history_key="cno", label="CNO cycle", color="#71D2FF"), 
-    FusionRate(profile_key="tri_alfa", history_key="tri_alfa", label="Triple alpha", color="tab:green"), 
-    FusionRate(
-        compute_profile=lambda p: p.eps_nuc - p.pp - p.cno - p.tri_alfa,
-        label="Heavier elements",
-        color="tab:red"
-    )
-] 
-
-
-
-
-
-
-
-
-
-def circle_composition(profile, history): 
+def circle_composition(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS): 
 
     config = CirclePlotConfig( 
         isotopes = isotopes.ISOTOPES, 
@@ -775,6 +707,7 @@ def circle_composition(profile, history):
     full_circle_plot(  
         profile = profile, 
         history = history, 
+        xaxis = xaxis, 
         config = config, 
     )  
 
@@ -795,13 +728,10 @@ def circle_fusion(profile, history):
         vmax = specific_L*10
 
     config = CirclePlotConfig( 
-        isotopes = FUSION_RATES, 
-        cutoff = specific_L/10, 
+        isotopes = isotopes.FUSION_RATES, 
+        cutoff = vmax/100, 
         vmin = 0, 
-        vmax = vmax, 
-        major_ticks = None, 
-        major_tick_labels = None, 
-        minor_ticks = None
+        vmax = vmax 
     )
 
     full_circle_plot(  
@@ -816,26 +746,40 @@ def circle_fusion(profile, history):
 
 
 
-def circle_convection(profile, history): 
+def circle_convection(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS): 
+
+    vmax = np.max([np.max(x.evaluate_profile(profile)) for x in isotopes.CONVECTIONS]) 
 
     config = CirclePlotConfig( 
-        isotopes = [FusionRate(
-            profile_key = "log_D_conv", 
-            compute_profile = lambda p: 10**p.log_D_conv, 
-            history_key = None, 
-            label = "Convection", 
-            color = "red"
-        )], 
-        cutoff = 0, 
-        vmin = None, 
-        vmax = None, 
-        major_ticks = None, 
-        major_tick_labels = None, 
-        minor_ticks = None
+        isotopes = isotopes.CONVECTIONS, 
+        cutoff = vmax/100, 
+        vmax = vmax, 
     )
 
     full_circle_plot(  
         profile = profile, 
         history = history, 
+        xaxis = xaxis, 
         config = config, 
     )  
+
+
+
+
+# def circle_convection_log(profile, history): 
+
+#     new_list = [
+#         replace(obj, profile_compute=None)
+#         for obj in isotopes.CONVECTIONS
+#     ]
+#     config = CirclePlotConfig( 
+#         isotopes = new_list, 
+#         vmin = 0, 
+#         vmax = 20, 
+#     )
+
+#     full_circle_plot(  
+#         profile = profile, 
+#         history = history, 
+#         config = config, 
+#     )  
