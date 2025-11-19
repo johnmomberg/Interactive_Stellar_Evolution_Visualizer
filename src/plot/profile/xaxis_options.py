@@ -29,7 +29,7 @@ PROFILEXAXIS_RADIUS = ProfileXAxisOption(
     xlabel = "$R_{{sun}}$", 
     core_strings = ['he_core_radius', 'c_core_radius', 'o_core_radius', 'si_core_radius', 'fe_core_radius'] ) 
 
-PROFILEXAXIS_OPTIONS = [PROFILEXAXIS_MASS, PROFILEXAXIS_RADIUS]
+PROFILEXAXIS_OPTIONS = [PROFILEXAXIS_RADIUS, PROFILEXAXIS_MASS]
 
 
 

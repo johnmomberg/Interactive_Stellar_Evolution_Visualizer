@@ -17,7 +17,7 @@ from ...data import isotopes
 
 
 
-def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.4): 
+def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.3, fig = None): 
 
     vmin, vmax = pcolormesh.get_clim()
     img_min = np.min(pcolormesh.get_array()) 
@@ -26,33 +26,43 @@ def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.4):
     ax_colorbar = cbar.ax 
     cbar.outline.set_visible(False) 
 
+    # Use background color of figure to block unused area of color bar 
+    # Assumes original bg color was white and you applied a fig.patch.set_facecolor() and fig.patch.set_alpha() 
+    # Blend that color with white to get what that color would be if it had an alpha of 1, 
+    # so that applying it doesn't include a reduced alpha and become transparent, allowing the colorbar to be seen through it. 
+    if fig is not None: 
+        bg_color_unblended = np.array(fig.get_facecolor()) 
+        bg_color = bg_color_unblended[0:3]*bg_color_unblended[3] + np.array([1.0, 1.0, 1.0]) * (1 - bg_color_unblended[3]) 
+    else: 
+        bg_color = "white"
+
     # White rectangles to block unused area of color bar 
     bottom_left_block = mpatches.Rectangle(
         xy = (vmin, 0), 
         width = img_min-vmin, 
         height = fig_fraction_cropped, 
-        color = "white")
+        color = bg_color)
     ax_colorbar.add_patch(bottom_left_block)
     
     top_left_block = mpatches.Rectangle(
         xy = (vmin, 1), 
         width = img_min-vmin, 
         height = -fig_fraction_cropped, 
-        color = "white")
+        color = bg_color)
     ax_colorbar.add_patch(top_left_block)
 
     bottom_right_block = mpatches.Rectangle(
         xy = (img_max, 0), 
         width = vmax-img_max, 
         height = fig_fraction_cropped, 
-        color = "white")
+        color = bg_color)
     ax_colorbar.add_patch(bottom_right_block)
     
     top_right_block = mpatches.Rectangle(
         xy = (img_max, 1), 
         width = vmax-img_max, 
         height = -fig_fraction_cropped, 
-        color = "white")
+        color = bg_color)
     ax_colorbar.add_patch(top_right_block)
     
 
@@ -432,7 +442,7 @@ def full_circle_plot(
         xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS, 
         base_interior_height_in: float = 6.0, 
         r_core_view_relative: float = 1.25, 
-        pad: Optional[Pad] = Pad(left=0.4, bottom = 0.8), 
+        pad: Optional[Pad] = Pad(left = 0.4, bottom = 0.8, top = 0.4), 
         layout_params: Optional[LayoutParams] = None): 
 
     # How big is the core? Determines how big the zoomed in plot needs to be 
@@ -465,13 +475,25 @@ def full_circle_plot(
         if np.max(isotope.evaluate_profile(profile)) > config.cutoff: 
             relevant_isotopes.append(isotope)
     
+    # If none of the options meet the threshold, simply plot the first option 
+    if len(relevant_isotopes) == 0: 
+        relevant_isotopes.append(config.isotopes[0]) 
+
     # extend for the rest of the isotopes
     layout.extend_positions(len(relevant_isotopes)-1)
     width0, height0 = layout.compute_width_height()
-    H_old = height0
+    H_old = height0 
+
+    # If only 1 plot shown, extend it horizontally so the title text fits 
+    if len(relevant_isotopes) == 1: 
+        pad.right = 1 
+        pad.left = 1 
+
     layout.apply_padding(pad)  
     fig_w, fig_h = layout.finalize_figsize_with_prepad(H_old, base_interior_height_in=base_interior_height_in)
-    fig = plt.figure(figsize=(fig_w, fig_h))
+    fig = plt.figure(figsize=(fig_w, fig_h)) 
+    fig.patch.set_facecolor("black")
+    fig.patch.set_alpha(0.05)
 
 
 
@@ -495,26 +517,6 @@ def full_circle_plot(
             vmin = config.vmin, 
             vmax = config.vmax 
         ) 
-
-        # Small plot 
-        small_center = layout.layout_to_fig_coords(pos.small.x, pos.small.y)
-        small_size_frac = layout.radius_to_fig_fraction(layout.params.r_small)
-        ax_small = add_centered_axis(
-            fig = fig, 
-            center = small_center, 
-            size_frac = small_size_frac, 
-            projection = 'polar', 
-            zorder = 10 # Make sure small axis appears above connecting lines 
-        )
-        ax_circle_plot(
-            ax = ax_small, 
-            profile = profile, 
-            xaxis = xaxis, 
-            f_r = isotope.evaluate_profile(profile), 
-            cmap = isotope.evaluate_colormap(), 
-            vmin = config.vmin, 
-            vmax = config.vmax, 
-            r_max = r_core_view)
 
 
 
@@ -558,7 +560,61 @@ def full_circle_plot(
             labelsize=0  # no label
         )
 
-        block_colorbar(big_mesh, cbar)
+        block_colorbar(pcolormesh = big_mesh, cbar = cbar, fig = fig)
+
+
+
+
+        # Only add scale bars to first plot 
+        if ind == 0: 
+
+            # Big scale bar 
+            x_big_scale = pos.big.x - (layout.params.r_big + 2*layout.params.r_pad) 
+            y_big_scale = pos.big.y
+            x_big_scale_fig, y_big_scale_fig = layout.layout_to_fig_coords(x_big_scale, y_big_scale)
+            height_big_scale_fig = layout.radius_to_fig_fraction(layout.params.r_big/2, option="height") 
+            width_big_scale_fig = 0 
+            ax_big_scale = fig.add_axes([x_big_scale_fig, y_big_scale_fig, width_big_scale_fig, height_big_scale_fig])
+            ax_big_scale.set_xticks([])
+            ax_big_scale.set_yticks([0.0, 0.5, 1.0])
+
+            ax_big_scale.set_yticklabels(
+                [
+                    f"{misc.round_sigfigs(np.max(xaxis.get_values(profile)), 2)} "
+                    f"{xaxis.xlabel}"
+                    if tick == 0.5 else ""
+                    for tick in ax_big_scale.get_yticks()
+                ],
+                va="center",
+                fontsize=14, 
+                rotation=90 
+            )
+
+
+
+        # If core is large enough, we don't need the zoomed in plot to see it, so skip the small axis  
+        if r_core_view > 0.20*np.max(xaxis.get_values(profile)): 
+            continue 
+
+        # Small plot 
+        small_center = layout.layout_to_fig_coords(pos.small.x, pos.small.y)
+        small_size_frac = layout.radius_to_fig_fraction(layout.params.r_small)
+        ax_small = add_centered_axis(
+            fig = fig, 
+            center = small_center, 
+            size_frac = small_size_frac, 
+            projection = 'polar', 
+            zorder = 10 # Make sure small axis appears above connecting lines 
+        )
+        ax_circle_plot(
+            ax = ax_small, 
+            profile = profile, 
+            xaxis = xaxis, 
+            f_r = isotope.evaluate_profile(profile), 
+            cmap = isotope.evaluate_colormap(), 
+            vmin = config.vmin, 
+            vmax = config.vmax, 
+            r_max = r_core_view)
 
 
 
@@ -598,53 +654,32 @@ def full_circle_plot(
 
 
 
-        # Only add scale bars to first plot 
-        if ind > 0: 
-            continue
+        if ind == 0: 
+            # Small scale bar 
+            x_small_scale = pos.small.x - (layout.params.r_small + 2*layout.params.r_pad) 
+            y_small_scale = pos.small.y
+            x_small_scale_fig, y_small_scale_fig = layout.layout_to_fig_coords(x_small_scale, y_small_scale)
+            height_small_scale_fig = layout.radius_to_fig_fraction(layout.params.r_small/2, option="height") 
+            width_small_scale_fig = 0 
+            ax_small_scale = fig.add_axes([x_small_scale_fig, y_small_scale_fig, width_small_scale_fig, height_small_scale_fig])
+            ax_small_scale.set_xticks([])
+            ax_small_scale.set_yticks([0.0, 0.5, 1.0])
 
-        # Big scale bar 
-        x_big_scale = pos.big.x - (layout.params.r_big + 2*layout.params.r_pad) 
-        y_big_scale = pos.big.y
-        x_big_scale_fig, y_big_scale_fig = layout.layout_to_fig_coords(x_big_scale, y_big_scale)
-        height_big_scale_fig = layout.radius_to_fig_fraction(layout.params.r_big/2, option="height") 
-        width_big_scale_fig = 0 
-        ax_big_scale = fig.add_axes([x_big_scale_fig, y_big_scale_fig, width_big_scale_fig, height_big_scale_fig])
-        ax_big_scale.set_xticks([])
-        ax_big_scale.set_yticks([0.0, 0.5, 1.0])
+            ax_small_scale.set_yticklabels(
+                [
+                    f"{misc.round_sigfigs(r_core_view, 2)} "
+                    f"{xaxis.xlabel}"
+                    if tick == 0.5 else ""
+                    for tick in ax_small_scale.get_yticks()
+                ],
+                va="center",
+                fontsize=12, 
+                rotation=90
+            )
 
-        ax_big_scale.set_yticklabels(
-            [
-                f"{misc.round_sigfigs(np.max(xaxis.get_values(profile)), 2)} "
-                f"{xaxis.xlabel}"
-                if tick == 0.5 else ""
-                for tick in ax_big_scale.get_yticks()
-            ],
-            va="center",
-            fontsize=14, 
-            rotation=90 
-        )
 
-        # Small scale bar 
-        x_small_scale = pos.small.x - (layout.params.r_small + 2*layout.params.r_pad) 
-        y_small_scale = pos.small.y
-        x_small_scale_fig, y_small_scale_fig = layout.layout_to_fig_coords(x_small_scale, y_small_scale)
-        height_small_scale_fig = layout.radius_to_fig_fraction(layout.params.r_small/2, option="height") 
-        width_small_scale_fig = 0 
-        ax_small_scale = fig.add_axes([x_small_scale_fig, y_small_scale_fig, width_small_scale_fig, height_small_scale_fig])
-        ax_small_scale.set_xticks([])
-        ax_small_scale.set_yticks([0.0, 0.5, 1.0])
 
-        ax_small_scale.set_yticklabels(
-            [
-                f"{misc.round_sigfigs(r_core_view, 2)} "
-                f"{xaxis.xlabel}"
-                if tick == 0.5 else ""
-                for tick in ax_small_scale.get_yticks()
-            ],
-            va="center",
-            fontsize=12, 
-            rotation=90
-        )
+    return fig 
 
 
 
@@ -704,12 +739,13 @@ def circle_composition(profile, history, xaxis: xaxis_options.ProfileXAxisOption
         minor_ticks = [i/10 for i in range(11)]
     )
 
-    full_circle_plot(  
+    fig = full_circle_plot(  
         profile = profile, 
         history = history, 
         xaxis = xaxis, 
         config = config, 
     )  
+    return fig 
 
 
 
@@ -718,7 +754,7 @@ def circle_composition(profile, history, xaxis: xaxis_options.ProfileXAxisOption
 
 
 
-def circle_fusion(profile, history): 
+def circle_fusion(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS): 
 
     specific_L = np.max(profile.luminosity)*phys_consts.L_sun / (profile.initial_mass*phys_consts.M_sun) 
     max_fusion = np.max(profile.eps_nuc) 
@@ -734,12 +770,14 @@ def circle_fusion(profile, history):
         vmax = vmax 
     )
 
-    full_circle_plot(  
+    fig = full_circle_plot(  
         profile = profile, 
         history = history, 
+        xaxis = xaxis, 
         config = config, 
         r_core_view_relative=1.5
     )  
+    return fig 
 
 
 
@@ -756,11 +794,35 @@ def circle_convection(profile, history, xaxis: xaxis_options.ProfileXAxisOption 
         vmax = vmax, 
     )
 
-    full_circle_plot(  
+    fig = full_circle_plot(  
         profile = profile, 
         history = history, 
         xaxis = xaxis, 
         config = config, 
-    )  
+    ) 
+    return fig 
 
+
+
+
+
+
+def circle_temp(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS): 
+
+
+    config = CirclePlotConfig( 
+        isotopes = [isotopes.PlotItem(
+            profile_compute = lambda p: 10**p.logT, 
+            label = "Temperature", 
+            cmap = "plasma"
+        )] 
+    )
+
+    fig = full_circle_plot(  
+        profile = profile, 
+        history = history, 
+        xaxis = xaxis, 
+        config = config, 
+    ) 
+    return fig 
 

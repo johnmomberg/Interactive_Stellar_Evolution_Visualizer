@@ -89,7 +89,7 @@ ISOTOPES = [
 
 
 FUSION_RATES = [ 
-    PlotItem(profile_key="eps_nuc",                             label="Total fusion",   color="black",      cmap="plasma"), 
+    PlotItem(profile_key="eps_nuc",                             label="Total fusion",   color="black", cmap="Greys"), 
     PlotItem(profile_key="pp",          history_key="pp",       label="PP chain",       color="#00759C"), 
     PlotItem(profile_key="cno",         history_key="cno",      label="CNO cycle",      color="#71D2FF"), 
     PlotItem(profile_key="tri_alfa",    history_key="tri_alfa", label="Triple alpha",   color="tab:green"), 

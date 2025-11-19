@@ -888,11 +888,11 @@ def _(
                         model, 
                         history_selected, 
                         include_label=model.id==model_selected.id, 
-                    
+
                         lower_alpha=0.1, 
                         lower_border_linewidth=0, 
                         lower_border_color="black", 
-                    
+
                         upper_alpha=1.0, 
                         upper_border_linewidth=2, 
                         upper_border_color="black", ) 
@@ -928,6 +928,65 @@ def _(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # Interior profile plots 
+            if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
+
+                if history_selected is None or profile_selected is None: 
+                    return "Select a Profile file to view profile plot" 
+
+                # Create profile plot depending on selected options in dropdown 
+                selected_plot_func = profile_plot_dropdown.value.plot_func 
+                selected_x_axis = profile_plot_x_dropdown.value  
+                fig2 = selected_plot_func(profile_selected, selected_x_axis, history_selected)
+
+                # Add colored region to title 
+                if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
+                
+                
+                    # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
+                    profile_str = profile_plot_dropdown.value.title_str
+                    title_str_list = [profile_str, substage_selected_str, "star"]  
+    
+                    # List of colors used in title (i.e., "black" + "red" + "black") 
+                    title_colors_list = ['black', substage_selected_color, 'black'] 
+                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
+
+                    # Face color of figure with low alpha 
+                    fig2.patch.set_facecolor(substage_selected_color)
+                    fig2.patch.set_alpha(0.12)
+
+                    # Draw a separate edge rectangle on top with full alpha
+                    rect = mpatches.Rectangle(
+                        (0, 0), 1, 1, transform=fig2.transFigure, 
+                        facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
+                    )
+                    fig2.patches.append(rect)
+
+                return mo.mpl.interactive(fig2) 
+
+
+
+
+
+
+
+
+
+    
+
         # Interior profile plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
@@ -937,30 +996,53 @@ def _(
             # Create profile plot depending on selected options in dropdown 
             selected_plot_func = profile_plot_dropdown.value.plot_func 
             selected_x_axis = profile_plot_x_dropdown.value  
-            fig2 = selected_plot_func(profile_selected, selected_x_axis, history_selected)
+            fig2 = selected_plot_func(profile = profile_selected, xaxis = selected_x_axis, history = history_selected)
 
-            # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
-            profile_str = profile_plot_dropdown.value.title_str
-            title_str_list = [profile_str, substage_selected_str, "star"]  
 
-            # List of colors used in title (i.e., "black" + "red" + "black") 
-            title_colors_list = ['black', substage_selected_color, 'black'] 
-
+        
             # Add colored region to title 
             if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
-                src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
-                # Face color of figure with low alpha 
-                fig2.patch.set_facecolor(substage_selected_color)
-                fig2.patch.set_alpha(0.12)
+                # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
+                profile_str = profile_plot_dropdown.value.title_str
+                title_str_list = [profile_str, substage_selected_str, "star"]  
+    
+                # List of colors used in title (i.e., "black" + "red" + "black") 
+                title_colors_list = ['black', substage_selected_color, 'black'] 
 
-                # Draw a separate edge rectangle on top with full alpha
-                rect = mpatches.Rectangle(
-                    (0, 0), 1, 1, transform=fig2.transFigure, 
-                    facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
-                )
-                fig2.patches.append(rect)
+            
+            
+                if profile_plot_dropdown.value.line_or_circle == "circle": 
 
+                    # Title 
+                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18) 
+    
+                    # Subtitle 
+                    fig2.text(
+                        0.5, 0.93, 
+                        f"{profile_selected.initial_mass_string} $M_{{sun}}$ at {profile_selected.age_string} old", 
+                        fontsize=12, ha='center')
+
+
+            
+                if profile_plot_dropdown.value.line_or_circle == "line": 
+
+                    # Title 
+                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
+
+                    # Face color of figure with low alpha 
+                    fig2.patch.set_facecolor(substage_selected_color)
+                    fig2.patch.set_alpha(0.12)
+
+                    # Draw a separate edge rectangle on top with full alpha
+                    rect = mpatches.Rectangle(
+                        (0, 0), 1, 1, transform=fig2.transFigure, 
+                        facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
+                    )
+                    fig2.patches.append(rect)
+
+
+        
             return mo.mpl.interactive(fig2) 
 
 

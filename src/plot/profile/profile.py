@@ -147,7 +147,7 @@ class ProfilePlot:
             raise ValueError("Composition plot requires 'history' to be provided")
 
         # Setup 
-        ymin = 1e-9
+        ymin = 1e-6
         config = ProfilePlotConfigParams(
             ylabel="Composition (mass fraction)",
             ylim=(ymin, 1),
@@ -468,7 +468,8 @@ def add_colored_title(fig, strings, colors, fontsize, y=0.95, spacing_pts=10):
             color=color, 
             ha='left', 
             va='center', 
-            bbox=dict(facecolor='white', edgecolor='none', pad=5) )
+            # bbox=dict(facecolor='white', edgecolor='none', pad=5) 
+        )
         x += width * pts_to_fig_frac + spacing_pts * pts_to_fig_frac
 
 

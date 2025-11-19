@@ -2,10 +2,11 @@
 
 import marimo as mo 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional 
 from . import base_option 
 from ..plot.profile import profile as profile_plotting
-from ..plot import history as history_plotting
+from ..plot import history as history_plotting 
+from ..plot.profile import circle as circle_plotting 
 
 
 
@@ -74,49 +75,122 @@ HISTORYPLOT_OPTIONS = [HISTORYPLOT_COMPOSITION, HISTORYPLOT_RADIUS, HISTORYPLOT_
 @dataclass
 class ProfilePlotOption(base_option.BaseOption):
     plot_func: Callable
-    title_str: str
+    title_str: str 
+    line_or_circle: Optional[str] = "line" 
+    include: Optional[bool] = True # True = standard plots, False = experimental/extra plots 
 
-PROFILEPLOT_COMPOSITION = ProfilePlotOption(
-    display="Composition (linear)", 
-    plot_func=profile_plotting.ProfilePlot.composition, 
-    title_str="Compostion in interior of a") 
 
-PROFILEPLOT_COMPOSITION_LOG = ProfilePlotOption( 
-    display="Composition (log)", 
-    plot_func=profile_plotting.ProfilePlot.composition_log, 
-    title_str="Composition in interior of a") 
 
-PROFILEPLOT_MU = ProfilePlotOption( 
-    display="Mass/particle", 
-    plot_func=profile_plotting.ProfilePlot.mu, 
-    title_str=f"Mass/particle ($\mu$) in interior of a")
+PROFILEPLOT_COMPOSITION_CIRCLE = ProfilePlotOption(
+    display="Composition", 
+    plot_func = circle_plotting.circle_composition, 
+    title_str="Compostion inside", 
+    line_or_circle = "circle"
+) 
 
-PROFILEPLOT_CONVECTION = ProfilePlotOption(
+PROFILEPLOT_CONVECTION_CIRCLE = ProfilePlotOption(
     display="Convection", 
-    plot_func=profile_plotting.ProfilePlot.convection, 
-    title_str="Convective regions in interior of a")
+    plot_func = circle_plotting.circle_convection, 
+    title_str="Convection inside", 
+    line_or_circle="circle"
+)
 
-PROFILEPLOT_TEMP = ProfilePlotOption(
-    display="Temperature", 
-    plot_func=profile_plotting.ProfilePlot.temp, 
-    title_str="Temperature in interior of a")
-
-PROFILEPLOT_TEMPGRAD = ProfilePlotOption(
-    display="Temp grad", 
-    plot_func=profile_plotting.ProfilePlot.tempgrad, 
-    title_str="Temperature gradient in interior of a")
-
-PROFILEPLOT_FUSION = ProfilePlotOption(
+PROFILEPLOT_FUSION_CIRCLE = ProfilePlotOption(
     display="Fusion rate", 
+    plot_func = circle_plotting.circle_fusion, 
+    title_str="Fusion inside", 
+    line_or_circle="circle"
+) 
+
+
+
+###### Optional/weird ones 
+
+PROFILEPLOT_COMPOSITION_LINE = ProfilePlotOption(
+    display="Composition (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.composition, 
+    title_str="Compostion in interior of a", 
+    include = False 
+) 
+
+PROFILEPLOT_COMPOSITION_LINE_LOG = ProfilePlotOption( 
+    display="Composition (line plot) (log scale)", 
+    plot_func=profile_plotting.ProfilePlot.composition_log, 
+    title_str="Composition in interior of a", 
+    include = False 
+) 
+
+PROFILEPLOT_MU_LINE = ProfilePlotOption( 
+    display="Mass/particle (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.mu, 
+    title_str=f"Mass/particle ($\mu$) in interior of a", 
+    include = False 
+)
+
+PROFILEPLOT_CONVECTION_LINE = ProfilePlotOption(
+    display="Convection (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.convection, 
+    title_str="Convective regions in interior of a", 
+    include = False 
+)
+
+PROFILEPLOT_TEMP_LINE = ProfilePlotOption(
+    display="Temperature (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.temp, 
+    title_str="Temperature in interior of a", 
+    include = False 
+)
+
+PROFILEPLOT_TEMP_CIRCLE = ProfilePlotOption(
+    display="Temperature", 
+    plot_func = circle_plotting.circle_temp, 
+    title_str="Temperature inside", 
+    line_or_circle="circle", 
+    include = False 
+)
+
+PROFILEPLOT_TEMPGRAD_LINE = ProfilePlotOption(
+    display="Temp grad (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.tempgrad, 
+    title_str="Temperature gradient in interior of a", 
+    include = False 
+)
+
+PROFILEPLOT_FUSION_LINE = ProfilePlotOption(
+    display="Fusion rate (line plot) (log scale)", 
     plot_func=profile_plotting.ProfilePlot.fusion, 
-    title_str="Fusion in interior of a") 
+    title_str="Fusion in interior of a", 
+    include = False 
+) 
 
-PROFILEPLOT_DEGENERACY = ProfilePlotOption( 
-    display="Degeneracy", 
+PROFILEPLOT_DEGENERACY_LINE = ProfilePlotOption( 
+    display="Degeneracy (line plot)", 
     plot_func=profile_plotting.ProfilePlot.degeneracy, 
-    title_str="Degeneracy of electrons and baryons inside a") 
+    title_str="Degeneracy of electrons and baryons inside a", 
+    include = False 
+) 
 
-PROFILEPLOT_OPTIONS = [PROFILEPLOT_COMPOSITION, PROFILEPLOT_COMPOSITION_LOG, PROFILEPLOT_MU, PROFILEPLOT_CONVECTION, PROFILEPLOT_TEMP, PROFILEPLOT_TEMPGRAD, PROFILEPLOT_FUSION, PROFILEPLOT_DEGENERACY]
+
+
+
+PROFILEPLOT_OPTIONS = [
+    PROFILEPLOT_COMPOSITION_CIRCLE, 
+    PROFILEPLOT_CONVECTION_CIRCLE, 
+    PROFILEPLOT_FUSION_CIRCLE, 
+    PROFILEPLOT_COMPOSITION_LINE, 
+    PROFILEPLOT_COMPOSITION_LINE_LOG, 
+    PROFILEPLOT_MU_LINE, 
+    PROFILEPLOT_CONVECTION_LINE, 
+    PROFILEPLOT_TEMP_LINE, 
+    PROFILEPLOT_TEMP_CIRCLE, 
+    PROFILEPLOT_TEMPGRAD_LINE, 
+    PROFILEPLOT_FUSION_LINE, 
+    PROFILEPLOT_DEGENERACY_LINE 
+]
+
+
+
+
 
 
 
