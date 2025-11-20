@@ -606,79 +606,66 @@ def _(
         ax.set_xticklabels(custom_xtick_labels, fontsize=14)
 
 
-        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_NOSELECTION: 
-            for substage in src.data.stars.sub_stages.ALL_SUBSTAGES_LIST: 
-                if substage.parent_stage is None: 
-                    continue 
+
+
+        # Draw selected substage 
+
+        for substage in src.data.stars.sub_stages.ALL_SUBSTAGES_LIST: 
+            if substage.parent_stage is None: 
+                continue 
+
+            if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_NOSELECTION: 
                 draw_substage_box(
-                    ax, 
-                    substage, 
-                    bg_color=substage.flowchart_color, 
-                    bg_alpha=1.0, 
+                    ax = ax, 
+                    substage = substage, 
+                    bg_color = substage.flowchart_color, 
+                    bg_alpha = 1.0, 
                     border_color="black", 
-                    border_linewidth=1, 
-                    text_color="white", 
-                    text_fontsize=11, 
-                )
+                    border_linewidth = 1, 
+                    text_color = "white", 
+                    text_fontsize = 11, 
+                ) 
+        
+            # Selected substage 
+            elif substage is substage_selected: 
+                draw_substage_box(
+                    ax = ax, 
+                    substage = substage, 
+                    bg_color = substage.flowchart_color, 
+                    bg_alpha = 1.0, 
+                    border_color="black", 
+                    border_linewidth = 4, 
+                    text_color = "white", 
+                    text_fontsize = 11, 
+                ) 
 
+            # Unselected, but available for comparision 
+            elif substage in available_substages:             
+                draw_substage_box(
+                    ax = ax, 
+                    substage = substage, 
+                    bg_color = substage.flowchart_color, 
+                    bg_alpha = 0.6, 
+                    border_color="black", 
+                    border_linewidth = 2, 
+                    text_color = "white", 
+                    text_fontsize = 11, 
+                ) 
 
-        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
-            for substage in available_substages: 
-                if substage.parent_stage is None: 
-                    continue
-                if substage.id == substage_selected.id: 
-                    draw_substage_box(
-                        ax, 
-                        substage, 
-                        bg_color=substage.flowchart_color, 
-                        bg_alpha=1.0, 
-                        border_color="black", 
-                        border_linewidth=2, 
-                        text_color="white", 
-                        text_fontsize=11, 
-                        text_y=np.sqrt(selected_massrange[0]*selected_massrange[1])
-                    ) 
-                else: 
-                    if substage.parent_stage is None: 
-                        continue 
-                    draw_substage_box(
-                        ax, 
-                        substage, 
-                        bg_color=substage.flowchart_color, 
-                        bg_alpha=0.6, 
-                        border_color="black", 
-                        border_linewidth=1, 
-                        text_color="white", 
-                        text_fontsize=11, 
-                        text_y=np.sqrt(selected_massrange[0]*selected_massrange[1])
-                    )
+            # Unavailable substages (barely visible)
+            else: 
+                draw_substage_box(
+                    ax = ax, 
+                    substage = substage, 
+                    bg_color = substage.flowchart_color, 
+                    bg_alpha = 0.05, 
+                    border_color="gray", 
+                    border_linewidth = 1, 
+                    text_color = "gray", 
+                    text_fontsize = 11, 
+                ) 
 
-
-        if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
-            for substage in available_substages: 
-                if substage.id == substage_selected.id: 
-                    draw_substage_box(
-                        ax, 
-                        substage, 
-                        bg_color=substage.flowchart_color, 
-                        bg_alpha=1.0, 
-                        border_color="black", 
-                        border_linewidth=2, 
-                        text_color="white", 
-                        text_fontsize=11 
-                    ) 
-                else: 
-                    draw_substage_box(
-                        ax, 
-                        substage, 
-                        bg_color=substage.flowchart_color, 
-                        bg_alpha=0.6, 
-                        border_color="black", 
-                        border_linewidth=1, 
-                        text_color="white", 
-                        text_fontsize=11, 
-                    ) 
-
+    
 
         return mo.mpl.interactive(fig)
 
@@ -692,7 +679,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_models,
     comparison_mode_radio,
@@ -954,12 +941,12 @@ def _(
 
                 # Add colored region to title 
                 if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
-                
-                
+
+
                     # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
                     profile_str = profile_plot_dropdown.value.title_str
                     title_str_list = [profile_str, substage_selected_str, "star"]  
-    
+
                     # List of colors used in title (i.e., "black" + "red" + "black") 
                     title_colors_list = ['black', substage_selected_color, 'black'] 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
@@ -985,7 +972,7 @@ def _(
 
 
 
-    
+
 
         # Interior profile plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
@@ -999,24 +986,24 @@ def _(
             fig2 = selected_plot_func(profile = profile_selected, xaxis = selected_x_axis, history = history_selected)
 
 
-        
+
             # Add colored region to title 
             if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
 
                 # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
                 profile_str = profile_plot_dropdown.value.title_str
                 title_str_list = [profile_str, substage_selected_str, "star"]  
-    
+
                 # List of colors used in title (i.e., "black" + "red" + "black") 
                 title_colors_list = ['black', substage_selected_color, 'black'] 
 
-            
-            
+
+
                 if profile_plot_dropdown.value.line_or_circle == "circle": 
 
                     # Title 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18) 
-    
+
                     # Subtitle 
                     fig2.text(
                         0.5, 0.93, 
@@ -1024,7 +1011,7 @@ def _(
                         fontsize=12, ha='center')
 
 
-            
+
                 if profile_plot_dropdown.value.line_or_circle == "line": 
 
                     # Title 
@@ -1042,7 +1029,7 @@ def _(
                     fig2.patches.append(rect)
 
 
-        
+
             return mo.mpl.interactive(fig2) 
 
 

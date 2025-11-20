@@ -49,7 +49,7 @@ MODEL_0_2_MS = MESA_model(
     substage=sub_stages.SUB_MS_LOWMASS, 
     model_start=225, 
     model_example=273, 
-    model_end=None, 
+    model_end=1000, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.2") 
 
 MODEL_0_2_HEWD = MESA_model( 

@@ -44,9 +44,23 @@ class SubStage(base_class.BaseEntity):
 
 
 # Choose the colormap 
-cmap = cm.get_cmap("Spectral", 20) 
-random_order = [17, 6, 2, 18, 12, 1, 8, 19, 13, 4, 0, 14, 16, 3] 
-random_order_iter = iter(random_order) 
+colors = [
+    '#468400', 
+    '#ad0000', 
+    '#0d1f95', 
+    '#9e03bd', 
+    '#bc7100', 
+    '#00b362', 
+    '#6600ff', 
+    "#8E8C09", 
+    '#bc7100', 
+    '#0299e4', 
+    '#04877e', 
+    '#8a420d', 
+    '#ad0000', 
+    '#005fbe', 
+]
+colors_iter = iter(colors)
 
 
 ################################################################################
@@ -79,7 +93,7 @@ SUB_HAYASHI = SubStage(
     parent_stage=parent_stages.PARENT_HAYASHI, 
     
     flowchart_text = "Hayashi", 
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="Hayashi", 
     mode1_desc="Hayashi track", 
@@ -101,7 +115,7 @@ SUB_HENYEY = SubStage(
     parent_stage=parent_stages.PARENT_HENYEY, 
 
     flowchart_text = "Henyey", 
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
 
     mode1_abbrev="Henyey", 
     mode1_desc="Henyey track", 
@@ -123,7 +137,7 @@ SUB_MS_LOWMASS = SubStage(
     parent_stage=parent_stages.PARENT_MS, 
 
     flowchart_text = "Main sequence \n(fully convective)", 
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (fully convective)", 
@@ -142,7 +156,7 @@ SUB_MS_MEDMASS = SubStage(
     parent_stage=parent_stages.PARENT_MS, 
     
     flowchart_text = "Main sequence \n(rad. core \n+ conv. env.)",     
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (radiative core + convective envelope)", 
@@ -161,7 +175,7 @@ SUB_MS_HIMASS = SubStage(
     parent_stage=parent_stages.PARENT_MS, 
     
     flowchart_text = "Main sequence \n(conv. core \n+ rad. env.)", 
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="MS", 
     mode1_desc="Main sequence (convective core + radiative envelope)", 
@@ -183,7 +197,7 @@ SUB_POSTMS_SUBGIANT = SubStage(
     parent_stage=parent_stages.PARENT_POSTMS, 
     
     flowchart_text="Subgiant", 
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="Subgiant", 
     mode1_desc="Subgiant", 
@@ -202,7 +216,7 @@ SUB_POSTMS_HGAP = SubStage(
     parent_stage=parent_stages.PARENT_POSTMS, 
     
     flowchart_text="Hertzsprung gap", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="Hertzsprung gap", 
     mode1_desc="Hertzsprung gap", 
@@ -224,7 +238,7 @@ SUB_RG = SubStage(
     parent_stage=parent_stages.PARENT_RG, 
     
     flowchart_text="Red giant", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="RG", 
     mode1_desc="Red giant", 
@@ -246,7 +260,7 @@ SUB_HEIGN_HEFLASH = SubStage(
     parent_stage=parent_stages.PARENT_HEIGN, 
     
     flowchart_text="Helium flash", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="He flash", 
     mode1_desc="Helium ignition (unstable; helium flash)", 
@@ -268,7 +282,7 @@ SUB_HEIGN_STABLE = SubStage(
     parent_stage=parent_stages.PARENT_HEIGN, 
     
     flowchart_text="Helium ignites \nstably", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="He ign.", 
     mode1_desc="Helium ignition (stable)", 
@@ -290,7 +304,7 @@ SUB_HEMS = SubStage(
     parent_stage=parent_stages.PARENT_HEMS, 
     
     flowchart_text="Helium main \nsequence", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="He MS", 
     mode1_desc="Helium main sequence", 
@@ -312,7 +326,7 @@ SUB_AGB = SubStage(
     parent_stage=parent_stages.PARENT_AGB, 
     
     flowchart_text="Asymptotic \ngiant", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="AGB", 
     mode1_desc="Asymptotic giant", 
@@ -334,7 +348,7 @@ SUB_WD_HE = SubStage(
     parent_stage=parent_stages.PARENT_WD, 
     
     flowchart_text="Helium \nwhite dwarf", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="He WD", 
     mode1_desc="Helium white dwarf", 
@@ -353,7 +367,7 @@ SUB_WD_CO = SubStage(
     parent_stage=parent_stages.PARENT_WD, 
     
     flowchart_text="Carbon + \noxygen \nwhite dwarf", 	
-    flowchart_color=cmap(next(random_order_iter)), 
+    flowchart_color=next(colors_iter), 
     
     mode1_abbrev="C+O WD", 
     mode1_desc="Carbon + oxygen white dwarf", 
