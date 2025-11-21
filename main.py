@@ -312,12 +312,12 @@ def _(available_substages, comparison_mode_radio, mo, src):
     return (available_substages_tabs,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, src):
     # Create history browser free selection mode 
 
     with mo.status.spinner(title="Creating History data file browser...") as _: 
-
+    
         history_browser = mo.ui.file_browser( 
             multiple=False, 
             selection_mode="directory", 
@@ -326,10 +326,11 @@ def _(mo, src):
             initial_path=src.data.file_paths.MESA_data_folder)
 
 
+
     return (history_browser,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(history_selected, mo, src):
     # Create profile dropdown for free selection mode 
 
@@ -358,7 +359,79 @@ def _(history_selected, mo, src):
     return (profile_dropdown,)
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(mo):
+    # Create file uploader for mode 4 
+
+    with mo.status.spinner(title="Creating file uploader...") as _: 
+        uploaded_file = mo.ui.file(kind="button") 
+
+    return (uploaded_file,)
+
+
+@app.cell
+def _(Path, mo, src, uploaded_file, zipfile):
+    # Download the selected file 
+
+
+
+    def download_file(uploaded_file, target_dir = src.data.file_paths.MESA_data_folder): 
+
+        # No file uploaded yet
+        if not uploaded_file.value:
+            print("Error: no file uploaded") 
+            return 
+
+        # Choose a target directory
+        uploaded_zip_name = uploaded_file.name() # e.g. "mydata.zip"
+        uploaded_bytes = uploaded_file.contents() # bytes
+        download_zip_filepath = target_dir / uploaded_zip_name 
+
+
+
+        # Uploaded file is not a .zip folder 
+        if Path(uploaded_zip_name).suffix.lower() != ".zip": 
+            print("Error: filename must end in .zip (uploaded file should be a zipped MESA data folder)") 
+            return 
+
+        # File already downloaded 
+        if download_zip_filepath.with_suffix("").exists(): 
+            print(f"Error: {download_zip_filepath.with_suffix('')} already exists") 
+            return 
+
+
+
+        # Save the uploaded zip to the target directory 
+        with open(download_zip_filepath, "wb") as f:
+            f.write(uploaded_bytes)
+        print(f"Downloading zipped folder \'{uploaded_zip_name}\' to \'{download_zip_filepath}\'") 
+
+
+
+        # Unzip the folder 
+        with zipfile.ZipFile(download_zip_filepath, "r") as zf:
+            zf.extractall(target_dir) 
+        print(f"Extracting \'{download_zip_filepath}\' into \'{target_dir}\' folder")
+
+
+
+
+        # Delete the zipped folder (only keep the extracted data)
+        download_zip_filepath.unlink()
+        print(f"Deleting ZIP file '{download_zip_filepath}'") 
+
+
+
+
+    with mo.status.spinner(title="Downloading uploaded file...") as _: 
+        download_file(uploaded_file)
+
+
+
+    return
+
+
+@app.cell
 def _(
     available_substages_tabs,
     comparison_mode_radio,
@@ -366,6 +439,7 @@ def _(
     mo,
     profile_dropdown,
     src,
+    uploaded_file,
 ):
     # "model_selector": either use "available_substages_tabs" or an hstack of "history_browser" and "profile_dropdown", depending on value of "comparison_mode_radio" 
 
@@ -374,7 +448,10 @@ def _(
         if comparison_mode_radio.value in [src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST]: 
             model_selector = available_substages_tabs 
         if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
-            model_selector = mo.hstack([history_browser.style(width="800px"), profile_dropdown], justify='space-around') 
+            model_selector = mo.vstack([history_browser, uploaded_file, profile_dropdown], justify='space-around') 
+
+
+
 
     return (model_selector,)
 
@@ -484,7 +561,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -625,7 +702,7 @@ def _(
                     text_color = "white", 
                     text_fontsize = 11, 
                 ) 
-        
+
             # Selected substage 
             elif substage is substage_selected: 
                 draw_substage_box(
@@ -665,7 +742,7 @@ def _(
                     text_fontsize = 11, 
                 ) 
 
-    
+
 
         return mo.mpl.interactive(fig)
 
@@ -1063,6 +1140,7 @@ def _():
         import os 
         import numpy as np 
         from pathlib import Path 
+        import zipfile
         from functools import lru_cache 
 
         import matplotlib.pyplot as plt
@@ -1071,13 +1149,12 @@ def _():
         import matplotlib.ticker as mticker 
 
         import mesa_reader as mr 
-
         import src
 
         plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
 
-    return Path, lru_cache, mo, mpatches, mticker, np, plt, src
+    return Path, lru_cache, mo, mpatches, mticker, np, plt, src, zipfile
 
 
 @app.cell
@@ -1105,6 +1182,7 @@ def _(
     userguide_text,
 ):
     # MAIN 
+
 
 
     full_interface = mo.vstack(
