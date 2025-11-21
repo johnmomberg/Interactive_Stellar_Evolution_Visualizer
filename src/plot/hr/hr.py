@@ -33,7 +33,7 @@ class HRDiagram:
         # X axis: Temperature
         self.ax.set_xlabel("Surface temperature (K)", fontsize=18, labelpad=14)
         self.ax.set_xscale("log")
-        self.ax.set_xlim((80000, 1000)) 
+        self.ax.set_xlim((20_000, 3000)) 
 
         # Y axis: Luminosity
         self.ax.set_ylabel("Luminosity ($L_{{sun}}$)", fontsize=18, labelpad=14)
@@ -211,7 +211,7 @@ class HRDiagram:
 
 
 
-    def add_spectral_type_labels(self, min_spacing_pixels=100, hide_spectraltype_spans=True):
+    def add_spectral_type_labels(self, min_spacing_pixels=70, hide_spectraltype_spans=True):
         """
         Add spectral type labels (OBAFGKM sequence) and shaded spectral bands.
         Labels automatically hide during pan/zoom and reappear afterward.

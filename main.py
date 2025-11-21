@@ -561,7 +561,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -814,7 +814,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_models,
     comparison_mode_radio,
@@ -858,7 +858,7 @@ def _(
 
                 hr.ax.set_title(f"Evolution of {model_selected.mass} $M_{{sun}}$ star across HR Diagram", fontsize=20, pad=50) 
 
-                for model in available_models: 
+                for index, model in enumerate(available_models): 
 
                     if model.substage.parent_stage is None: 
                         continue 
@@ -886,7 +886,7 @@ def _(
                             modelnum_start = model.model_start, 
                             modelnum_end = model.model_end, 
                             color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
+                            label = f"{index}: {model.substage.mode1_abbrev}", 
                             alpha = 1, 
                             lw = 2 
                         )
@@ -899,7 +899,7 @@ def _(
                             modelnum_start = model.model_start, 
                             modelnum_end = model.model_end, 
                             color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
+                            label = f"{index}: {model.substage.mode1_abbrev}", 
                             alpha = 1, 
                             lw = 2 
                         )
@@ -912,7 +912,7 @@ def _(
                             modelnum_start = model.model_start, 
                             modelnum_end = model.model_end, 
                             color = model.substage.flowchart_color, 
-                            label = model.substage.mode1_abbrev, 
+                            label = f"{index}: {model.substage.mode1_abbrev}", 
                             alpha = 1, 
                             lw = 1 
                         )
