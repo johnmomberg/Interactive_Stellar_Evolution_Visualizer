@@ -312,12 +312,12 @@ def _(available_substages, comparison_mode_radio, mo, src):
     return (available_substages_tabs,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, src):
     # Create history browser free selection mode 
 
     with mo.status.spinner(title="Creating History data file browser...") as _: 
-    
+
         history_browser = mo.ui.file_browser( 
             multiple=False, 
             selection_mode="directory", 
@@ -330,7 +330,7 @@ def _(mo, src):
     return (history_browser,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(history_selected, mo, src):
     # Create profile dropdown for free selection mode 
 
@@ -359,7 +359,7 @@ def _(history_selected, mo, src):
     return (profile_dropdown,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     # Create file uploader for mode 4 
 
@@ -369,7 +369,7 @@ def _(mo):
     return (uploaded_file,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(Path, mo, src, uploaded_file, zipfile):
     # Download the selected file 
 
@@ -431,7 +431,7 @@ def _(Path, mo, src, uploaded_file, zipfile):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages_tabs,
     comparison_mode_radio,
@@ -561,7 +561,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_substages,
     comparison_mode_radio,
@@ -578,6 +578,70 @@ def _(
     unique_masses,
 ):
     # Draw the flowchart
+
+
+
+
+
+
+    def draw_spectraltype_labels_on_flowchart(fig, ax):
+    
+        def _sample_visible_subtypes(ax):
+            min_spacing_pixels = 30 
+
+            xmin, xmax = ax.get_ylim()
+            selected = []
+            spectral_letters = "OBAFGKM"
+
+            for stype in src.plot.hr.spectral_types.SPECTRAL_TYPES:
+                if stype.letter not in spectral_letters:
+                    continue
+                for subtype in stype.subtypes:
+                    if xmin <= subtype.MS_mass <= xmax:
+                        x_disp = ax.transData.transform((0, subtype.MS_mass))[1] 
+                        if not selected or abs(x_disp - selected[-1][1]) >= min_spacing_pixels:
+                            selected.append((subtype, x_disp))
+            return [subtype for subtype, _ in selected]
+
+
+
+        subtypes_to_display = _sample_visible_subtypes(ax)
+        transform = ax.get_yaxis_transform(which='grid')
+
+        for subtype in subtypes_to_display:
+            x = subtype.MS_mass 
+        
+            # Connector line (like a tick)
+            connector = ax.plot(
+                [1.0, 1.015], [x, x], 
+                transform=transform, color='black', lw=1.0, clip_on=False
+            )[0]
+
+            # Text label
+            txt = ax.text(
+                1.02, x,
+                subtype.label,
+                transform=transform,
+                ha='left', va='center',
+                fontsize=12, color='black'
+            )
+
+        # for index, st in enumerate(src.plot.hr.spectral_types.SPECTRAL_TYPES):
+        #         span = ax.axhspan(
+        #             st.MS_mass_range[0], st.MS_mass_range[1],
+        #             color=["black", "white"][index%2], alpha=0.05
+        #         )
+
+        fig.text(
+            0.98, 0.5,
+            "Spectral type on main sequence",
+            va="center", 
+            rotation=90, 
+            fontsize = 14
+        )
+
+
+
 
 
 
@@ -661,19 +725,13 @@ def _(
         ax.set_ylabel("Initial Mass ($M_{{sun}}$)", fontsize=18, labelpad=14)
         ax.set_ylim(min(unique_masses), max(unique_masses))
         ax.set_yscale("log") 
-
-        # HR_diagram_plotting.label_spectraltypes(
-        #     ax, 
-        #     location="right", 
-        #     attribute="mass", 
-        #     subtype_fraction_threshold=0.5, min_subtype_label_px=55, 
-        #     axis_label="Spectral type (on MS)")   
-
         ax.yaxis.set_minor_formatter(mticker.NullFormatter())
         ax.set_yticks(custom_yticks)
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
         ax.tick_params(axis="y", which="minor", length=0)
         ax.grid(alpha=0.5, axis="y", color="black")
+        draw_spectraltype_labels_on_flowchart(fig, ax)  
+
 
         # X axis: Evolution
         ax.set_xlabel("Evolutionary phase", fontsize=18, labelpad=14)
