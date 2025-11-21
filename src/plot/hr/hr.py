@@ -59,7 +59,7 @@ class HRDiagram:
     def add_path(self, history, color=None, label=None, lw=2, alpha=1, modelnum_start=None, modelnum_end=None):
         """Add an evolutionary track to the HR diagram."""
         ind_start = 0 if modelnum_start is None else modelnum_start - 1
-        ind_end = -1 if modelnum_end is None else modelnum_end - 1
+        ind_end = -1 if modelnum_end is None else modelnum_end - 1 + 1 # Add one to ending to remove gaps between segments 
 
         line, = self.ax.plot(
             10**history.log_Teff[ind_start:ind_end],
