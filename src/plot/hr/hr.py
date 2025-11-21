@@ -267,7 +267,7 @@ class HRDiagram:
                 # Text label
                 txt = self.ax.text(
                     x, 1.02,
-                    f"{subtype.label.replace('V', '')} \n({int(subtype.temp):,})",
+                    f"{subtype.label.replace('V', '')} \n({int(subtype.temp):,} K)",
                     transform=transform,
                     ha='center', va='bottom',
                     fontsize=12, color='black'
