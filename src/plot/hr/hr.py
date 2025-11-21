@@ -211,7 +211,7 @@ class HRDiagram:
 
 
 
-    def add_spectral_type_labels(self, min_spacing_pixels=70, hide_spectraltype_spans=True):
+    def add_spectral_type_labels(self, min_spacing_pixels=100, hide_spectraltype_spans=True):
         """
         Add spectral type labels (OBAFGKM sequence) and shaded spectral bands.
         Labels automatically hide during pan/zoom and reappear afterward.
@@ -234,10 +234,10 @@ class HRDiagram:
 
             for stype in spectral_types.SPECTRAL_TYPES:
                 if stype.letter not in spectral_letters:
-                    continue
-                for subtype in stype.subtypes:
+                    continue 
+                for subtype in stype.subtypes: 
                     if xmin <= subtype.temp <= xmax:
-                        x_disp = self.ax.transData.transform((subtype.temp, 0))[0]
+                        x_disp = self.ax.transData.transform((subtype.temp, 0))[0] 
                         if not selected or abs(x_disp - selected[-1][1]) >= min_spacing_pixels:
                             selected.append((subtype, x_disp))
             return [subtype for subtype, _ in selected]
@@ -267,10 +267,10 @@ class HRDiagram:
                 # Text label
                 txt = self.ax.text(
                     x, 1.02,
-                    subtype.label,
+                    f"{subtype.label.replace('V', '')} \n({int(subtype.temp):,})",
                     transform=transform,
                     ha='center', va='bottom',
-                    fontsize=14, color='black'
+                    fontsize=12, color='black'
                 )
 
                 self._spectral_label_elements.append((txt, connector))

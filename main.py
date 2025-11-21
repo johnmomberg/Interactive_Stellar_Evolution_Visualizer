@@ -561,7 +561,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_substages,
     comparison_mode_radio,
@@ -587,7 +587,7 @@ def _(
     def draw_spectraltype_labels_on_flowchart(fig, ax):
     
         def _sample_visible_subtypes(ax):
-            min_spacing_pixels = 30 
+            min_spacing_pixels = 50 
 
             xmin, xmax = ax.get_ylim()
             selected = []
@@ -620,10 +620,10 @@ def _(
             # Text label
             txt = ax.text(
                 1.02, x,
-                subtype.label,
+                f"{subtype.label.replace('V', '')} \n({subtype.MS_mass} $M_{{sun}}$)",
                 transform=transform,
                 ha='left', va='center',
-                fontsize=12, color='black'
+                fontsize=10, color='black'
             )
 
         # for index, st in enumerate(src.plot.hr.spectral_types.SPECTRAL_TYPES):
@@ -633,7 +633,7 @@ def _(
         #         )
 
         fig.text(
-            0.98, 0.5,
+            0.98, 0.56,
             "Spectral type on main sequence",
             va="center", 
             rotation=90, 
@@ -697,7 +697,7 @@ def _(
             return "Flowchart unavailable"
 
         fig, ax = plt.subplots(figsize=(15, 5))
-        fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=0.92)
+        fig.subplots_adjust(top=0.95, bottom=0.16, left=0.07, right=0.90)
 
         if comparison_mode_radio.value==src.data.marimo_ui_options.COMPAREMODE_NOSELECTION: 
             custom_yticks = unique_masses 
@@ -814,7 +814,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_models,
     comparison_mode_radio,
