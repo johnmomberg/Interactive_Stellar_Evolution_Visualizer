@@ -450,7 +450,7 @@ def _(
             profile_dropdown_display = mo.vstack([f"File selected: \u200b \u200b \u200b \u200b \u200b {Path(history_browser.value[0].id)}", profile_dropdown]) 
         if profile_dropdown is None: 
             profile_dropdown_display = ""
-        
+
         if comparison_mode_radio.value in [src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST]: 
             model_selector = available_substages_tabs 
         if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
@@ -465,9 +465,9 @@ def _(
                         ], 
                         justify="start", 
                         gap=0.2, 
-                        widths=[0.18, 0.08, 1]
+                        widths=[0.2, 0.2, 1]
                     ), 
-                    "(Note: If the file you've uploaded doesn't appear above, please refresh the File Browser.)", 
+                    "(Don’t see your file? Try refreshing the File Browser.)", 
                     "\u200b", 
                     profile_dropdown_display
                 ], 
@@ -609,7 +609,7 @@ def _(
 
 
     def draw_spectraltype_labels_on_flowchart(fig, ax):
-    
+
         def _sample_visible_subtypes(ax):
             min_spacing_pixels = 50 
 
@@ -634,7 +634,7 @@ def _(
 
         for subtype in subtypes_to_display:
             x = subtype.MS_mass 
-        
+
             # Connector line (like a tick)
             connector = ax.plot(
                 [1.0, 1.015], [x, x], 
