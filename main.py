@@ -312,7 +312,7 @@ def _(available_substages, comparison_mode_radio, mo, src):
     return (available_substages_tabs,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, src):
     # Create history browser free selection mode 
 
@@ -330,7 +330,7 @@ def _(mo, src):
     return (history_browser,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(history_selected, mo, src):
     # Create profile dropdown for free selection mode 
 
@@ -431,7 +431,7 @@ def _(Path, mo, src, uploaded_file, zipfile):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     Path,
     available_substages_tabs,
@@ -446,14 +446,24 @@ def _(
 
     with mo.status.spinner(title="Choosing model selector...") as _: 
 
-        if profile_dropdown is not None: 
-            profile_dropdown_display = mo.vstack([f"File selected: \u200b \u200b \u200b \u200b \u200b {Path(history_browser.value[0].id)}", profile_dropdown]) 
-        if profile_dropdown is None: 
-            profile_dropdown_display = ""
-
-        if comparison_mode_radio.value in [src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST]: 
+        first_3_options = [
+            src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, 
+            src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, 
+            src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST
+        ]
+    
+        if comparison_mode_radio.value in first_3_options:  
             model_selector = available_substages_tabs 
+
+
+    
         if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
+
+            if profile_dropdown is not None: 
+                profile_dropdown_display = mo.vstack([f"File selected: \u200b \u200b \u200b \u200b \u200b {Path(history_browser.value[0].id)}", profile_dropdown]) 
+            if profile_dropdown is None: 
+                profile_dropdown_display = ""
+
             model_selector = mo.vstack(
                 [
                     history_browser, 
@@ -585,7 +595,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_substages,
     comparison_mode_radio,
@@ -608,28 +618,26 @@ def _(
 
 
 
-    def draw_spectraltype_labels_on_flowchart(fig, ax):
+    def draw_spectraltype_labels_on_flowchart(fig, ax, yticks):
 
-        def _sample_visible_subtypes(ax):
-            min_spacing_pixels = 50 
+        # Find the closest spectral subtype to each y-tick 
+        def _sample_visible_subtypes(ax, yticks):
 
-            xmin, xmax = ax.get_ylim()
-            selected = []
-            spectral_letters = "OBAFGKM"
+            all_subtypes = [] 
+            for stype in src.plot.hr.spectral_types.SPECTRAL_TYPES: 
+                for subtype in stype.subtypes: 
+                    all_subtypes.append(subtype)
 
-            for stype in src.plot.hr.spectral_types.SPECTRAL_TYPES:
-                if stype.letter not in spectral_letters:
-                    continue
-                for subtype in stype.subtypes:
-                    if xmin <= subtype.MS_mass <= xmax:
-                        x_disp = ax.transData.transform((0, subtype.MS_mass))[1] 
-                        if not selected or abs(x_disp - selected[-1][1]) >= min_spacing_pixels:
-                            selected.append((subtype, x_disp))
-            return [subtype for subtype, _ in selected]
+            result = [] 
+            for y in yticks:
+                closest = min(all_subtypes, key=lambda s: abs(s.MS_mass - y))
+                result.append(closest)            
+
+            return result 
 
 
 
-        subtypes_to_display = _sample_visible_subtypes(ax)
+        subtypes_to_display = _sample_visible_subtypes(ax, yticks)
         transform = ax.get_yaxis_transform(which='grid')
 
         for subtype in subtypes_to_display:
@@ -637,31 +645,26 @@ def _(
 
             # Connector line (like a tick)
             connector = ax.plot(
-                [1.0, 1.015], [x, x], 
-                transform=transform, color='black', lw=1.0, clip_on=False
+                [1.0, 1.01], [x, x], 
+                transform=transform, color='black', lw=0.8, clip_on=False
             )[0]
 
             # Text label
             txt = ax.text(
-                1.02, x,
-                f"{subtype.label.replace('V', '')} \n({subtype.MS_mass} $M_{{sun}}$)",
+                1.012, x,
+                f"{subtype.label.replace('V', '')} ({subtype.MS_mass} $M_{{sun}}$)",
                 transform=transform,
                 ha='left', va='center',
                 fontsize=10, color='black'
             )
 
-        # for index, st in enumerate(src.plot.hr.spectral_types.SPECTRAL_TYPES):
-        #         span = ax.axhspan(
-        #             st.MS_mass_range[0], st.MS_mass_range[1],
-        #             color=["black", "white"][index%2], alpha=0.05
-        #         )
-
+        # custom plt.ylabel on right side 
         fig.text(
             0.98, 0.56,
             "Spectral type on main sequence",
             va="center", 
             rotation=90, 
-            fontsize = 14
+            fontsize = 11
         )
 
 
@@ -754,8 +757,7 @@ def _(
         ax.set_yticklabels([str(tick) for tick in custom_yticks], fontsize=14)
         ax.tick_params(axis="y", which="minor", length=0)
         ax.grid(alpha=0.5, axis="y", color="black")
-        draw_spectraltype_labels_on_flowchart(fig, ax)  
-
+        draw_spectraltype_labels_on_flowchart(fig, ax, custom_yticks)  
 
         # X axis: Evolution
         ax.set_xlabel("Evolutionary phase", fontsize=18, labelpad=14)
