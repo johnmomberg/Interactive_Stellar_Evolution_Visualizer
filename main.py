@@ -96,10 +96,10 @@ def _(mo, mode1_massrange_dropdown, mode2_parentstage_dropdown):
 
     with mo.status.spinner(title="Creating Comparison Mode radio options...") as _: 
 
-        noselection_str = mo.md(f"No selection: View entire flowchart")
-        massfirst_str = mo.md(f"Select mass first: View the evolution of a {mode1_massrange_dropdown} mass star")
-        stagefirst_str = mo.md(f"Select stage first: Compare how stars of different masses experience the {mode2_parentstage_dropdown} stage") 
-        freeselection_str = mo.md(f"Select a specific MESA file to load") 
+        noselection_str = mo.md(f"No selection: \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b \u200b View entire flowchart")
+        massfirst_str = mo.md(f"Select mass first: \u200b \u200b \u200b \u200b {mode1_massrange_dropdown} $M_{{sun}}$")
+        stagefirst_str = mo.md(f"Select stage first: \u200b \u200b \u200b \u200b {mode2_parentstage_dropdown} stage") 
+        freeselection_str = mo.md(f"Free exploration: \u200b \u200b \u200b \u200b \u200b Load MESA folder directly") 
 
     return freeselection_str, massfirst_str, noselection_str, stagefirst_str
 
@@ -312,7 +312,7 @@ def _(available_substages, comparison_mode_radio, mo, src):
     return (available_substages_tabs,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, src):
     # Create history browser free selection mode 
 
@@ -322,7 +322,7 @@ def _(mo, src):
             multiple=False, 
             selection_mode="directory", 
             restrict_navigation=True, 
-            label="Choose MESA data folder", 
+            label="File Browser: Click the box to the left of the desired folder to select it.", 
             initial_path=src.data.file_paths.MESA_data_folder)
 
 
@@ -330,7 +330,7 @@ def _(mo, src):
     return (history_browser,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(history_selected, mo, src):
     # Create profile dropdown for free selection mode 
 
@@ -339,7 +339,7 @@ def _(history_selected, mo, src):
         if history_selected is not None: 
 
             profile_dropdown = src.data.marimo_ui_options.create_dropdown(
-                label="Select Profile from the selected MESA data folder", 
+                label="Profile selected: ", 
                 options_list = [
                     src.data.marimo_ui_options.AvailableModelnumsOption(
                         modelnum=modelnum_, 
@@ -371,7 +371,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(Path, mo, src, uploaded_file, zipfile):
-    # Download the selected file 
+    # Download the file uploaded using the file uploader 
 
 
 
@@ -431,8 +431,9 @@ def _(Path, mo, src, uploaded_file, zipfile):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
+    Path,
     available_substages_tabs,
     comparison_mode_radio,
     history_browser,
@@ -445,10 +446,33 @@ def _(
 
     with mo.status.spinner(title="Choosing model selector...") as _: 
 
+        if profile_dropdown is not None: 
+            profile_dropdown_display = mo.vstack([f"File selected: \u200b \u200b \u200b \u200b \u200b {Path(history_browser.value[0].id)}", profile_dropdown]) 
+        if profile_dropdown is None: 
+            profile_dropdown_display = ""
+        
         if comparison_mode_radio.value in [src.data.marimo_ui_options.COMPAREMODE_NOSELECTION, src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST]: 
             model_selector = available_substages_tabs 
         if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
-            model_selector = mo.vstack([history_browser, uploaded_file, profile_dropdown], justify='space-around') 
+            model_selector = mo.vstack(
+                [
+                    history_browser, 
+                    mo.hstack(
+                        [
+                            "Upload your own MESA file:", 
+                            uploaded_file, 
+                            "(Uploaded file must be a .zip compressed MESA data folder)"
+                        ], 
+                        justify="start", 
+                        gap=0.2, 
+                        widths=[0.18, 0.08, 1]
+                    ), 
+                    "(Note: If the file you've uploaded doesn't appear above, please refresh the File Browser.)", 
+                    "\u200b", 
+                    profile_dropdown_display
+                ], 
+                justify='space-around'
+            ) 
 
 
 
@@ -561,7 +585,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
