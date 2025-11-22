@@ -77,7 +77,7 @@ class ProfilePlot:
         ax.set_title(config.title, fontsize=20, pad=25) 
         ax.text(
             0.5, 1.025, 
-            f"{profile.initial_mass_string} $M_{{sun}}$ star at {profile.age_string} years old (model number={profile.modelnum})", 
+            f"{profile.initial_mass_string} $M_{{sun}}$ star at {profile.age_string} old (model number={profile.modelnum})", 
             transform=ax.transAxes, 
             fontsize=12, ha='center')
 
@@ -446,8 +446,11 @@ class ProfilePlot:
 
 def add_colored_title(fig, strings, colors, fontsize, y=0.95, spacing_pts=10):
 
+    # Remove current title, if there is one 
     ax = fig.axes[0]  
     ax.set_title("") 
+    fig.suptitle("") 
+    
     fontprops = FontProperties(family='DejaVu Sans', size=fontsize)
 
     def get_text_width(text, fontprops):

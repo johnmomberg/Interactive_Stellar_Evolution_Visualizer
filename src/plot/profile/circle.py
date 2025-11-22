@@ -423,12 +423,13 @@ def add_centered_axis(fig, center: Tuple[float,float], size_frac: float, project
 @dataclass 
 class CirclePlotConfig: 
     isotopes: list[isotopes.PlotItem] 
+    title: str = "Error: title not provided to CirclePlotConfig"
     vmin: Optional[float] = None 
     vmax: Optional[float] = None
     cutoff: Optional[float] = 0.0
     major_ticks: Optional[list] = None 
     major_tick_labels: Optional[list] = None 
-    minor_ticks: Optional[list] = None  
+    minor_ticks: Optional[list] = None 
 
 
 
@@ -495,6 +496,23 @@ def full_circle_plot(
     fig.patch.set_facecolor("black")
     fig.patch.set_alpha(0.05)
 
+    # Title (gets replaced if in mode 1 or 2)
+    fig.suptitle(
+        config.title, 
+        fontsize=18, 
+        x=0.5, 
+        y=0.97, 
+        ha="center", 
+        va="center"
+    ) 
+
+    # Subtitle 
+    fig.text(
+        0.5, 0.93, 
+        f"{profile.initial_mass_string} $M_{{sun}}$ at {profile.age_string} old", 
+        fontsize=12, ha='center')
+
+
 
 
     for ind, isotope in enumerate(relevant_isotopes):
@@ -507,7 +525,8 @@ def full_circle_plot(
             fig = fig, 
             center = big_center, 
             size_frac = big_size_frac, 
-            projection = 'polar')
+            projection = 'polar'
+        )
         big_mesh = ax_circle_plot(
             ax = ax_big, 
             profile = profile, 
@@ -614,7 +633,8 @@ def full_circle_plot(
             cmap = isotope.evaluate_colormap(), 
             vmin = config.vmin, 
             vmax = config.vmax, 
-            r_max = r_core_view)
+            r_max = r_core_view
+        )
 
 
 
@@ -731,6 +751,7 @@ def circle_composition(profile, history, xaxis: xaxis_options.ProfileXAxisOption
 
     config = CirclePlotConfig( 
         isotopes = isotopes.ISOTOPES, 
+        title = "Interior composition", 
         cutoff = 0.1, 
         vmin = 0, 
         vmax = 1, 
@@ -765,6 +786,7 @@ def circle_fusion(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xa
 
     config = CirclePlotConfig( 
         isotopes = isotopes.FUSION_RATES, 
+        title = "Fusion rate inside star", 
         cutoff = vmax/100, 
         vmin = 0, 
         vmax = vmax 
@@ -790,6 +812,7 @@ def circle_convection(profile, history, xaxis: xaxis_options.ProfileXAxisOption 
 
     config = CirclePlotConfig( 
         isotopes = isotopes.CONVECTIONS, 
+        title = "Convective regions inside star", 
         cutoff = vmax/100, 
         vmax = vmax, 
     )

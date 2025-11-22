@@ -344,7 +344,7 @@ def _(history_selected, mo, src):
                     src.data.marimo_ui_options.AvailableModelnumsOption(
                         modelnum=modelnum_, 
                         age=history_selected.star_age[modelnum_-1], 
-                        display=f"Modelnum={modelnum_}, Age={history_selected.age_strings[modelnum_-1]} yrs") 
+                        display=f"Modelnum={modelnum_}, Age={history_selected.age_strings[modelnum_-1]}") 
                     for modelnum_ in history_selected.model_numbers_available]
             )
 
@@ -451,12 +451,12 @@ def _(
             src.data.marimo_ui_options.COMPAREMODE_MASSFIRST, 
             src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST
         ]
-    
+
         if comparison_mode_radio.value in first_3_options:  
             model_selector = available_substages_tabs 
 
 
-    
+
         if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_FREE: 
 
             if profile_dropdown is not None: 
@@ -673,6 +673,7 @@ def _(
 
 
 
+
     def draw_substage_box(
         ax, substage, 
         bg_color, bg_alpha, 
@@ -840,7 +841,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_models,
     comparison_mode_radio,
@@ -1015,6 +1016,8 @@ def _(
 
 
 
+
+    
         # History plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_HISTORY: 
 
@@ -1077,64 +1080,7 @@ def _(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-            # Interior profile plots 
-            if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
-
-                if history_selected is None or profile_selected is None: 
-                    return "Select a Profile file to view profile plot" 
-
-                # Create profile plot depending on selected options in dropdown 
-                selected_plot_func = profile_plot_dropdown.value.plot_func 
-                selected_x_axis = profile_plot_x_dropdown.value  
-                fig2 = selected_plot_func(profile_selected, selected_x_axis, history_selected)
-
-                # Add colored region to title 
-                if comparison_mode_radio.value != src.data.marimo_ui_options.COMPAREMODE_FREE: 
-
-
-                    # List of strings used in the title (i.e., "Interior composition of a" + "Subgiant" (with red text) + "star")
-                    profile_str = profile_plot_dropdown.value.title_str
-                    title_str_list = [profile_str, substage_selected_str, "star"]  
-
-                    # List of colors used in title (i.e., "black" + "red" + "black") 
-                    title_colors_list = ['black', substage_selected_color, 'black'] 
-                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
-
-                    # Face color of figure with low alpha 
-                    fig2.patch.set_facecolor(substage_selected_color)
-                    fig2.patch.set_alpha(0.12)
-
-                    # Draw a separate edge rectangle on top with full alpha
-                    rect = mpatches.Rectangle(
-                        (0, 0), 1, 1, transform=fig2.transFigure, 
-                        facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
-                    )
-                    fig2.patches.append(rect)
-
-                return mo.mpl.interactive(fig2) 
-
-
-
-
-
-
-
-
-
-
-
+    
         # Interior profile plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
@@ -1165,13 +1111,7 @@ def _(
                     # Title 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18) 
 
-                    # Subtitle 
-                    fig2.text(
-                        0.5, 0.93, 
-                        f"{profile_selected.initial_mass_string} $M_{{sun}}$ at {profile_selected.age_string} old", 
-                        fontsize=12, ha='center')
-
-
+            
 
                 if profile_plot_dropdown.value.line_or_circle == "line": 
 
