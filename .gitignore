@@ -9,3 +9,5 @@ __pycache__/
 /src/plot/__pycache__/
 /src/plot/hr/__pycache__/
 /src/plot/profile/__pycache__/
+/test.ipynb 
+/test_marimo_script.py 
