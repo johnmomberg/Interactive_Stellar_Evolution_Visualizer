@@ -211,7 +211,7 @@ class HRDiagram:
 
 
 
-    def add_spectral_type_labels(self, min_spacing_pixels=100, hide_spectraltype_spans=True):
+    def add_spectral_type_labels(self, min_spacing_pixels=120, hide_spectraltype_spans=True):
         """
         Add spectral type labels (OBAFGKM sequence) and shaded spectral bands.
         Labels automatically hide during pan/zoom and reappear afterward.
@@ -224,6 +224,8 @@ class HRDiagram:
         self._spectral_spans = []
         self._spectral_color_cycle = itertools.cycle(["black", "white"])
 
+        # Add label to right side of spectral types
+        self.fig.text(0.84, 0.85, "\u2190 Spectral type", fontsize=12)
 
 
         # --- Helper: Determine which subtypes fit in current view ---
@@ -270,7 +272,7 @@ class HRDiagram:
                     f"{subtype.label.replace('V', '')} \n({int(subtype.temp):,} K)",
                     transform=transform,
                     ha='center', va='bottom',
-                    fontsize=12, color='black'
+                    fontsize=10, color='black'
                 )
 
                 self._spectral_label_elements.append((txt, connector))
