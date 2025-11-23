@@ -17,11 +17,18 @@ from ...data import isotopes
 
 
 
-def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.3, fig = None): 
+def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.3, fig = None, cutoff=None): 
 
-    vmin, vmax = pcolormesh.get_clim()
-    img_min = np.min(pcolormesh.get_array()) 
-    img_max = np.max(pcolormesh.get_array())  
+    vmin, vmax = pcolormesh.get_clim() 
+
+    img_arr = pcolormesh.get_array() 
+    if cutoff is not None: 
+        ind_include = np.where(img_arr>cutoff) 
+        img_included = img_arr[ind_include] 
+    else: 
+        img_included = img_arr 
+    img_min = np.nanmin(img_included) 
+    img_max = np.nanmax(img_included)
 
     ax_colorbar = cbar.ax 
     cbar.outline.set_visible(False) 
@@ -430,6 +437,7 @@ class CirclePlotConfig:
     major_ticks: Optional[list] = None 
     major_tick_labels: Optional[list] = None 
     minor_ticks: Optional[list] = None 
+    block_colorbar_cutoff: Optional[float] = None 
 
 
 
@@ -487,8 +495,13 @@ def full_circle_plot(
 
     # If only 1 plot shown, extend it horizontally so the title text fits 
     if len(relevant_isotopes) == 1: 
-        pad.right = 1 
-        pad.left = 1 
+        new_pad = Pad(
+            left = 1.0, 
+            right = 1.0, 
+            bottom = pad.bottom, 
+            top = pad.top
+        )
+        pad = new_pad 
 
     layout.apply_padding(pad)  
     fig_w, fig_h = layout.finalize_figsize_with_prepad(H_old, base_interior_height_in=base_interior_height_in)
@@ -579,7 +592,11 @@ def full_circle_plot(
             labelsize=0  # no label
         )
 
-        block_colorbar(pcolormesh = big_mesh, cbar = cbar, fig = fig)
+        block_colorbar(
+            pcolormesh = big_mesh, 
+            cbar = cbar, 
+            fig = fig, 
+            cutoff = config.block_colorbar_cutoff)
 
 
 
@@ -815,6 +832,70 @@ def circle_convection(profile, history, xaxis: xaxis_options.ProfileXAxisOption 
         title = "Convective regions inside star", 
         cutoff = vmax/100, 
         vmax = vmax, 
+    )
+
+    fig = full_circle_plot(  
+        profile = profile, 
+        history = history, 
+        xaxis = xaxis, 
+        config = config, 
+    ) 
+    return fig 
+
+
+
+
+
+def circle_convection_log(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS): 
+
+
+    new_isotopes = [
+        isotopes.PlotItem(
+            profile_key=i.profile_key,
+            profile_compute=None,   # Overridden
+            history_key=i.history_key,
+            label=i.label,
+            color=i.color,
+            cmap=i.cmap,
+            show_initial_abundance=i.show_initial_abundance
+        )
+        for i in isotopes.CONVECTIONS
+    ]
+
+    def find_max_and_min(x, cutoff): 
+        ind_include = np.where(x>cutoff)[0] # Minimum value, if we exclude 1e-99 which is practically zero 
+        if len(ind_include) == 0: 
+            min_val = np.nan 
+        else: 
+            min_val = np.min(x[ind_include]) 
+        max_val = np.max(x) 
+        return (min_val, max_val) 
+    
+    # Find range that convection levels vary across, ignoring any curves that stay at 1e-99 the whole time 
+    min_arr = [] 
+    max_arr = [] 
+    cutoff = -70 # remember, these numbers are all log base 10. 
+    for iso in new_isotopes:
+        (min_val, max_val) = find_max_and_min(iso.evaluate_profile(profile), cutoff) 
+        min_arr.append(min_val)
+        max_arr.append(max_val) 
+    
+    vmin = np.nanmin(min_arr)
+    vmax = np.nanmax(max_arr)
+
+    locator = mticker.MaxNLocator(nbins=3) 
+    ticks = locator.tick_values(vmin, vmax)
+    labels = [f"$10^{{{x}}}$" for x in ticks]
+
+    config = CirclePlotConfig( 
+        isotopes = new_isotopes, 
+        title = "Convective regions inside star", 
+        cutoff = cutoff, 
+        vmin = vmin, 
+        vmax = vmax, 
+        block_colorbar_cutoff = cutoff, 
+        major_ticks = ticks, 
+        major_tick_labels = labels 
     )
 
     fig = full_circle_plot(  

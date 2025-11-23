@@ -82,29 +82,11 @@ class ProfilePlotOption(base_option.BaseOption):
 
 
 PROFILEPLOT_COMPOSITION_CIRCLE = ProfilePlotOption(
-    display="Composition", 
+    display="Composition (circle plot)", 
     plot_func = circle_plotting.circle_composition, 
     title_str="Compostion inside", 
     line_or_circle = "circle"
 ) 
-
-PROFILEPLOT_CONVECTION_CIRCLE = ProfilePlotOption(
-    display="Convection", 
-    plot_func = circle_plotting.circle_convection, 
-    title_str="Convection inside", 
-    line_or_circle="circle"
-)
-
-PROFILEPLOT_FUSION_CIRCLE = ProfilePlotOption(
-    display="Fusion rate", 
-    plot_func = circle_plotting.circle_fusion, 
-    title_str="Fusion inside", 
-    line_or_circle="circle"
-) 
-
-
-
-###### Optional/weird ones 
 
 PROFILEPLOT_COMPOSITION_LINE = ProfilePlotOption(
     display="Composition (line plot)", 
@@ -120,10 +102,20 @@ PROFILEPLOT_COMPOSITION_LINE_LOG = ProfilePlotOption(
     include = False 
 ) 
 
-PROFILEPLOT_MU_LINE = ProfilePlotOption( 
-    display="Mass/particle (line plot)", 
-    plot_func=profile_plotting.ProfilePlot.mu, 
-    title_str=f"Mass/particle ($\mu$) in interior of a", 
+
+
+PROFILEPLOT_CONVECTION_CIRCLE = ProfilePlotOption(
+    display="Convection (circle plot)", 
+    plot_func = circle_plotting.circle_convection, 
+    title_str="Convection inside", 
+    line_or_circle="circle"
+)
+
+PROFILEPLOT_CONVECTION_CIRCLE_LOG = ProfilePlotOption( 
+    display="Convection (circle plot) (log scale)", 
+    plot_func = circle_plotting.circle_convection_log, 
+    title_str="Convection inside", 
+    line_or_circle="circle", 
     include = False 
 )
 
@@ -134,6 +126,32 @@ PROFILEPLOT_CONVECTION_LINE = ProfilePlotOption(
     include = False 
 )
 
+
+
+PROFILEPLOT_FUSION_CIRCLE = ProfilePlotOption(
+    display="Fusion rate (circle plot)", 
+    plot_func = circle_plotting.circle_fusion, 
+    title_str="Fusion inside", 
+    line_or_circle="circle"
+) 
+
+PROFILEPLOT_FUSION_LINE = ProfilePlotOption(
+    display="Fusion rate (line plot) (log scale)", 
+    plot_func=profile_plotting.ProfilePlot.fusion, 
+    title_str="Fusion in interior of a", 
+    include = False 
+) 
+
+
+
+PROFILEPLOT_TEMP_CIRCLE = ProfilePlotOption(
+    display="Temperature (circle plot)", 
+    plot_func = circle_plotting.circle_temp, 
+    title_str="Temperature inside", 
+    line_or_circle="circle", 
+    include = False 
+)
+
 PROFILEPLOT_TEMP_LINE = ProfilePlotOption(
     display="Temperature (line plot)", 
     plot_func=profile_plotting.ProfilePlot.temp, 
@@ -141,11 +159,12 @@ PROFILEPLOT_TEMP_LINE = ProfilePlotOption(
     include = False 
 )
 
-PROFILEPLOT_TEMP_CIRCLE = ProfilePlotOption(
-    display="Temperature", 
-    plot_func = circle_plotting.circle_temp, 
-    title_str="Temperature inside", 
-    line_or_circle="circle", 
+
+
+PROFILEPLOT_MU_LINE = ProfilePlotOption( 
+    display="Mass/particle (line plot)", 
+    plot_func=profile_plotting.ProfilePlot.mu, 
+    title_str=f"Mass/particle ($\mu$) in interior of a", 
     include = False 
 )
 
@@ -155,13 +174,6 @@ PROFILEPLOT_TEMPGRAD_LINE = ProfilePlotOption(
     title_str="Temperature gradient in interior of a", 
     include = False 
 )
-
-PROFILEPLOT_FUSION_LINE = ProfilePlotOption(
-    display="Fusion rate (line plot) (log scale)", 
-    plot_func=profile_plotting.ProfilePlot.fusion, 
-    title_str="Fusion in interior of a", 
-    include = False 
-) 
 
 PROFILEPLOT_DEGENERACY_LINE = ProfilePlotOption( 
     display="Degeneracy (line plot)", 
@@ -175,17 +187,18 @@ PROFILEPLOT_DEGENERACY_LINE = ProfilePlotOption(
 
 PROFILEPLOT_OPTIONS = [
     PROFILEPLOT_COMPOSITION_CIRCLE, 
-    PROFILEPLOT_CONVECTION_CIRCLE, 
-    PROFILEPLOT_FUSION_CIRCLE, 
     PROFILEPLOT_COMPOSITION_LINE, 
     PROFILEPLOT_COMPOSITION_LINE_LOG, 
-    PROFILEPLOT_MU_LINE, 
+    PROFILEPLOT_CONVECTION_CIRCLE, 
+    PROFILEPLOT_CONVECTION_CIRCLE_LOG, 
     PROFILEPLOT_CONVECTION_LINE, 
-    PROFILEPLOT_TEMP_LINE, 
-    PROFILEPLOT_TEMP_CIRCLE, 
-    PROFILEPLOT_TEMPGRAD_LINE, 
+    PROFILEPLOT_FUSION_CIRCLE, 
     PROFILEPLOT_FUSION_LINE, 
-    PROFILEPLOT_DEGENERACY_LINE 
+    PROFILEPLOT_TEMP_CIRCLE, 
+    PROFILEPLOT_TEMP_LINE, 
+    PROFILEPLOT_MU_LINE, 
+    PROFILEPLOT_TEMPGRAD_LINE, 
+    PROFILEPLOT_DEGENERACY_LINE, 
 ]
 
 
