@@ -46,18 +46,18 @@ class SubStage(base_class.BaseEntity):
 # Choose the colormap 
 colors = [
     '#468400', 
-    "#850000", 
+    "#BE0101", 
     '#0d1f95', 
     '#9e03bd', 
     "#a77730", 
     '#00b362', 
     '#6600ff', 
     "#8E8C09", 
-    "#ce8414", 
+    "#d07d00", 
     '#0299e4', 
     '#04877e', 
     '#8a420d', 
-    "#ca0000", 
+    "#db4242", 
     '#005fbe', 
 ]
 colors_iter = iter(colors)
