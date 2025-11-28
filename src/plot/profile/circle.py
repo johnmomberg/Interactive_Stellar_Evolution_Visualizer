@@ -39,7 +39,7 @@ def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.3, fig = None, cutof
     # so that applying it doesn't include a reduced alpha and become transparent, allowing the colorbar to be seen through it. 
     if fig is not None: 
         bg_color_unblended = np.array(fig.get_facecolor()) 
-        bg_color = bg_color_unblended[0:3]*bg_color_unblended[3] + np.array([1.0, 1.0, 1.0]) * (1 - bg_color_unblended[3]) 
+        bg_color = misc.blend_with_white(bg_color_unblended) 
     else: 
         bg_color = "white"
 
@@ -506,8 +506,9 @@ def full_circle_plot(
     layout.apply_padding(pad)  
     fig_w, fig_h = layout.finalize_figsize_with_prepad(H_old, base_interior_height_in=base_interior_height_in)
     fig = plt.figure(figsize=(fig_w, fig_h)) 
-    fig.patch.set_facecolor("black")
-    fig.patch.set_alpha(0.05)
+
+    # Set the facecolor to very light gray 
+    fig.patch.set_facecolor(misc.blend_with_white((0, 0, 0, 0.05)))
 
     # Title (gets replaced if in mode 1 or 2)
     fig.suptitle(
