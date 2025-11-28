@@ -508,7 +508,7 @@ def full_circle_plot(
     fig = plt.figure(figsize=(fig_w, fig_h)) 
 
     # Set the facecolor to very light gray 
-    fig.patch.set_facecolor(misc.blend_with_white((0, 0, 0, 0.05)))
+    fig.patch.set_facecolor(misc.blend_with_white(input_color="black", alpha=0.05))
 
     # Title (gets replaced if in mode 1 or 2)
     fig.suptitle(

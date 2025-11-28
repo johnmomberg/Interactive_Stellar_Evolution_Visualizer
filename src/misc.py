@@ -75,10 +75,24 @@ class CustomList(list):
 
 
 # Blend a color with white to get what that color would be if it had an alpha of 1 
-def blend_with_white(input_color): 
-    if type(input_color) is tuple: 
-        input_color = np.array(input_color) 
-    if type(input_color) is not np.ndarray: 
-        raise ValueError("Input must be tuple or np.array of length 4") 
-    output_color = input_color[0:3]*input_color[3] + np.array([1.0, 1.0, 1.0]) * (1 - input_color[3]) 
+def blend_with_white(input_color, alpha=None):
+    
+    # Input must be either 3 length array, tuple, or string 
+    if type(input_color) is str: 
+        color_rgb_3array = np.array(mcolors.to_rgb(input_color)) 
+    elif type(input_color) is tuple and len(input_color) == 3: 
+        color_rgb_3array = np.array(input_color) 
+    elif type(input_color) is np.ndarray and len(input_color) == 3: 
+        color_rgb_3array = input_color 
+    elif type(input_color) is tuple and len(input_color) == 4: 
+        color_rgb_3array = np.array(input_color)[0:3] 
+        alpha = np.array(input_color)[3] 
+    elif type(input_color) is np.ndarray and len(input_color) == 4: 
+        color_rgb_3array = input_color[0:3] 
+        alpha = input_color[3] 
+    else: 
+        raise ValueError("Input error")
+
+    color_rgba_4array = np.append(color_rgb_3array, alpha) 
+    output_color = color_rgba_4array[0:3]*color_rgba_4array[3] + np.array([1.0, 1.0, 1.0]) * (1 - color_rgba_4array[3]) 
     return output_color 

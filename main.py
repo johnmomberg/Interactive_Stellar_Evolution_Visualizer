@@ -1017,7 +1017,7 @@ def _(
 
 
 
-    
+
         # History plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_HISTORY: 
 
@@ -1080,7 +1080,7 @@ def _(
 
 
 
-    
+
         # Interior profile plots 
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
@@ -1111,7 +1111,7 @@ def _(
                     # Title 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18) 
 
-            
+
 
                 if profile_plot_dropdown.value.line_or_circle == "line": 
 
@@ -1119,8 +1119,7 @@ def _(
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
                     # Face color of figure with low alpha 
-                    fig2.patch.set_facecolor(substage_selected_color)
-                    fig2.patch.set_alpha(0.12)
+                    fig2.patch.set_facecolor(src.misc.blend_with_white(input_color=substage_selected_color, alpha=0.12))
 
                     # Draw a separate edge rectangle on top with full alpha
                     rect = mpatches.Rectangle(
