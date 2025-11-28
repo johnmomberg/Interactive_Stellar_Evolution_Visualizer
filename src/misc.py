@@ -76,5 +76,9 @@ class CustomList(list):
 
 # Blend a color with white to get what that color would be if it had an alpha of 1 
 def blend_with_white(input_color): 
+    if type(input_color) is tuple: 
+        input_color = np.array(input_color) 
+    if type(input_color) is not np.ndarray: 
+        raise ValueError("Input must be tuple or np.array of length 4") 
     output_color = input_color[0:3]*input_color[3] + np.array([1.0, 1.0, 1.0]) * (1 - input_color[3]) 
     return output_color 
