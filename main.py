@@ -604,6 +604,7 @@ def _(
     mo,
     mpatches,
     mticker,
+    mtransforms,
     np,
     plt,
     selected_massrange,
@@ -667,6 +668,35 @@ def _(
             fontsize = 11
         )
 
+        # Add background colors for spectral PARENT types 
+        for st in src.plot.hr.spectral_types.SPECTRAL_TYPES: 
+            trans = mtransforms.blended_transform_factory(ax.transAxes, ax.transData)
+            ymin = st.MS_mass_range[0] 
+            ymax = st.MS_mass_range[1]
+            color = st.color 
+        
+            # Add colored rectangle above plot
+            span = mpatches.Rectangle(
+                xy = (1.00, ymin), 
+                width = 0.01, 
+                height = ymax-ymin, 
+                transform = trans, 
+                facecolor = color, 
+                alpha = 1.0, 
+                edgecolor = "white", 
+                linewidth = 2, 
+                clip_on = True ) 
+            ax.add_patch(span) 
+        
+            # Set clip boundary of rectangle 
+            clip_fig_rect = mpatches.Rectangle( 
+                xy = (0, fig.subplotpars.bottom), 
+                width = 1.0, 
+                height = fig.subplotpars.top - fig.subplotpars.bottom, 
+                transform=fig.transFigure, 
+                facecolor="none", 
+                edgecolor="none")
+            span.set_clip_path(clip_fig_rect) 
 
 
 
@@ -841,7 +871,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_models,
     comparison_mode_radio,
@@ -1170,6 +1200,7 @@ def _():
         import matplotlib.patches as mpatches
         import matplotlib.colors as mcolors 
         import matplotlib.ticker as mticker 
+        import matplotlib.transforms as mtransforms 
 
         import mesa_reader as mr 
         import src
@@ -1177,7 +1208,18 @@ def _():
         plt.style.use('default') # Make sure the plots appear with a white background, even if the user is in dark mode 
 
 
-    return Path, lru_cache, mo, mpatches, mticker, np, plt, src, zipfile
+    return (
+        Path,
+        lru_cache,
+        mo,
+        mpatches,
+        mticker,
+        mtransforms,
+        np,
+        plt,
+        src,
+        zipfile,
+    )
 
 
 @app.cell
