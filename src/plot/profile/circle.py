@@ -630,7 +630,7 @@ def full_circle_plot(
 
 
         # If core is large enough, we don't need the zoomed in plot to see it, so skip the small axis  
-        if r_core_view > 0.20*np.max(xaxis.get_values(profile)): 
+        if r_core_view > 0.05*np.max(xaxis.get_values(profile)): 
             continue 
 
         # Small plot 
