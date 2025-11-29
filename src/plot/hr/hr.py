@@ -1,5 +1,7 @@
-import matplotlib.ticker as mticker 
 import matplotlib.pyplot as plt 
+import matplotlib.ticker as mticker 
+import matplotlib.transforms as mtransforms 
+import matplotlib.patches as mpatches 
 import itertools 
 import functools 
 import numpy as np 
@@ -281,13 +283,47 @@ class HRDiagram:
 
 
 
-        # --- Static shaded background spans ---
+        # Colored regions above plot corresponding to each spectral type 
         if not hasattr(self, "_spectral_spans") or not self._spectral_spans:
             for st in spectral_types.SPECTRAL_TYPES:
-                span = self.ax.axvspan(
-                    st.temp_range[1], st.temp_range[0],
-                    color=next(self._spectral_color_cycle), alpha=0.05
-                )
+
+                trans = mtransforms.blended_transform_factory(self.ax.transData, self.ax.transAxes)
+                xmin = st.temp_range[1] 
+                xmax = st.temp_range[0]
+                color = st.color 
+
+                # # Highlight inside plot 
+                # self.ax.axvspan(
+                #     xmin, xmax, 
+                #     facecolor = color, 
+                #     alpha = 0.2) 
+                
+                # # Add borders between regions 
+                # self.ax.axvline(xmin, color=color, lw=0.8, zorder=0)
+                
+                # Add colored rectangle above plot
+                span = mpatches.Rectangle(
+                    xy = (xmin, 1.00), 
+                    width = xmax-xmin, 
+                    height = 0.1, 
+                    transform = trans, 
+                    facecolor = color, 
+                    alpha = 1.0, 
+                    edgecolor = "white", 
+                    linewidth = 2, 
+                    clip_on = True ) 
+                self.ax.add_patch(span) 
+
+                # Set clip boundary of rectangle 
+                clip_fig_rect = mpatches.Rectangle( 
+                    xy = (self.fig.subplotpars.left, 0), 
+                    width = self.fig.subplotpars.right - self.fig.subplotpars.left, 
+                    height = 1.0, 
+                    transform=self.fig.transFigure, 
+                    facecolor="none", 
+                    edgecolor="none")
+                span.set_clip_path(clip_fig_rect) 
+
                 self._spectral_spans.append(span)
 
         # Store helper functions for later re-use

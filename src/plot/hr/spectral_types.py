@@ -21,7 +21,8 @@ class SpectralType:
     letter: str
     temp_range: Tuple[float, float]       # (min, max) in Kelvin
     MS_mass_range: Tuple[float, float]
-    subtypes: List[SpectralSubtype] = field(default_factory=list)
+    color: str
+    subtypes: List[SpectralSubtype] = field(default_factory=list) 
 
     @property
     def temp_midpoint(self) -> float:
@@ -131,11 +132,11 @@ _Y = [
 
 
 SPECTRAL_TYPES: List[SpectralType] = [
-    SpectralType(letter="O", temp_range=(31_650, 999_999_999_999), MS_mass_range=(18.2, 300),  subtypes=_O),
-    SpectralType(letter="B", temp_range=(10_000, 31_650),          MS_mass_range=(2.33, 18.2), subtypes=_B),
-    SpectralType(letter="A", temp_range=(7_300, 10_000),           MS_mass_range=(1.68, 2.33), subtypes=_A),
-    SpectralType(letter="F", temp_range=(5_960, 7_300),            MS_mass_range=(1.07, 1.68), subtypes=_F),
-    SpectralType(letter="G", temp_range=(5_330, 5_960),            MS_mass_range=(0.89, 1.07), subtypes=_G),
-    SpectralType(letter="K", temp_range=(3_890, 5_330),            MS_mass_range=(0.58, 0.89), subtypes=_K),
-    SpectralType(letter="M", temp_range=(2_310, 3_890),            MS_mass_range=(0.1, 0.58),  subtypes=_M),
+    SpectralType(letter="O", temp_range=(31_650, 999_999_999_999), MS_mass_range=(18.2, 300),  subtypes=_O, color="#9BB6FD"),
+    SpectralType(letter="B", temp_range=(10_000, 31_650),          MS_mass_range=(2.33, 18.2), subtypes=_B, color="#A9C1FD"),
+    SpectralType(letter="A", temp_range=(7_300, 10_000),           MS_mass_range=(1.68, 2.33), subtypes=_A, color="#D8E0FE"),
+    SpectralType(letter="F", temp_range=(5_960, 7_300),            MS_mass_range=(1.07, 1.68), subtypes=_F, color="#F9F5FF"),
+    SpectralType(letter="G", temp_range=(5_330, 5_960),            MS_mass_range=(0.89, 1.07), subtypes=_G, color="#FCEDE4"),
+    SpectralType(letter="K", temp_range=(3_890, 5_330),            MS_mass_range=(0.58, 0.89), subtypes=_K, color="#F9DAB7"),
+    SpectralType(letter="M", temp_range=(2_310, 3_890),            MS_mass_range=(0.1, 0.58),  subtypes=_M, color="#F4B673"),
 ]
