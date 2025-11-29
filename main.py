@@ -264,7 +264,7 @@ def _(
 
                     closest_model = min(
                         models_in_stage,
-                        key=lambda m: abs(m.mass - substage_geometric_center)
+                        key=lambda m: np.abs(np.log(m.mass) - np.log(substage_geometric_center))
                     )                
 
                     available_models.append(closest_model)
