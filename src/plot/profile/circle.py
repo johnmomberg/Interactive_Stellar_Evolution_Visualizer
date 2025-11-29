@@ -454,6 +454,8 @@ def full_circle_plot(
         pad: Optional[Pad] = Pad(left = 0.4, bottom = 0.8, top = 0.4), 
         layout_params: Optional[LayoutParams] = None): 
 
+
+
     # How big is the core? Determines how big the zoomed in plot needs to be 
     r_core = 0.0 
     for string in xaxis.core_strings: 
@@ -467,16 +469,9 @@ def full_circle_plot(
         r_core = np.max(xaxis.get_values(profile)) * r_view_relative_default 
     
     r_core_view = r_core_view_relative * r_core 
+    do_small_plot = r_core_view < 0.025*np.max(xaxis.get_values(profile)) 
 
-    # If no layout_params are provided, use default values 
-    if layout_params is None: 
-        layout_params = LayoutParams()
-    layout = Layout(params = layout_params)
-
-    # initial seed (your values)
-    x1_big, y1_big = 0.0, 0.0
-    x1_small, y1_small = 0.0, 0.0 - layout.params.r_big - layout.params.r_small - 2*layout.params.r_pad
-    layout.add_initial(x1_big, y1_big, x1_small, y1_small)
+    
 
     # Only plot elements that reach a minimum threshold 
     relevant_isotopes = [] 
@@ -488,11 +483,6 @@ def full_circle_plot(
     if len(relevant_isotopes) == 0: 
         relevant_isotopes.append(config.isotopes[0]) 
 
-    # extend for the rest of the isotopes
-    layout.extend_positions(len(relevant_isotopes)-1)
-    width0, height0 = layout.compute_width_height()
-    H_old = height0 
-
     # If only 1 plot shown, extend it horizontally so the title text fits 
     if len(relevant_isotopes) == 1: 
         new_pad = Pad(
@@ -502,10 +492,34 @@ def full_circle_plot(
             top = pad.top
         )
         pad = new_pad 
+    
+
+
+    # If no layout_params are provided, use default values 
+    if layout_params is None: 
+        layout_params = LayoutParams()
+    
+    # If only 1 plot is created, and it doesn't require the 2nd zoom-in subplot,  
+    # set r_small=0 so there is not a gap between colorbar and big plot 
+    if len(relevant_isotopes) == 1 and do_small_plot == False: 
+        layout_params = LayoutParams(r_small=0)
+    layout = Layout(params = layout_params)
+
+    # initial seed (your values)
+    x1_big, y1_big = 0.0, 0.0
+    x1_small, y1_small = 0.0, 0.0 - layout.params.r_big - layout.params.r_small - 2*layout.params.r_pad
+    layout.add_initial(x1_big, y1_big, x1_small, y1_small)
+
+    # extend for the rest of the isotopes
+    layout.extend_positions(len(relevant_isotopes)-1)
+    width0, height0 = layout.compute_width_height()
+    H_old = height0 
 
     layout.apply_padding(pad)  
     fig_w, fig_h = layout.finalize_figsize_with_prepad(H_old, base_interior_height_in=base_interior_height_in)
     fig = plt.figure(figsize=(fig_w, fig_h)) 
+
+
 
     # Set the facecolor to very light gray 
     fig.patch.set_facecolor(misc.blend_with_white(input_color="black", alpha=0.05))
@@ -525,6 +539,7 @@ def full_circle_plot(
         0.5, 0.93, 
         f"{profile.initial_mass_string} $M_{{sun}}$ at {profile.age_string} old", 
         fontsize=12, ha='center')
+
 
 
 
@@ -555,8 +570,8 @@ def full_circle_plot(
 
         # Determine location of color bar (located beneath plots)
         x_small_fig, y_small_fig = layout.layout_to_fig_coords(pos.small.x, pos.small.y) 
-        width_colorbar_fig = layout.radius_to_fig_fraction(layout.params.r_small, option="width") * 1.0 
-        height_colorbar_fig = layout.radius_to_fig_fraction(layout.params.r_small, option="height") * 0.2   
+        width_colorbar_fig = layout.radius_to_fig_fraction(layout.params.r_big, option="width") * 0.70 
+        height_colorbar_fig = layout.radius_to_fig_fraction(layout.params.r_big, option="height") * 0.14   
         x_colorbar_fig = x_small_fig 
         y_colorbar_fig = layout.radius_to_fig_fraction(layout.params.r_big, option="height") * 0.3 
         left_colorbar_fig = x_colorbar_fig - width_colorbar_fig/2 
@@ -630,7 +645,7 @@ def full_circle_plot(
 
 
         # If core is large enough, we don't need the zoomed in plot to see it, so skip the small axis  
-        if r_core_view > 0.05*np.max(xaxis.get_values(profile)): 
+        if do_small_plot == False:  
             continue 
 
         # Small plot 
