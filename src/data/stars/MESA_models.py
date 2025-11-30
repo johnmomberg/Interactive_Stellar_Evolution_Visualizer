@@ -93,13 +93,13 @@ MODEL_0_4_SUBGIANT = MESA_model(
     substage=sub_stages.SUB_POSTMS_SUBGIANT, 
     model_start=350, 
     model_example=450, 
-    model_end=1200, 
+    model_end=500, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
 
 MODEL_0_4_RG = MESA_model( 
     mass=0.4, 
     substage=sub_stages.SUB_RG, 
-    model_start=1200, 
+    model_start=500, 
     model_example=3000, 
     model_end=4850, 
     MESA_folder_path=file_paths.MESA_data_folder/"M=0.4") 
