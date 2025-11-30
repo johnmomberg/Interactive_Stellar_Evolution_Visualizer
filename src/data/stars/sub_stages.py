@@ -204,7 +204,7 @@ SUB_POSTMS_SUBGIANT = SubStage(
     mode1_interior_plot_title="Subgiant", 
     
     mode2_abbrev="Subgiant", 
-    mode2_desc="Subgiant", 
+    mode2_desc="Slow evolution (Subgiant)", 
     mode2_interior_plot_title="Subgiant", 
     
     mass_min=0.3, 
@@ -215,15 +215,15 @@ SUB_POSTMS_HGAP = SubStage(
 
     parent_stage=parent_stages.PARENT_POSTMS, 
     
-    flowchart_text="Hertzsprung gap", 	
+    flowchart_text="SC limit /\nHertzsprung gap", 	
     flowchart_color=next(colors_iter), 
     
     mode1_abbrev="Hertzsprung gap", 
-    mode1_desc="Hertzsprung gap", 
+    mode1_desc="Crosses the SC limit and jumps the Hertzsprung gap", 
     mode1_interior_plot_title="Hertzsprung gap", 
     
     mode2_abbrev="Hertzsprung gap", 
-    mode2_desc="Hertzsprung gap", 
+    mode2_desc="Fast evolution (crosses the SC limit and jumps the Hertzsprung gap)", 
     mode2_interior_plot_title="Hertzsprung gap", 
     
     mass_min=1.5, 
