@@ -935,7 +935,8 @@ def circle_temp(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxi
             profile_compute = lambda p: 10**p.logT, 
             label = "Temperature", 
             cmap = "plasma"
-        )] 
+        )], 
+        title = "Temperature" 
     )
 
     fig = full_circle_plot(  
