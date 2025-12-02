@@ -316,9 +316,21 @@ def add_substage_highlight(
         edgecolor="none")
     rect.set_clip_path(clip_fig_rect) 
 
+    # Left and right sides of box (either the actual position, or the position where it gets cropped to)
+    x_left = np.max([xmin, ax.get_xlim()[0]]) 
+    x_right = np.min([xmax, ax.get_xlim()[1]]) 
+
+    # Check if wide enough for a label
+    data_to_fig = (ax.transData + fig.transFigure.inverted())
+    x0_fig, _ = data_to_fig.transform((x_left, 0))
+    x1_fig, _ = data_to_fig.transform((x_right, 0))
+    fig_width_fraction = abs(x1_fig - x0_fig)
+    if fig_width_fraction >= 0.05:
+        include_label = True
+
     # Add text in the middle of the rectangle 
     if include_label == True: 
-        xmid = (xmin + xmax) / 2
+        xmid = (x_left + x_right) / 2
         ymid = rect.get_xy()[1] + rect.get_height()/2 - 0.005
         ax.text(
             xmid,
