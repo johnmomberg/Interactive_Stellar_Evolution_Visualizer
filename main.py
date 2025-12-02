@@ -595,7 +595,7 @@ def _(
     return modelnum_selected, profile_selected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     available_substages,
     comparison_mode_radio,
@@ -674,7 +674,7 @@ def _(
             ymin = st.MS_mass_range[0] 
             ymax = st.MS_mass_range[1]
             color = st.color 
-        
+
             # Add colored rectangle above plot
             span = mpatches.Rectangle(
                 xy = (1.00, ymin), 
@@ -687,7 +687,7 @@ def _(
                 linewidth = 2, 
                 clip_on = True ) 
             ax.add_patch(span) 
-        
+
             # Set clip boundary of rectangle 
             clip_fig_rect = mpatches.Rectangle( 
                 xy = (0, fig.subplotpars.bottom), 
@@ -871,7 +871,7 @@ def _(
     return (flowchart,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(
     available_models,
     comparison_mode_radio,
@@ -1135,32 +1135,33 @@ def _(
                 title_colors_list = ['black', substage_selected_color, 'black'] 
 
 
-
+                # Add colored title 
                 if profile_plot_dropdown.value.line_or_circle == "circle": 
-
-                    # Title 
-                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18) 
-
-
-
+                    src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, y=0.97, fontsize=18)             
                 if profile_plot_dropdown.value.line_or_circle == "line": 
-
-                    # Title 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
-                    # Face color of figure with low alpha 
-                    fig2.patch.set_facecolor(src.misc.blend_with_white(input_color=substage_selected_color, alpha=0.12))
+            
+                # Face color of figure with low alpha 
+                src.misc.set_bg_color(fig2, src.misc.blend_with_white(input_color=substage_selected_color, alpha=0.06))
 
-                    # Draw a separate edge rectangle on top with full alpha
-                    rect = mpatches.Rectangle(
-                        (0, 0), 1, 1, transform=fig2.transFigure, 
-                        facecolor='none', edgecolor=substage_selected_color, linewidth=10, zorder=2
-                    )
-                    fig2.patches.append(rect)
+                # Draw a separate edge rectangle on top with full alpha
+                rect = mpatches.Rectangle(
+                    xy=(0, 0), 
+                    width=1, 
+                    height=1, 
+                    transform=fig2.transFigure, 
+                    facecolor='none', 
+                    edgecolor=substage_selected_color, 
+                    linewidth=10, 
+                    zorder=0, 
+                )
+                fig2.patches.append(rect)
 
 
 
             return mo.mpl.interactive(fig2) 
+        
 
 
 

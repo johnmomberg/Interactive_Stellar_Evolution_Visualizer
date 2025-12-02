@@ -1,6 +1,7 @@
 import numpy as np 
 import math 
 import matplotlib.colors as mcolors 
+import matplotlib.patches as mpatches 
 
 
 
@@ -96,3 +97,19 @@ def blend_with_white(input_color, alpha=None):
     color_rgba_4array = np.append(color_rgb_3array, alpha) 
     output_color = color_rgba_4array[0:3]*color_rgba_4array[3] + np.array([1.0, 1.0, 1.0]) * (1 - color_rgba_4array[3]) 
     return output_color 
+
+
+
+
+
+# Set the background color of a figure 
+# But first, set the facecolor of any rectangles with the same facecolor as the background to the new color 
+def set_bg_color(fig, color): 
+
+    for ax in fig.axes: 
+        rectangles = [p for p in ax.patches if isinstance(p, mpatches.Rectangle)] 
+        bg_rectangles = [rect for rect in rectangles if rect.get_facecolor()==fig.get_facecolor()]
+        for rect in bg_rectangles: 
+            rect.set_facecolor(color)
+
+    fig.patch.set_facecolor(color)

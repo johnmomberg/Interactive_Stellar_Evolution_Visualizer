@@ -48,28 +48,36 @@ def block_colorbar(pcolormesh, cbar, fig_fraction_cropped=0.3, fig = None, cutof
         xy = (vmin, 0), 
         width = img_min-vmin, 
         height = fig_fraction_cropped, 
-        color = bg_color)
+        color = bg_color, 
+        lw = 0
+    )
     ax_colorbar.add_patch(bottom_left_block)
     
     top_left_block = mpatches.Rectangle(
         xy = (vmin, 1), 
         width = img_min-vmin, 
         height = -fig_fraction_cropped, 
-        color = bg_color)
+        color = bg_color, 
+        lw = 0 
+    )
     ax_colorbar.add_patch(top_left_block)
 
     bottom_right_block = mpatches.Rectangle(
         xy = (img_max, 0), 
         width = vmax-img_max, 
         height = fig_fraction_cropped, 
-        color = bg_color)
+        color = bg_color, 
+        lw = 0 
+    )
     ax_colorbar.add_patch(bottom_right_block)
     
     top_right_block = mpatches.Rectangle(
         xy = (img_max, 1), 
         width = vmax-img_max, 
         height = -fig_fraction_cropped, 
-        color = bg_color)
+        color = bg_color, 
+        lw = 0 
+    )
     ax_colorbar.add_patch(top_right_block)
     
 
@@ -451,7 +459,7 @@ def full_circle_plot(
         xaxis: xaxis_options.ProfileXAxisOption = xaxis_options.PROFILEXAXIS_RADIUS, 
         base_interior_height_in: float = 6.0, 
         r_core_view_relative: float = 1.25, 
-        pad: Optional[Pad] = Pad(left = 0.4, bottom = 0.8, top = 0.4), 
+        pad: Optional[Pad] = Pad(left = 0.4, bottom = 0.8, top = 0.4, right=0.1), 
         layout_params: Optional[LayoutParams] = None): 
 
 
