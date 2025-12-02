@@ -444,6 +444,7 @@ class CirclePlotConfig:
     cutoff: Optional[float] = 0.0
     major_ticks: Optional[list] = None 
     major_tick_labels: Optional[list] = None 
+    major_tick_formatter: Optional[callable] = None 
     minor_ticks: Optional[list] = None 
     block_colorbar_cutoff: Optional[float] = None 
 
@@ -597,6 +598,8 @@ def full_circle_plot(
         if config.major_ticks is not None: 
             ax_colorbar.xaxis.set_major_locator(mticker.FixedLocator(config.major_ticks))  
             ax_colorbar.xaxis.set_major_formatter(mticker.FixedFormatter(config.major_tick_labels)) 
+        elif config.major_tick_formatter is not None: 
+            ax_colorbar.xaxis.set_major_formatter(mticker.FuncFormatter(config.major_tick_formatter))
         ax_colorbar.tick_params(
             axis='x',
             which='major',
@@ -941,10 +944,11 @@ def circle_temp(profile, history, xaxis: xaxis_options.ProfileXAxisOption = xaxi
     config = CirclePlotConfig( 
         isotopes = [isotopes.PlotItem(
             profile_compute = lambda p: 10**p.logT, 
-            label = "Temperature", 
+            label = "Temperature (K)", 
             cmap = "plasma"
         )], 
-        title = "Temperature" 
+        title = "Temperature", 
+        major_tick_formatter=mticker.EngFormatter()
     )
 
     fig = full_circle_plot(  
