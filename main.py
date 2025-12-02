@@ -9,7 +9,7 @@ def _(mo):
     # Create title string "full_title"
 
     with mo.status.spinner(title="Creating title text...") as _: 
-        full_title = mo.md("<h1>Stellar Evolution Interactive Tool</h1>") 
+        full_title = mo.md("<h1>Interactive Stellar Evolution Visualizer</h1>") 
 
     return (full_title,)
 
