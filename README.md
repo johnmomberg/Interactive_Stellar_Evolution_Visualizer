@@ -1,4 +1,6 @@
-Click here to load interactive tool: https://marimo.app/github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/main.py 
+# Interactive Stellar Evolution Visualizer 
+
+**Click here to load the tool in your browser:** https://marimo.app/github.com/johnmomberg/Gayley_Stellar_Evolution_Textbook/blob/main/main.py 
 
 Click the button with **3 rectangles** on the bottom right of the screen to hide the code. 
 
