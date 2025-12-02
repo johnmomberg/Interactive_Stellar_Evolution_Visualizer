@@ -129,7 +129,7 @@ class ProfilePlot:
             # Add horizontal dashed lines showing the initial composition
             if isotope.show_initial_abundance: 
                 composition_history = getattr(history, isotope.history_key)
-                ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
+                ax.axhline(composition_history[0], color=isotope.color, ls="dashed", lw=0.7) 
 
         # Legend 
         ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
@@ -167,7 +167,7 @@ class ProfilePlot:
         for isotope, max_val in isotope_values: 
 
             # Only plot profiles that are significant
-            if max_val > 0: 
+            if max_val > ymin: 
                 composition_profile = getattr(profile, isotope.profile_key)
                 ax.plot(
                     x_arr,
@@ -179,7 +179,7 @@ class ProfilePlot:
 
             # Add horizontal dashed lines showing the initial composition
             composition_history = getattr(history, isotope.history_key)
-            ax.axhline(composition_history[0], color=isotope.color, ls="dashed") 
+            ax.axhline(composition_history[0], color=isotope.color, ls="dashed", lw=0.7) 
 
         # Legend 
         ax.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
