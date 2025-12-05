@@ -508,11 +508,23 @@ def full_circle_plot(
     if layout_params is None: 
         layout_params = LayoutParams()
     
+
+
     # If only 1 plot is created, and it doesn't require the 2nd zoom-in subplot,  
     # set r_small=0 so there is not a gap between colorbar and big plot 
+    # and reduce padding on left/right sides 
     if len(relevant_isotopes) == 1 and do_small_plot == False: 
         layout_params = LayoutParams(r_small=0)
+        new_pad = Pad(
+            left = 0.3, 
+            right = 0.3, 
+            bottom = pad.bottom, 
+            top = pad.top
+        ) 
+        pad = new_pad 
     layout = Layout(params = layout_params)
+
+
 
     # initial seed (your values)
     x1_big, y1_big = 0.0, 0.0
