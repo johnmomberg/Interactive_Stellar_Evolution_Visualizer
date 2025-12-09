@@ -4,6 +4,12 @@ __generated_with = "0.13.15"
 app = marimo.App(width="full")
 
 
+@app.cell
+def _():
+    # NOTE: Click the button with 3 rectangles on the bottom right of the screen to hide the code 
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     # Create title string "full_title"
