@@ -114,19 +114,19 @@ class HistoryPlot:
         # 3 fusion rates: Hydrogen, helium, and everything else (aka metals) 
         ax.plot(
             history.star_age, 10**history.log_L, 
-            lw=3, color="black", 
+            lw=3, color="cyan", 
             label="Total luminosity \nof star")
         ax.plot(
             history.star_age, 10**history.log_LH, 
-            lw=1, color="tab:blue", 
+            lw=2, color="tab:blue", 
             label=f"Hydrogen \u2192 Helium")
         ax.plot(
             history.star_age, 10**history.log_LHe, 
-            lw=1, color="tab:green", 
+            lw=2, color="tab:green", 
             label=f"Helium \u2192 Carbon")
         ax.plot(
             history.star_age, 10**history.log_LZ, 
-            lw=1, color="tab:red", 
+            lw=2, color="tab:red", 
             label=f"Heavier elements") 
 
         # Use mass-luminosity relation on the MS to predict the range of fusion rates to use for y limits 
