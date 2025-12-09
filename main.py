@@ -1186,7 +1186,7 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _():
+async def _():
     # Imports/setup 
 
     import marimo as mo
@@ -1194,6 +1194,10 @@ def _():
 
 
     with mo.status.spinner(title="Importing packages...") as _: 
+
+        # Manually install packages in requirements.txt (in order to install packages whose pip install ___ name does not match their import ___ name) 
+        import micropip
+        await micropip.install([x.strip() for x in open("requirements.txt","r").readlines()])
 
         import os 
         import numpy as np 
