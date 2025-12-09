@@ -324,7 +324,7 @@ def add_substage_highlight(
     data_to_fig = (ax.transData + fig.transFigure.inverted())
     x0_fig, _ = data_to_fig.transform((x_left, 0))
     x1_fig, _ = data_to_fig.transform((x_right, 0))
-    fig_width_fraction = abs(x1_fig - x0_fig)
+    fig_width_fraction = x1_fig - x0_fig 
     if fig_width_fraction >= 0.05:
         include_label = True
 
