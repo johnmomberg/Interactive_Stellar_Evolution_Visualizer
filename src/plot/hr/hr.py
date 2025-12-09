@@ -5,9 +5,11 @@ import matplotlib.patches as mpatches
 import itertools 
 import functools 
 import numpy as np 
+import labellines 
 
 from . import locators 
 from . import spectral_types 
+from ...data import phys_consts 
 
 
 
@@ -105,6 +107,39 @@ class HRDiagram:
         self.ax.yaxis.set_major_locator(mticker.LogLocator(numticks=5))
         self.ax.yaxis.set_minor_locator(mticker.LogLocator(subs='auto', numticks=2))
 
+
+
+
+
+    def add_radius_contours(self): 
+
+        lines = [] 
+        temp_range = np.logspace(2, 6, 100)
+        for radius in np.logspace(-6, 6, 7):
+            
+            # Calculate Luminosity using L = 4pi*sigma * R^2 * T^4
+            L_range = (
+                4*np.pi * phys_consts.sigma_sb *
+                (radius*phys_consts.R_sun)**2 *
+                (temp_range)**4 
+            ) / phys_consts.L_sun 
+
+            # Add line to list 
+            line = self.ax.plot(temp_range, L_range, label=f"{radius:,g} $R_{{sun}}$", color="midnightblue", alpha=0.5, lw=0.8)
+            lines.append(line[0])
+
+        # Add the labels twice: Once to the left side of the plot, and once to the right side  
+        xleft = np.log10(self.ax.get_xlim()[1])
+        xright = np.log10(self.ax.get_xlim()[0])
+        xdiff = xright - xleft
+        xleft_label = xleft + xdiff*0.05 
+        xright_label = xright - xdiff*0.05
+        _ = labellines.labelLines(lines, xvals=10**xleft_label, alpha=0.5) 
+        _ = labellines.labelLines(lines, xvals=10**xright_label, alpha=0.5) 
+
+        # After adding contour labels, remove the labels from each line object so that it doesn't appear in the legend 
+        for line in lines: 
+            line.set_label(None)
 
 
 

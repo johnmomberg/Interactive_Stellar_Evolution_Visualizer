@@ -1040,6 +1040,7 @@ def _(
 
             hr.legend(fontsize=12, loc="center left", bbox_to_anchor=(1, 0.5)) 
             hr.add_spectral_type_labels()  
+            hr.add_radius_contours() 
 
             fig2 = hr.fig 
             return mo.mpl.interactive(fig2) 
@@ -1138,7 +1139,7 @@ def _(
                 if profile_plot_dropdown.value.line_or_circle == "line": 
                     src.plot.profile.profile.add_colored_title(fig2, title_str_list, title_colors_list, fontsize=20) 
 
-            
+
                 # Face color of figure with low alpha 
                 src.misc.set_bg_color(fig2, src.misc.blend_with_white(input_color=substage_selected_color, alpha=0.06))
 
@@ -1158,7 +1159,7 @@ def _(
 
 
             return mo.mpl.interactive(fig2) 
-        
+
 
 
 
