@@ -61,7 +61,7 @@ def _(mo):
     # Controls section header ("controls_subtitle") and secondary plot section header ("secondary_plot_subtitle")
     with mo.status.spinner(title="Creating Controls section subheaders...") as _: 
         controls_subtitle = mo.md("<h2>Controls</h2>") 
-        secondary_plot_subtitle = mo.md("<h2>Secondary Plot</h2>") 
+        secondary_plot_subtitle = mo.md("<h2>Plot</h2>") 
 
     return controls_subtitle, secondary_plot_subtitle
 
@@ -70,7 +70,7 @@ def _(mo):
 def _(mo, src):
     # Comparison mode radio 
     with mo.status.spinner(title="Creating Comparison Mode selector and subheader...") as _: 
-        comparison_mode_title = mo.md("<h3>Choose mass/evolutionary stage highlighted by secondary plot</h3>") 
+        comparison_mode_title = mo.md("<h3>2. Choose type of star</h3>") 
         comparison_mode_radio = src.data.marimo_ui_options.create_radio(src.data.marimo_ui_options.COMPAREMODE_OPTIONS) 
 
     return comparison_mode_radio, comparison_mode_title
@@ -114,7 +114,7 @@ def _(mo, mode1_massrange_dropdown, mode2_parentstage_dropdown):
 def _(mo, src):
     # Plot mode section header ("plot_mode_title") and radio selector ("plot_mode_radio")  
     with mo.status.spinner(title="Creating Plot Mode selector and subheader...") as _: 
-        plot_mode_title = mo.md("<h3>Choose secondary plot</h3>") 
+        plot_mode_title = mo.md("<h3>1. Choose variable to plot</h3>") 
         plot_mode_radio = src.data.marimo_ui_options.create_radio(src.data.marimo_ui_options.PLOTMODE_OPTIONS)
 
     return plot_mode_radio, plot_mode_title
@@ -291,6 +291,7 @@ def _(available_substages, comparison_mode_radio, mo, src):
 
         if len(available_substages) == 0: 
             available_substages_tabs = "" 
+            available_substages_tabs_title = ""
 
         elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
 
@@ -302,7 +303,8 @@ def _(available_substages, comparison_mode_radio, mo, src):
             available_substages_tabs = mo.ui.tabs(
                 available_substages_options, 
                 value=list(available_substages_options.keys())[0]) 
-
+            available_substages_tabs_title = mo.md("<h4>Choose an evolutionary stage:</h4>") 
+            
         elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
 
             available_substages_options = {
@@ -313,9 +315,10 @@ def _(available_substages, comparison_mode_radio, mo, src):
             available_substages_tabs = mo.ui.tabs(
                 available_substages_options, 
                 value=list(available_substages_options.keys())[0]) 
+            available_substages_tabs_title = mo.md("<h4>Choose a mass range:</h4>") 
 
 
-    return (available_substages_tabs,)
+    return available_substages_tabs, available_substages_tabs_title
 
 
 @app.cell(hide_code=True)
@@ -328,7 +331,7 @@ def _(mo, src):
             multiple=False, 
             selection_mode="directory", 
             restrict_navigation=True, 
-            label="File Browser: Click the box to the left of the desired folder to select it.", 
+            label="Select MESA data folder to be plotted...", 
             initial_path=src.data.file_paths.MESA_data_folder)
 
 
@@ -472,6 +475,7 @@ def _(
 
             model_selector = mo.vstack(
                 [
+                    mo.md("<h4>File Browser</h4>"), 
                     history_browser, 
                     mo.hstack(
                         [
@@ -481,7 +485,7 @@ def _(
                         ], 
                         justify="start", 
                         gap=0.2, 
-                        widths=[0.2, 0.2, 1]
+                        widths=[0.4, 0.2, 1]
                     ), 
                     "(Don’t see your file? Try refreshing the File Browser.)", 
                     "\u200b", 
@@ -489,6 +493,7 @@ def _(
                 ], 
                 justify='space-around'
             ) 
+        
 
 
 
@@ -1119,7 +1124,7 @@ def _(
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
             if history_selected is None or profile_selected is None: 
-                return "Select a Profile file to view profile plot" 
+                return "ERROR: Profile plot unavailable; please select an evolutionary stage" 
 
             # Create profile plot depending on selected options in dropdown 
             selected_plot_func = profile_plot_dropdown.value.plot_func 
@@ -1234,6 +1239,7 @@ async def _():
 @app.cell
 def _(
     HR_diagram_str,
+    available_substages_tabs_title,
     comparison_mode_radio,
     comparison_mode_title,
     controls_subtitle,
@@ -1289,21 +1295,23 @@ def _(
             "\u200b", 
 
             comparison_mode_title, 
-            mo.hstack(
-                [
-                    comparison_mode_radio, 
-                    mo.vstack(
-                        [
-                            noselection_str, 
-                            massfirst_str, 
-                            stagefirst_str, 
-                            freeselection_str
-                        ], 
-                        gap=0)
-                ], 
-                gap=0, align="center"), 
-            "\u200b", 
-            model_selector, 
+            mo.hstack( 
+                [     
+                mo.hstack(
+                    [
+                        comparison_mode_radio, 
+                        mo.vstack(
+                            [
+                                noselection_str, 
+                                massfirst_str, 
+                                stagefirst_str, 
+                                freeselection_str
+                            ], 
+                            gap=0), 
+                    ],
+                    gap=0, align="center"), 
+                mo.vstack([available_substages_tabs_title, model_selector]) 
+                ], widths=[5, 10], align="start"), 
             "\u200b", 
             mo.md("---"), 
             "\u200b", 
