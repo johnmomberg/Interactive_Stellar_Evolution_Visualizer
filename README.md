@@ -4,38 +4,49 @@
 
 - Click here to load the tool in your browser:
   https://marimo.app/github.com/johnmomberg/Interactive_Stellar_Evolution_Visualizer/blob/main/main.py 
-- To hide the code, click the button with **three-rectangle** in the bottom-right corner of the screen.
+- To hide the code, click the button with **three boxes** in the bottom-right corner of the screen.
 
 ## Feedback 
 
 There are several ways that you can give feedback (report a bug, make suggestions, etc):
 - Add an issue to this repository’s **Issues** tab.  
-- Email: john-momberg@uiowa.edu 
-- Fill out this short survey:  
+- Email me at john-momberg@uiowa.edu 
+- Fill out this survey about your experience using this program:  
   https://docs.google.com/forms/d/e/1FAIpQLSfM8DIz6Jri5ruX6axiyvR9M9x5XapsTQQrbQr-yVbNdOL2TA/viewform?usp=header 
 
----
+--- 
 
+## Detailed Walkthrough  
 
+### Controls 
+To use this tool, first make a selection using the Controls section. Depending on the options you select, the corresponding plot will be generated and displayed in the Plot section below. 
 
-# WARNING: ChatGPT generated content below (I will edit and adapt this later)
-
-
-## How to use the program
-
-### 1. Choose the kind of plot
+#### Choose variable to plot 
 Select the type of plot you want to generate:
 
-- **HR diagram** — the star’s path across the HR diagram.  
-- **History** — a variable vs. time (e.g., radius vs. time).  
-- **Interior profile** — a snapshot of interior structure (variable vs. location inside the star) at a **specific** evolutionary time.
+- **HR diagram**: Shows the star’s path across the HR diagram. 
+- **History**: a variable vs. time (e.g., radius vs. time). 
+- **Interior profile**: interior structure (variable vs. location inside the star) at a snapshot in time.
 
-For **Interior profile** you can choose the x-axis unit:
+For **Interior profile**, you can additionally select the units used on the x-axis: 
+- **Radius**: Distance from the center (standard) 
+- **Mass coordinate**: The amount of mass interior to each point. (For example, 'x = 1.5' means the location in the star where a sphere extending to your current radius would contain a total of 1.5 solar masses). 
 
-- **Radius** — distance from center (what you usually expect for interior plots).  
-- **Mass coordinate** — the fraction (or amount) of mass interior to that radius (e.g., `x = 0.3` means 0.3 M\_☉ is inside that radius).
+--- 
+
+## Acknowledgements 
 
 ---
+
+
+
+
+
+
+
+
+
+# Notes and rough drafts 
 
 ### 2. Choose the type of comparison (how you pick mass/stage)
 This program emphasizes comparative exploration. There are three modes — pick the one that matches the comparison you want:
@@ -80,6 +91,47 @@ You can upload a `.zip` of your own MESA run and use the visualizer with your da
 - Select the checkbox next to your folder (don’t click the folder name — that opens it instead of selecting it).
 
 ---
+
+2. Choose type of star This program emphasizes the use of understanding by making comparisons. There are two types of comparisons that can be made, and which comparison mode you are considering affects which button in this selector you choose.
+   1. For a given star, compare its properties at different points in its life (for instance, from main sequence to red giant). This corresponds to the button label "Select mass first". The idea is that you select the mass first, then the program tells you what evolutionary stages that THAT particular mass goes through, and then you select the evolutionary stage second. First, select the mass range from the dropdown. Depending on your selection, the program will tell you which stages that mass range goes through. Second, make a selection on the tabs selector that appears to choose an evolutionary stage.
+   2. For a given point in time, compare how stars of different masses experience it (for instance, compare the properties during the main sequence of a low mass star vs a high mass star). This corresponds to the button labeled "Select stage first". The idea is that first, you pick the evolutionary stage (for example, main sequence), and the program tells you what ranges of masses do different things during that stage (for instance maybe 1.5 solar masses is hte cutoff between different behavior in the main sequence) so you pick your stage first and then pick the mass range. First, select the evolutionary stage using the dropdown. Depending on your selection, the program will display which ranges of masses do different things during this evolutionary stage. Second, make your selection on the tabs selector that appears in order to choose a mass range.
+   3. Free exploration: Modes 1 and 2 were the main ways this program is meant to be used: I have associated each stage of stellar evolution/type of star with a MESA file and assigned a specific point in time that I think represents that stage best. However, if you want to see how the star behaves at points in between the time steps I've higlighted, or you just want to explore the data more freely, you can use the Free Exploration mode. This allows you to directly select the MESA file to load and then select the exact point in time you would like to view; in this mode, points in time are just as they come from the MESA folder, and I haven't imposed my own definitions of when the "main sequence" or "red giant" branch occurs. To select a folder to analyze, click the folder icon to the left of the name (a checkmark should appear in the box). Do not click the name of the folder; this causes you to go INTO the folder but you aren't actually selecting it for analysis. Next, once you've selected a MESA folder to analyze, you can pick a particular point in time within this MESA file using the dropdown selector. Model numbers, or "modelnums", are a way that MESA labels different points in time (since it might create more models in a short period of time if a lot of change happens so its not linear with time). The age of the star at each point is also included next to where I label the modelnum.
+
+This mode also allows you to upload your OWN mesa data folder for analysis. You can upload your own folder and use all of my interactive features and plots and use this tool to visualize and browse data of your own. To do that, click the Upload button and select a .zip compressed version of your MESA data folder. A MESA data folder should contain: "trimmed_history.data" or "history.data", and a series of files that looks like "profile1.data", "profile2.data", etc. If you take a MESA data folder and right click and compress to .zip, then you can upload it to my program to be plotted. After uploading, your folder may not appear in the file browser. If so, you must refresh the file browser. In order to do this, you must enter a folder and then go back to the parent folder. To accomplish this, I added a fake folder called "Click HERE to refresh file browser". You can click the name of that folder to enter it. Inside, you will see a fake folder called "Click Back Arrow to refresh file browser". The title of this folder instructs you to click the back arrow, returning you to the parent folder. This manuever is my hacked way of forcing you to refresh the file browser, and you should now see the folder that you uploaded listed. You can click on the box next toyour folder to select it just as you can select any other MESA data folder. 
+
+
+#### Choose star 
+
+##### Select mass first 
+
+##### Select stage first 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# More notes and rougher drafts 
 
 ## Flowchart (evolutionary overview)
 
@@ -129,13 +181,34 @@ If the file structure differs, the app may not detect the run correctly.
 
 ---
 
-## Contact & collaboration
-If you’d like to collaborate, test features, or contribute MESA models, I’m eager to hear from you:
 
-- Email: **john-momberg@uiowa.edu**  
-- Open an issue on GitHub for specific feature requests or bugs.
 
 ---
 
-## License & citation
-*(Add your preferred license text here or a short citation instruction if you’d like people to cite your work when they use it.)*
+
+
+Original notes/rough draft: 
+
+
+How to use this program 
+
+1. Choose variable to plot Choose the type of plot to generate. Options include:
+   a. HR diagram: Shows the path that the star takes across the HR diagram
+   b. History: something vs time. Example: Radius vs time.
+   c. Interior profile: Interior structure, or something vs location within the star, at a fixed age. For the profile plot, there are two options for what you can plot on the x axis:
+   1. Radius: Exactly what you would expect to be plotted on the x axis of a plot showing the interior structure of a star.
+   2. 2. Mass coordinate: This represents however much mass is contained inside the point shown. So if x=0.3, that corresponds to the location in the star where you've travelled far enough out from the center such that 0.3 solar masses is interior to your current radius.
+
+2. Choose type of star This program emphasizes the use of understanding by making comparisons. There are two types of comparisons that can be made, and which comparison mode you are considering affects which button in this selector you choose.
+   1. For a given star, compare its properties at different points in its life (for instance, from main sequence to red giant). This corresponds to the button label "Select mass first". The idea is that you select the mass first, then the program tells you what evolutionary stages that THAT particular mass goes through, and then you select the evolutionary stage second. First, select the mass range from the dropdown. Depending on your selection, the program will tell you which stages that mass range goes through. Second, make a selection on the tabs selector that appears to choose an evolutionary stage.
+   2. For a given point in time, compare how stars of different masses experience it (for instance, compare the properties during the main sequence of a low mass star vs a high mass star). This corresponds to the button labeled "Select stage first". The idea is that first, you pick the evolutionary stage (for example, main sequence), and the program tells you what ranges of masses do different things during that stage (for instance maybe 1.5 solar masses is hte cutoff between different behavior in the main sequence) so you pick your stage first and then pick the mass range. First, select the evolutionary stage using the dropdown. Depending on your selection, the program will display which ranges of masses do different things during this evolutionary stage. Second, make your selection on the tabs selector that appears in order to choose a mass range.
+   3. Free exploration: Modes 1 and 2 were the main ways this program is meant to be used: I have associated each stage of stellar evolution/type of star with a MESA file and assigned a specific point in time that I think represents that stage best. However, if you want to see how the star behaves at points in between the time steps I've higlighted, or you just want to explore the data more freely, you can use the Free Exploration mode. This allows you to directly select the MESA file to load and then select the exact point in time you would like to view; in this mode, points in time are just as they come from the MESA folder, and I haven't imposed my own definitions of when the "main sequence" or "red giant" branch occurs. To select a folder to analyze, click the folder icon to the left of the name (a checkmark should appear in the box). Do not click the name of the folder; this causes you to go INTO the folder but you aren't actually selecting it for analysis. Next, once you've selected a MESA folder to analyze, you can pick a particular point in time within this MESA file using the dropdown selector. Model numbers, or "modelnums", are a way that MESA labels different points in time (since it might create more models in a short period of time if a lot of change happens so its not linear with time). The age of the star at each point is also included next to where I label the modelnum.
+
+This mode also allows you to upload your OWN mesa data folder for analysis. You can upload your own folder and use all of my interactive features and plots and use this tool to visualize and browse data of your own. To do that, click the Upload button and select a .zip compressed version of your MESA data folder. A MESA data folder should contain: "trimmed_history.data" or "history.data", and a series of files that looks like "profile1.data", "profile2.data", etc. If you take a MESA data folder and right click and compress to .zip, then you can upload it to my program to be plotted. After uploading, your folder may not appear in the file browser. If so, you must refresh the file browser. In order to do this, you must enter a folder and then go back to the parent folder. To accomplish this, I added a fake folder called "Click HERE to refresh file browser". You can click the name of that folder to enter it. Inside, you will see a fake folder called "Click Back Arrow to refresh file browser". The title of this folder instructs you to click the back arrow, returning you to the parent folder. This manuever is my hacked way of forcing you to refresh the file browser, and you should now see the folder that you uploaded listed. You can click on the box next toyour folder to select it just as you can select any other MESA data folder. 
+
+Flowchart 
+Below the controls section, you will see the Evolutionary Flowchart. This diagram summarizes the stages of life that stars of different masses go through. Intitial mass is given on the y axis. For a given value of mass, you can move along horizontally to see what stages that mass evolves into. The x axis lists out all of the major evolutionary stages. NOTE: This is NOT linear with respect to time. If it was, the main sequence would take up 99% of the lifetime of most stars. In addition, the main sequence for lower mass stars would be longer for lower mass stars, so you woudn't even be able to see the data for high mass stars. Instead, the flowchart uses "evolutionary stage" as a kind of proxy for age. Each evolutionary stage is sometimes broken into smaller sub-regions meaning stars of different masses experience that stage in different ways. For example, all stars go through the main sequence, but the properties of the main sequence are different for stars above and below 1.5 solar masses, so I'm representing that difference by creating a separation between the two boxes there. When in mode 1 (select mass first), all of the evolutionary stages in a horizontal line, that correspond to the selected mass, are highlighted, showing how you can compare different points in time of this mass. If you're in mode 2 (select stage first), boxes in a vertical line are highlighted, corresponding to the selected evolutionary stage, showing how you can compare how stars of different masses experience a particular stage of evolution. The right side of the flowchart gives the spectral type of a star with the corresponding mass when it's on the main sequence. NOTE: This is not necessarily the spectral type of the star at all points in its life. In fact, it will certainly change spectral type; for example, when stars become red giants, they would all become spectral type M. Instead, this allows you to better understand what is meant when someone talks about the evolution of "B type stars" or "G type stars" or "B3 type stars" or whatever. What that means is "the evolution of a star that, when its on the main sequence, has a spectral type of B", and the question is, what MASS does that correspond to? So I added a spectral type on MS axis to the right side of the plot to answer this question. 
+
+Plot 
+The selected plot is generated for the selected type of star and is displayed below the flowchart."
+
