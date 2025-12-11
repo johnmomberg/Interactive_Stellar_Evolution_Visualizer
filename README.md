@@ -117,7 +117,7 @@ I would like to thank Ken Gayley, my PhD advisor, for support and guidance throu
 
 Next, I would like to thank Philip Griffin for introducing me to Marimo, which forms the backbone of the interactivity of this entire project. 
 
-Finally, I want to thank everyone who has helped me test this project and gave me feedback, including but not limited to: Andi Swirbul, Nathan Helvy, Scott Call 
+Finally, I want to thank everyone who has helped me test this project and gave me feedback, including but not limited to: Andi Swirbul, Nathan Helvy, Scott Call, Chris Piker 
 
 ---
 
