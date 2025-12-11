@@ -20,25 +20,31 @@ def _(mo):
     return (full_title,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     # User Guide section header "userguide_subtitle" with switch to minimize it "userguide_switch"
     with mo.status.spinner(title="Creating User Guide section...") as _: 
-        userguide_subtitle = mo.md("<h2>Tutorial/Documentation</h2>") 
+        userguide_subtitle = mo.md("<h2>User Guide</h2>") 
         userguide_switch = mo.ui.switch(value=True, label="Hide / show")
         userguide_subtitle_hstack = mo.hstack([userguide_subtitle, userguide_switch], justify="space-between", align="center")
 
-    return userguide_subtitle_hstack, userguide_switch
+    return (userguide_switch,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo, userguide_switch):
     # User guide text (shows up if user guide is not minimized) "userguide_text"
 
     with mo.status.spinner(title="Setting User Guide section text...") as _: 
-        userguide_text = "Tutorial minimized by user" 
+        userguide_text = "" 
         if userguide_switch.value == True: 
-            userguide_text = "To do: create user guide/tutorial/documentation for this app. "
+            github_URL = "https://github.com/johnmomberg/Interactive_Stellar_Evolution_Visualizer"
+            userguide_text = mo.md(
+                f"""
+                For detailed instructions on how to use this tool, see here: [{github_URL}]({github_URL}) 
+                """
+
+            )
 
 
     return (userguide_text,)
@@ -304,7 +310,7 @@ def _(available_substages, comparison_mode_radio, mo, src):
                 available_substages_options, 
                 value=list(available_substages_options.keys())[0]) 
             available_substages_tabs_title = mo.md("<h4>Choose an evolutionary stage:</h4>") 
-            
+
         elif comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_STAGEFIRST: 
 
             available_substages_options = {
@@ -493,7 +499,7 @@ def _(
                 ], 
                 justify='space-around'
             ) 
-        
+
 
 
 
@@ -919,7 +925,7 @@ def _(
             hr = src.plot.hr.hr.HRDiagram() 
 
             if history_selected is None: 
-                return "Select a History file to view HR diagram" 
+                return "ERROR: HR Diagram is unavailable for current selection." 
 
 
             if comparison_mode_radio.value == src.data.marimo_ui_options.COMPAREMODE_MASSFIRST: 
@@ -1064,7 +1070,7 @@ def _(
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_HISTORY: 
 
             if history_selected is None: 
-                return "Select a History file to view history plot" 
+                return "ERROR: History Plot is unavailable for current selection." 
 
             selected_plot_func = history_plot_dropdown.value.plot_func 
             fig2 = selected_plot_func(history_selected) 
@@ -1124,7 +1130,7 @@ def _(
         if plot_mode_radio.value == src.data.marimo_ui_options.PLOTMODE_PROFILE:
 
             if history_selected is None or profile_selected is None: 
-                return "ERROR: Profile plot unavailable; please select an evolutionary stage" 
+                return "ERROR: Profile Plot is unavailable for current selection. Please select both a mass and an evolutionary stage to view plot. " 
 
             # Create profile plot depending on selected options in dropdown 
             selected_plot_func = profile_plot_dropdown.value.plot_func 
@@ -1258,7 +1264,6 @@ def _(
     secondary_plot,
     secondary_plot_subtitle,
     stagefirst_str,
-    userguide_subtitle_hstack,
     userguide_text,
 ):
     # MAIN 
@@ -1268,11 +1273,11 @@ def _(
     full_interface = mo.vstack(
         [
             full_title, 
-            "\u200b", 
-            mo.md("---"), 
-            "\u200b", 
+            # "\u200b", 
+            # mo.md("---"), 
+            # "\u200b", 
 
-            userguide_subtitle_hstack, 
+            # userguide_subtitle_hstack, 
             userguide_text, 
             "\u200b", 
             mo.md("---"), 
